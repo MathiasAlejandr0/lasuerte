@@ -1,4 +1,4 @@
-# Suertu2s
+# Suertu2s (lasuerte)
 
 Migración de WordPress/WooCommerce a **Next.js 16 + Supabase**.
 
