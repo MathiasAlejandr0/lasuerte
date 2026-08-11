@@ -1,62 +1,30 @@
-# Suertu2s (lasuerte)
+# Suertu2s
 
-Migración de WordPress/WooCommerce a **Next.js 16 + Supabase**.
+Proyecto de sorteos online (Next.js). El repositorio contiene dos versiones del proyecto en carpetas separadas:
 
-## Desarrollo
+## v1/ — Versión original
+
+Proyecto base que estaba publicado originalmente en este repositorio.
+
+- Estructura y funcionalidad original (checkout, admin, afiliados, pagos).
+- Se mantiene intacta por si se quiere conservar esa versión.
+
+## v2/ — Versión 2
+
+Versión actual con el trabajo más reciente.
+
+- Nuevo panel **Sorteos** en el administrador: ciclo activo, creación de un nuevo ciclo de sorteo (archiva el anterior con sus pedidos/códigos en un historial) y consulta del historial de sorteos.
+- Acceso rápido al ciclo activo desde el Resumen del admin.
+- El catálogo local (`catalog.json`) se guarda en `.data/` (ignorado por git).
+
+## Cómo correr cada versión
+
+Cada carpeta es un proyecto Next.js independiente.
 
 ```bash
+cd v1   # o v2
 npm install
-cp .env.example .env.local
 npm run dev
 ```
 
-En local el checkout puede simular el pago (mock con token firmado) y redirigir a `/pago/exito`. En producción el mock está siempre desactivado.
-
-## Stack
-
-- Next.js (App Router) + TypeScript + Tailwind CSS 4
-- Supabase (Postgres + RLS) — ver `supabase/migrations/`
-- Mercado Pago Checkout Pro + Transbank Webpay Plus
-- Resend (emails)
-- Zustand (carrito)
-
-## Rutas
-
-| Ruta               | Descripción         |
-| ------------------ | ------------------- |
-| `/`                | Landing             |
-| `/carrito`         | Carrito             |
-| `/checkout`        | Checkout + pago     |
-| `/check-tickets`   | Consulta de números |
-| `/sorteos-activos` | Sorteo vigente      |
-| `/bases-legales`   | Bases               |
-| `/admin`           | Pedidos             |
-
-## Supabase
-
-1. Crea un proyecto en Supabase
-2. Aplica **una sola** migración (esquema completo):  
-   `supabase/migrations/20260811000000_init.sql`  
-   (SQL Editor → pegar → Run, o `supabase db push` / link + migrate)
-3. Completa en `.env.local`:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-4. En Admin → Afiliados, asigna contraseña a `embajador@suertu2s.cl` / `demo@suertu2s.cl` para el portal `/afiliados`
-
-Sin Supabase, la app usa un store en memoria (útil para demo local).
-
-> Si ya habías aplicado migraciones viejas en un proyecto, parte de un proyecto limpio o resetea el schema: este archivo reemplaza el historial fragmentado anterior.
-
-## Pagos reales
-
-- Credenciales Mercado Pago y/o Webpay en `.env.local`
-- `MERCADOPAGO_WEBHOOK_SECRET` (obligatorio en producción)
-- `NEXT_PUBLIC_SITE_URL` con la URL pública (webhooks)
-
-## Seguridad (producción)
-
-- `ADMIN_SESSION_SECRET` largo y aleatorio (obligatorio; distinto de la contraseña)
-- `ADMIN_PASSWORD` o preferible `ADMIN_PASSWORD_HASH` (scrypt)
-- `AFFILIATE_SESSION_SECRET` (opcional; si no, usa `ADMIN_SESSION_SECRET`)
-- `TRUST_PROXY=true` detrás de Vercel/Cloudflare/nginx
+> Las variables de entorno secretas (`.env.local`) no se suben al repositorio. Copia el archivo `.env.local` desde tu máquina de desarrollo o crea uno a partir de `.env.example`.
