@@ -1,15 +1,17 @@
 import { Resend } from "resend";
 import type { DbOrder, DbTicket } from "@/lib/db/types";
-import { getPackById } from "@/lib/catalog/store";
+import { getPackById, getRaffle } from "@/lib/catalog/store";
 import { escapeHtml } from "@/lib/security/html";
+import { ticketDisplayCode } from "@/lib/tickets/codes";
 
 export async function sendOrderConfirmation(
   order: DbOrder,
   tickets: DbTicket[],
   packIds: string[],
 ) {
-  const numbers = tickets
-    .map((t) => String(t.number).padStart(5, "0"))
+  const raffleCode = getRaffle().code;
+  const codes = tickets
+    .map((t) => ticketDisplayCode(t, raffleCode))
     .join(", ");
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -32,19 +34,32 @@ export async function sendOrderConfirmation(
         .join("")
     : `<p style="color:#d8c28a">Tus ilustraciones quedan asociadas a este pedido. Si no las ves aquí, escríbenos con tu correo de compra.</p>`;
 
+  const codesHtml = tickets.length
+    ? `<ul style="padding-left:18px;margin:12px 0;font-size:18px;color:#f7c64b;font-weight:bold">
+        ${tickets
+          .map(
+            (t) =>
+              `<li style="margin:6px 0">${escapeHtml(ticketDisplayCode(t, raffleCode))}</li>`,
+          )
+          .join("")}
+      </ul>`
+    : `<p style="font-size:20px;color:#f7c64b;font-weight:bold">—</p>`;
+
   const safeName = escapeHtml(order.full_name);
   const safeEmail = escapeHtml(order.email);
-  const safeNumbers = escapeHtml(numbers || "—");
   const safeOrderId = escapeHtml(order.id);
+  const safeRaffleCode = escapeHtml(raffleCode);
   const site = escapeHtml(siteUrl);
 
   const html = `
     <div style="font-family:sans-serif;background:#020503;color:#fff5d4;padding:24px">
       <h1 style="color:#36f073">¡Gracias por tu compra, ${safeName}!</h1>
-      <p>Tu pago fue confirmado. Estos son tus números de sorteo:</p>
-      <p style="font-size:20px;color:#f7c64b;font-weight:bold">${safeNumbers}</p>
+      <p>Tu pago fue confirmado. Aquí tienes tus <strong>ilustraciones digitales</strong> y tus <strong>códigos de participación</strong> del sorteo <strong>${safeRaffleCode}</strong>.</p>
+      <p style="color:#d8c28a;font-size:13px">Cada código se forma con el código del sorteo más 5 dígitos aleatorios. Guárdalos: con ellos participas en el sorteo.</p>
+      <h2 style="color:#36f073;font-size:18px;margin-top:24px">Tus códigos</h2>
+      ${codesHtml}
       <p>Puedes consultarlos cuando quieras en
-        <a href="${site}/check-tickets" style="color:#36f073">Consultar números</a>
+        <a href="${site}/check-tickets" style="color:#36f073">Consultar códigos</a>
         con el correo <strong>${safeEmail}</strong>.
       </p>
       <h2 style="color:#36f073;font-size:18px;margin-top:28px">Tus ilustraciones digitales</h2>
@@ -56,7 +71,7 @@ export async function sendOrderConfirmation(
   if (!process.env.RESEND_API_KEY) {
     console.info("[email:mock]", {
       to: order.email,
-      numbers,
+      codes,
       packs: packs.map((p) => p.id),
     });
     return { mocked: true };
@@ -66,7 +81,7 @@ export async function sendOrderConfirmation(
   await resend.emails.send({
     from: process.env.EMAIL_FROM || "Suertu2s <noreply@suertu2s.cl>",
     to: order.email,
-    subject: "Tus números de sorteo Suertu2s",
+    subject: "Tus ilustraciones y códigos de sorteo Suertu2s",
     html,
   });
   return { mocked: false };

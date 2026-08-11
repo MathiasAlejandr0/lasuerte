@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+// React solo usa eval() en desarrollo (debug de errores). En producción no.
+const isDev = process.env.NODE_ENV === "development";
+
 const securityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -17,8 +20,8 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // Next.js aún requiere inline en varios builds; sin unsafe-eval
-      "script-src 'self' 'unsafe-inline'",
+      // unsafe-eval solo en desarrollo; producción queda estricto
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' data:",

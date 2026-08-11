@@ -252,7 +252,7 @@ export async function fulfillOrder(orderId: string) {
     0,
   );
 
-  const { data: numbers, error: assignError } = await sb.rpc("assign_tickets", {
+  const { data: codes, error: assignError } = await sb.rpc("assign_tickets", {
     p_order_id: orderId,
     p_count: count,
   });
@@ -262,13 +262,13 @@ export async function fulfillOrder(orderId: string) {
     .from("tickets")
     .select("*")
     .eq("order_id", orderId)
-    .order("number");
+    .order("code");
 
   return {
     order: claimed as DbOrder,
     tickets: tickets ?? [],
     alreadyPaid: false,
-    assignedNumbers: numbers as number[],
+    assignedCodes: codes as string[],
   };
 }
 
@@ -462,8 +462,7 @@ export async function upsertAffiliate(
   if (!isSupabaseConfigured()) {
     return memoryUpsertAffiliate({
       ...input,
-      password_hash:
-        password_hash !== undefined ? password_hash : undefined,
+      password_hash: password_hash !== undefined ? password_hash : undefined,
     });
   }
 
@@ -540,6 +539,32 @@ export function paymentsMockEnabled() {
   if (process.env.PAYMENTS_MOCK === "false") return false;
   if (process.env.PAYMENTS_MOCK === "true") return true;
   return true;
+}
+
+/** Conteo de pedidos y códigos emitidos para un ciclo de sorteo. */
+export async function getRaffleCycleStats(raffleId: string) {
+  if (!isSupabaseConfigured()) {
+    return {
+      ordersCount: memoryListOrders().filter((o) => o.raffle_id === raffleId)
+        .length,
+      ticketsCount: memoryListTickets().filter((t) => t.raffle_id === raffleId)
+        .length,
+    };
+  }
+  const [orders, tickets] = await Promise.all([
+    getSupabaseAdmin()
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("raffle_id", raffleId),
+    getSupabaseAdmin()
+      .from("tickets")
+      .select("id", { count: "exact", head: true })
+      .eq("raffle_id", raffleId),
+  ]);
+  return {
+    ordersCount: orders.count ?? 0,
+    ticketsCount: tickets.count ?? 0,
+  };
 }
 
 export { RAFFLE, RAFFLE_UUID };

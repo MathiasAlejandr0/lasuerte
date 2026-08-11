@@ -16,6 +16,7 @@ import { orderStatusLabel } from "@/lib/i18n/labels";
 type TicketRow = {
   id: string;
   number: number;
+  code?: string;
   email: string;
   order_id: string;
   created_at: string;
@@ -39,14 +40,14 @@ export default function AdminTicketsPage() {
         const res = await adminFetch(
           `/api/admin/tickets?q=${encodeURIComponent(q)}`,
         );
-        const json = await readJson<{ tickets: TicketRow[] }>(res, "Números");
+        const json = await readJson<{ tickets: TicketRow[] }>(res, "Códigos");
         if (!cancelled) setTickets(json.tickets || []);
       } catch (err) {
         if (!cancelled) {
           setError(
             err instanceof Error
               ? err.message
-              : "No se pudieron cargar los números",
+              : "No se pudieron cargar los códigos",
           );
         }
       }
@@ -63,19 +64,20 @@ export default function AdminTicketsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="font-title text-2xl font-black text-white m-0">
-            Números del sorteo
+            Códigos del sorteo
           </h2>
           <p className="text-sm text-brand-muted m-0 mt-1">
-            {tickets.length} números emitidos en el período
+            {tickets.length} códigos emitidos en el período
           </p>
         </div>
         <button
           type="button"
           onClick={() =>
-            exportCsv(`numeros_${from}_${to}.csv`, [
-              ["numero", "correo", "nombre", "pedido_id", "estado", "fecha"],
+            exportCsv(`codigos_${from}_${to}.csv`, [
+              ["codigo", "sufijo", "correo", "nombre", "pedido_id", "estado", "fecha"],
               ...tickets.map((t) => [
-                String(t.number),
+                t.code || String(t.number).padStart(5, "0"),
+                String(t.number).padStart(5, "0"),
                 t.email,
                 t.full_name || "",
                 t.order_id,
@@ -92,19 +94,19 @@ export default function AdminTicketsPage() {
 
       <div className="max-w-md">
         <Field
-          label="Buscar número o correo"
+          label="Buscar código o correo"
           value={q}
           onChange={setQ}
-          placeholder="ej. 42 o demo+1@"
+          placeholder="ej. S2S2648291 o demo+1@"
         />
       </div>
 
-      <Panel title="Inventario de números">
+      <Panel title="Inventario de códigos">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-brand-muted text-[11px] uppercase">
               <tr>
-                <th className="px-3 py-2">Número</th>
+                <th className="px-3 py-2">Código</th>
                 <th className="px-3 py-2">Participante</th>
                 <th className="px-3 py-2">Pedido</th>
                 <th className="px-3 py-2">Estado</th>
@@ -114,8 +116,8 @@ export default function AdminTicketsPage() {
             <tbody>
               {tickets.map((t) => (
                 <tr key={t.id} className="border-t border-white/5">
-                  <td className="px-3 py-2.5 text-brand-gold font-black text-base">
-                    #{t.number}
+                  <td className="px-3 py-2.5 text-brand-gold font-black text-base tracking-wide">
+                    {t.code || `#${String(t.number).padStart(5, "0")}`}
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="text-white font-semibold">
@@ -149,7 +151,7 @@ export default function AdminTicketsPage() {
               {!tickets.length && (
                 <tr>
                   <td colSpan={5}>
-                    <EmptyState title="Sin números en el período" />
+                    <EmptyState title="Sin códigos en el período" />
                   </td>
                 </tr>
               )}

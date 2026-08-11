@@ -1,7 +1,12 @@
-import { randomUUID } from "crypto";
+import { randomInt, randomUUID } from "crypto";
 import { assertRaffleAcceptsOrders } from "@/lib/catalog/orders-guard";
 import { getPackById, getPacks, getRaffle } from "@/lib/catalog/store";
 import { hashPassword } from "@/lib/security/password";
+import {
+  TICKET_SUFFIX_MAX,
+  formatTicketCode,
+  normalizeRaffleCode,
+} from "@/lib/tickets/codes";
 import type {
   CheckoutInput,
   DbAffiliate,
@@ -18,7 +23,6 @@ type Store = {
   tickets: DbTicket[];
   affiliates: DbAffiliate[];
   payouts: DbAffiliatePayout[];
-  nextTicket: number;
   demoSeeded: boolean;
 };
 
@@ -71,7 +75,6 @@ function store(): Store {
       tickets: [],
       affiliates: seedAffiliates(),
       payouts: [],
-      nextTicket: getRaffle().ticketMin,
       demoSeeded: false,
     };
   }
@@ -82,9 +85,15 @@ function store(): Store {
   if (!Array.isArray(s.items)) s.items = [];
   if (!Array.isArray(s.tickets)) s.tickets = [];
   if (!Array.isArray(s.payouts)) s.payouts = [];
-  if (typeof s.nextTicket !== "number") s.nextTicket = getRaffle().ticketMin;
   if (typeof s.demoSeeded !== "boolean") {
     s.demoSeeded = s.orders.some((o) => o.email.startsWith("demo+"));
+  }
+  // Backfill códigos en tickets viejos en memoria
+  const raffleCode = normalizeRaffleCode(getRaffle().code);
+  for (const t of s.tickets) {
+    if (!t.code) {
+      t.code = formatTicketCode(raffleCode, t.number);
+    }
   }
   // Stores en memoria sin password_hash (recargas en desarrollo)
   for (const a of s.affiliates) {
@@ -350,6 +359,50 @@ export function memorySetPaymentExternal(
   return order;
 }
 
+function allocateRandomTickets(
+  order: DbOrder,
+  count: number,
+  createdAt?: string,
+): DbTicket[] {
+  const s = store();
+  const raffleCode = normalizeRaffleCode(getRaffle().code);
+  const used = new Set(
+    s.tickets.filter((t) => t.raffle_id === order.raffle_id).map((t) => t.number),
+  );
+
+  if (used.size + count > TICKET_SUFFIX_MAX) {
+    throw new Error("No quedan códigos disponibles para este sorteo");
+  }
+
+  const tickets: DbTicket[] = [];
+  for (let i = 0; i < count; i++) {
+    let suffix = -1;
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const candidate = randomInt(0, TICKET_SUFFIX_MAX);
+      if (!used.has(candidate)) {
+        suffix = candidate;
+        break;
+      }
+    }
+    if (suffix < 0) {
+      throw new Error("No se pudo generar un código único");
+    }
+    used.add(suffix);
+    const ticket: DbTicket = {
+      id: randomUUID(),
+      raffle_id: order.raffle_id,
+      order_id: order.id,
+      number: suffix,
+      code: formatTicketCode(raffleCode, suffix),
+      email: order.email,
+      created_at: createdAt || new Date().toISOString(),
+    };
+    s.tickets.push(ticket);
+    tickets.push(ticket);
+  }
+  return tickets;
+}
+
 export function memoryFulfillOrder(orderId: string) {
   const s = store();
   const order = s.orders.find((o) => o.id === orderId);
@@ -361,24 +414,7 @@ export function memoryFulfillOrder(orderId: string) {
 
   const items = s.items.filter((i) => i.order_id === orderId);
   const count = items.reduce((acc, i) => acc + i.ticket_count, 0);
-  const tickets: DbTicket[] = [];
-
-  for (let i = 0; i < count; i++) {
-    if (s.nextTicket > getRaffle().ticketMax) {
-      throw new Error("No quedan números disponibles");
-    }
-    const ticket: DbTicket = {
-      id: randomUUID(),
-      raffle_id: order.raffle_id,
-      order_id: order.id,
-      number: s.nextTicket,
-      email: order.email,
-      created_at: new Date().toISOString(),
-    };
-    s.nextTicket += 1;
-    s.tickets.push(ticket);
-    tickets.push(ticket);
-  }
+  const tickets = allocateRandomTickets(order, count);
 
   order.status = "paid";
   order.paid_at = new Date().toISOString();
@@ -552,17 +588,7 @@ export function memorySeedDemoSales() {
         (acc, l) => acc + l.pack.ticketCount * l.quantity,
         0,
       );
-      for (let i = 0; i < count; i++) {
-        s.tickets.push({
-          id: randomUUID(),
-          raffle_id: getRaffle().id,
-          order_id: orderId,
-          number: s.nextTicket,
-          email: sample.email,
-          created_at: created,
-        });
-        s.nextTicket += 1;
-      }
+      allocateRandomTickets(order, count, created);
     }
   }
 

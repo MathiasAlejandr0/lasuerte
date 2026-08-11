@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
       rows = rows.filter(
         (t) =>
           String(t.number).includes(q) ||
+          (t.code || "").toLowerCase().includes(q) ||
           t.email.includes(q) ||
           (t.full_name || "").toLowerCase().includes(q) ||
           t.order_id.toLowerCase().includes(q),

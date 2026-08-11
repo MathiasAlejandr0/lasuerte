@@ -36,7 +36,7 @@ En local el checkout puede simular el pago (mock con token firmado) y redirigir 
 
 1. Crea un proyecto en Supabase
 2. Aplica **una sola** migración (esquema completo):  
-   `supabase/migrations/20260808000000_init.sql`  
+   `supabase/migrations/20260811000000_init.sql`  
    (SQL Editor → pegar → Run, o `supabase db push` / link + migrate)
 3. Completa en `.env.local`:
    - `NEXT_PUBLIC_SUPABASE_URL`

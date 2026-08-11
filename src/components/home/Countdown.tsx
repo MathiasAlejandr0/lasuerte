@@ -44,7 +44,7 @@ export function Countdown({ endsAt }: { endsAt?: string }) {
   ];
 
   return (
-    <div className="border border-brand-gold/25 rounded-2xl p-3 sm:p-4 bg-brand-bgLight/80 max-w-md w-full backdrop-blur-sm">
+    <div className="border border-brand-gold/25 rounded-2xl p-3 sm:p-4 bg-[#07160b] max-w-md w-full">
       <span className="text-xs text-brand-gold uppercase tracking-wider font-bold block mb-2">
         Tiempo restante para el gran sorteo:
       </span>
@@ -55,7 +55,8 @@ export function Countdown({ endsAt }: { endsAt?: string }) {
             className="bg-brand-bg p-1.5 sm:p-2 rounded-lg border border-brand-gold/10"
           >
             <span
-              className={`text-xl sm:text-2xl md:text-3xl font-extrabold block ${
+              key={`${cell.label}-${ready ? cell.value : "empty"}`}
+              className={`tick-pop text-xl sm:text-2xl md:text-3xl font-extrabold block ${
                 cell.bright ? "text-brand-greenBright" : "text-white"
               }`}
             >

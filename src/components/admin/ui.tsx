@@ -20,7 +20,7 @@ export function KpiCard({
     <div
       className={`rounded-2xl border p-4 ${
         accent
-          ? "border-brand-greenBright/40 bg-brand-green/15"
+          ? "gradient-border border-brand-greenBright/40 bg-brand-green/15"
           : "border-white/10 bg-brand-bgLight/50"
       }`}
     >

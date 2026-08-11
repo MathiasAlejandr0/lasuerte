@@ -29,8 +29,13 @@ export const RAFFLE = {
   title: "Sorteo MOTORRAD CORSA R150 0km 2026",
   prizeName: "MOTORRAD CORSA R150 2026",
   endsAt: "2026-10-01T00:00:00-03:00",
-  ticketMin: 1,
-  ticketMax: 100000,
+  /**
+   * Prefijo del código de participación. Cada ticket = code + 5 dígitos aleatorios
+   * (ej. S2S26 + 48291 → S2S2648291). No es secuencial ni refleja ventas.
+   */
+  code: "S2S26",
+  ticketMin: 0,
+  ticketMax: 99999,
   /** Compat: suma de DEFAULT_PRIZES (fuente de verdad: prizes en catalog store) */
   estimatedPrizeCostClp: DEFAULT_PRIZES.reduce((a, p) => a + p.costClp, 0),
   estimatedOpsCostClp: 400_000,
@@ -38,7 +43,8 @@ export const RAFFLE = {
   liveStreamUrl: "",
   /** open = sorteo activo; closed = cerrado (puede anunciarse ganador). */
   raffleStatus: "open" as "open" | "closed",
-  winnerTicketNumber: null as number | null,
+  /** Código completo ganador (ej. S2S2648291). */
+  winnerTicketCode: "",
   winnerName: "",
   winnerNote: "",
 };

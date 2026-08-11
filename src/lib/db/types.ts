@@ -51,7 +51,10 @@ export type DbTicket = {
   id: string;
   raffle_id: string;
   order_id: string;
+  /** Sufijo aleatorio 0..99999 (no secuencial). */
   number: number;
+  /** Código completo: código del sorteo + 5 dígitos (ej. S2S2648291). */
+  code: string;
   email: string;
   created_at: string;
 };

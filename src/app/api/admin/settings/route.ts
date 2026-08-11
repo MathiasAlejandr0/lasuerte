@@ -14,8 +14,28 @@ import {
   updateRaffle,
 } from "@/lib/catalog/store";
 import { paymentsMockEnabled } from "@/lib/db/orders";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isSupabaseConfigured, getSupabaseAdmin } from "@/lib/supabase/server";
 import { logServerError, publicError } from "@/lib/security/errors";
+import {
+  isValidRaffleCode,
+  isValidTicketCodeForRaffle,
+  normalizeRaffleCode,
+} from "@/lib/tickets/codes";
+
+const RAFFLE_UUID = "a0000000-0000-4000-8000-000000000001";
+
+async function syncRaffleCodeToSupabase(code: string) {
+  if (!isSupabaseConfigured()) return;
+  const { error } = await getSupabaseAdmin()
+    .from("raffles")
+    .update({ code: normalizeRaffleCode(code) })
+    .eq("id", RAFFLE_UUID);
+  if (error) {
+    throw new Error(
+      `No se pudo sincronizar el código del sorteo en la base de datos: ${error.message}`,
+    );
+  }
+}
 
 function emailConfigured() {
   return Boolean(process.env.RESEND_API_KEY);
@@ -85,7 +105,14 @@ const putSchema = z.object({
       title: z.string().min(3).max(200),
       prizeName: z.string().min(2).max(200),
       endsAt: z.string().min(8),
-      ticketMin: z.number().int().positive().optional(),
+      code: z
+        .string()
+        .min(2)
+        .max(12)
+        .transform((v) => normalizeRaffleCode(v))
+        .refine(isValidRaffleCode, "Código de sorteo inválido (A-Z / 0-9)")
+        .optional(),
+      ticketMin: z.number().int().nonnegative().optional(),
       ticketMax: z.number().int().positive().optional(),
       estimatedOpsCostClp: z.number().int().nonnegative().max(100_000_000),
       liveStreamUrl: z
@@ -100,12 +127,7 @@ const putSchema = z.object({
         )
         .optional(),
       raffleStatus: z.enum(["open", "closed"]).optional(),
-      winnerTicketNumber: z
-        .number()
-        .int()
-        .positive()
-        .nullable()
-        .optional(),
+      winnerTicketCode: z.string().max(20).optional().nullable(),
       winnerName: z.string().max(120).optional(),
       winnerNote: z.string().max(300).optional(),
     })
@@ -142,25 +164,36 @@ export async function PUT(req: NextRequest) {
       }
 
       const current = getRaffle();
-      const ticketMin = body.raffle.ticketMin ?? current.ticketMin;
-      const ticketMax = body.raffle.ticketMax ?? current.ticketMax;
+      const nextCode = body.raffle.code
+        ? normalizeRaffleCode(body.raffle.code)
+        : current.code;
+      const winnerRaw = body.raffle.winnerTicketCode;
       if (
-        body.raffle.winnerTicketNumber != null &&
-        (body.raffle.winnerTicketNumber < ticketMin ||
-          body.raffle.winnerTicketNumber > ticketMax)
+        winnerRaw != null &&
+        String(winnerRaw).trim() !== "" &&
+        !isValidTicketCodeForRaffle(String(winnerRaw), nextCode)
       ) {
         return NextResponse.json(
           {
-            error: `El número ganador debe estar entre ${ticketMin} y ${ticketMax}`,
+            error: `El código ganador debe ser ${nextCode} seguido de 5 dígitos (ej. ${nextCode}48291)`,
           },
           { status: 400 },
         );
       }
 
-      updateRaffle({
+      const updated = updateRaffle({
         ...body.raffle,
+        code: nextCode,
+        winnerTicketCode:
+          winnerRaw == null || String(winnerRaw).trim() === ""
+            ? ""
+            : String(winnerRaw).trim().toUpperCase(),
         endsAt: ends.toISOString(),
       });
+
+      if (body.raffle.code) {
+        await syncRaffleCodeToSupabase(updated.code);
+      }
     }
 
     if (body.prizes) {

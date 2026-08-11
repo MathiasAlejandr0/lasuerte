@@ -26,7 +26,7 @@ type OrderDetail = {
     unit_price_clp: number;
     ticket_count: number;
   }>;
-  tickets: Array<{ id: string; number: number; email: string }>;
+  tickets: Array<{ id: string; number: number; code?: string; email: string }>;
 };
 
 const PAGE_SIZE = 15;
@@ -402,7 +402,7 @@ export default function AdminOrdersPage() {
                         </span>
                         <span className="text-brand-muted">
                           {formatClp(item.unit_price_clp * item.quantity)} ·{" "}
-                          {item.ticket_count} números
+                          {item.ticket_count} códigos
                         </span>
                       </li>
                     ))}
@@ -411,22 +411,22 @@ export default function AdminOrdersPage() {
 
                 <div>
                   <p className="text-xs uppercase text-brand-muted font-bold m-0 mb-2">
-                    Números ({detail.tickets.length})
+                    Códigos ({detail.tickets.length})
                   </p>
                   {detail.tickets.length ? (
                     <div className="flex flex-wrap gap-1.5">
                       {detail.tickets.map((t) => (
                         <span
                           key={t.id}
-                          className="px-2 py-1 rounded bg-brand-bg border border-brand-gold/20 text-brand-gold text-xs font-bold"
+                          className="px-2 py-1 rounded bg-brand-bg border border-brand-gold/20 text-brand-gold text-xs font-bold tracking-wide"
                         >
-                          #{t.number}
+                          {t.code || `#${String(t.number).padStart(5, "0")}`}
                         </span>
                       ))}
                     </div>
                   ) : (
                     <p className="text-brand-muted text-xs m-0">
-                      Sin números asignados.
+                      Sin códigos asignados.
                     </p>
                   )}
                 </div>

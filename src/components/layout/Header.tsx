@@ -16,10 +16,18 @@ const navLinks = [
 export function Header() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const items = useCart((s) => s.items);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const count = mounted ? getCartItemCount(items) : 0;
@@ -27,7 +35,11 @@ export function Header() {
 
   return (
     <>
-      <header className="header-liquid-glass px-3 sm:px-5 py-[12px] box-border max-w-[100vw]">
+      <header
+        className={`header-liquid-glass px-3 sm:px-5 py-[12px] box-border max-w-[100vw] ${
+          scrolled ? "header-scrolled" : ""
+        }`}
+      >
         {/* Capa de difuminado (backdrop-filter) */}
         <div className="header-glass-bg" aria-hidden />
 
@@ -205,7 +217,7 @@ export function Header() {
               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 110 4 2 2 0 010-4z"
             />
           </svg>
-          Ir al pago ({ticketCount} números)
+          Ir al pago ({ticketCount} códigos)
         </Link>
       </div>
     </>

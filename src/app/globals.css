@@ -29,19 +29,6 @@ body {
   color: #fff5d4;
   overflow-x: hidden;
   padding-top: 100px;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-image:
-    radial-gradient(
-      circle at 10% 15%,
-      rgba(54, 240, 115, 0.08),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 90% 85%,
-      rgba(247, 198, 75, 0.08),
-      transparent 35%
-    );
   font-family: var(--font-jakarta), "Noto Color Emoji", sans-serif;
 }
 
@@ -76,9 +63,9 @@ section[id] {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(2, 5, 3, 0.75);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(2, 5, 3, 0.94);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
   pointer-events: none;
 }
 
@@ -166,23 +153,7 @@ section[id] {
 }
 
 .home-green-banner::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.08) 30%,
-    rgba(255, 255, 255, 0.25) 50%,
-    rgba(255, 255, 255, 0.08) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: skewX(-25deg);
-  animation: ribbon-shine 8s ease-in-out infinite;
-  pointer-events: none;
+  content: none;
 }
 
 @keyframes ribbon-shine {
@@ -299,8 +270,7 @@ section[id] {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-content,
-  .animate-pixar-jump,
-  .home-green-banner::after {
+  .animate-pixar-jump {
     animation: none !important;
   }
 }
@@ -309,6 +279,293 @@ section[id] {
 body:has(.admin-app) {
   padding-top: 0;
   background-image: none;
+}
+
+/* ==========================================================================
+   Apple-style design system (v2)
+   ========================================================================== */
+
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tipografía display tipo Apple: grande, apretada, alto contraste */
+.display-title {
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+/* Glassmorphism premium (sin backdrop-filter: evita bandas/artefactos) */
+.glass-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.015)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.glass-card:hover {
+  border-color: rgba(54, 240, 115, 0.4);
+}
+
+/* Scroll reveal (IntersectionObserver añade .is-visible) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s var(--ease-out-expo),
+    transform 0.8s var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 0.08s;
+}
+.reveal-delay-2 {
+  transition-delay: 0.16s;
+}
+.reveal-delay-3 {
+  transition-delay: 0.24s;
+}
+.reveal-delay-4 {
+  transition-delay: 0.32s;
+}
+
+/* Estage 3D para el carrusel */
+.carousel-3d-stage {
+  perspective: 1500px;
+  perspective-origin: 50% 42%;
+}
+
+/* Cards de packs con elevación tipo Apple */
+.pack-card {
+  transform: translateY(0);
+  transition:
+    transform 0.5s var(--ease-out-expo),
+    border-color 0.4s ease,
+    box-shadow 0.5s var(--ease-out-expo),
+    background-color 0.4s ease;
+}
+
+.pack-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(54, 240, 115, 0.45);
+  box-shadow: 0 30px 60px -15px rgba(54, 240, 115, 0.25);
+}
+
+/* Flotación suave para elementos 3D */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotateZ(-0.4deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .pack-card,
+  .glass-card,
+  .carousel-3d-stage,
+  .animate-float-slow {
+    transition: none;
+    transform: none;
+    opacity: 1;
+    filter: none;
+    animation: none;
+  }
+
+  .gradient-border::before,
+  .ambient-bg {
+    animation: none;
+  }
+} /* ==========================================================================
+   Extra (v2): smooth scroll, fondo ambiente, noise, bordes animados, etc.
+   ========================================================================== */
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Fondo ambiente: halos que respiran muy lentamente (sin manchas) */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      34rem 34rem at 10% 12%,
+      rgba(54, 240, 115, 0.06),
+      transparent 62%
+    ),
+    radial-gradient(
+      30rem 30rem at 88% 28%,
+      rgba(247, 198, 75, 0.05),
+      transparent 62%
+    );
+  background-size: 150% 150%;
+  animation: ambient-drift 28s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Textura de ruido sutil (film grain) */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* Borde con gradiente rotatorio (borde que brilla) */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.gradient-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    rgba(54, 240, 115, 0.9),
+    rgba(247, 198, 75, 0.9),
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(54, 240, 115, 0.45),
+    rgba(255, 255, 255, 0.05) 65%,
+    rgba(247, 198, 75, 0.9)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: gradient-rotate 7s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes gradient-rotate {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+/* Divisor de sección con glow sutil */
+.section-divider {
+  height: 1px;
+  border: none;
+  width: min(92%, 960px);
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(54, 240, 115, 0.3),
+    rgba(247, 198, 75, 0.18),
+    transparent
+  );
+}
+
+/* Pop del contador cuando cambia el número */
+@keyframes tick-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.16);
+    color: #36f073;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tick-pop {
+  display: inline-block;
+  animation: tick-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Check de éxito al agregar al carrito */
+@keyframes check-pop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.check-pop {
+  animation: check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Header que se encoge al hacer scroll */
+.header-liquid-glass {
+  transition:
+    padding-top 0.3s ease,
+    padding-bottom 0.3s ease,
+    min-height 0.3s ease;
+}
+
+.header-scrolled {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.header-scrolled .header-glass-bg {
+  background: rgba(2, 5, 3, 0.97);
 }
 
 body:has(.admin-app) .header-liquid-glass,

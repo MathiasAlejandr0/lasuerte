@@ -64,9 +64,7 @@ export async function GET(req: NextRequest) {
       emailConfigured: Boolean(process.env.RESEND_API_KEY),
       liveStreamConfigured: Boolean(raffle.liveStreamUrl?.trim()),
       raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",
-      winnerConfigured:
-        raffle.winnerTicketNumber != null &&
-        Number(raffle.winnerTicketNumber) > 0,
+      winnerConfigured: Boolean(raffle.winnerTicketCode?.trim()),
     };
 
     return NextResponse.json({
@@ -86,6 +84,14 @@ export async function GET(req: NextRequest) {
       providerMix,
       packMix,
       ops,
+      raffle: {
+        title: raffle.title,
+        prizeName: raffle.prizeName,
+        code: raffle.code,
+        endsAt: raffle.endsAt,
+        raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",
+        winnerTicketCode: raffle.winnerTicketCode,
+      },
       alerts: {
         pendingOrders: kpis.ordersPending,
         orphanCodes: orphanCodes.length,

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getRaffle } from "@/lib/catalog/store";
 import { lookupTicketsByEmail } from "@/lib/db/orders";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { logServerError, publicError } from "@/lib/security/errors";
+import { ticketDisplayCode } from "@/lib/tickets/codes";
 
 const schema = z.object({
   email: z.string().email(),
@@ -27,9 +29,12 @@ export async function POST(req: NextRequest) {
 
     const { email } = schema.parse(await req.json());
     const tickets = await lookupTicketsByEmail(email);
+    const raffleCode = getRaffle().code;
     return NextResponse.json({
       email: email.toLowerCase().trim(),
+      raffleCode,
       tickets: tickets.map((t) => ({
+        code: ticketDisplayCode(t, raffleCode),
         number: t.number,
         orderId: t.order_id,
         createdAt: t.created_at,

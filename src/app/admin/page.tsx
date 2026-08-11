@@ -44,8 +44,15 @@ export default function AdminDashboardPage() {
     return <p className="text-brand-muted text-sm">Cargando resumen…</p>;
   }
 
-  const { kpis, alerts, packMix, providerMix, affiliateStats, orphanCodes, ops } =
-    data;
+  const {
+    kpis,
+    alerts,
+    packMix,
+    providerMix,
+    affiliateStats,
+    orphanCodes,
+    ops,
+  } = data;
 
   const opsItems = ops
     ? [
@@ -59,7 +66,9 @@ export default function AdminDashboardPage() {
         {
           label: "Mercado Pago",
           ok: ops.mercadoPagoConfigured,
-          detail: ops.mercadoPagoConfigured ? "Claves listas" : "Falta configurar",
+          detail: ops.mercadoPagoConfigured
+            ? "Claves listas"
+            : "Falta configurar",
         },
         {
           label: "Webpay en vivo",
@@ -110,6 +119,60 @@ export default function AdminDashboardPage() {
           Indicadores de ventas, referidos y operación del período seleccionado.
         </p>
       </div>
+
+      {data.raffle && (
+        <Panel
+          title="Sorteo activo"
+          actions={
+            <Link
+              href="/admin/raffles"
+              className="text-xs text-brand-gold no-underline font-semibold"
+            >
+              Crear nuevo sorteo
+            </Link>
+          }
+        >
+          <div className="px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-white font-bold m-0 truncate">
+                {data.raffle.title}
+              </p>
+              <p className="text-brand-muted text-sm m-0 truncate">
+                {data.raffle.prizeName}
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-sm shrink-0">
+              <div>
+                <p className="text-brand-muted text-[11px] uppercase font-semibold m-0">
+                  Código
+                </p>
+                <p className="text-brand-greenBright font-bold m-0">
+                  {data.raffle.code}
+                </p>
+              </div>
+              <div>
+                <p className="text-brand-muted text-[11px] uppercase font-semibold m-0">
+                  Cierre
+                </p>
+                <p className="text-white m-0">
+                  {new Date(data.raffle.endsAt).toLocaleDateString("es-CL", {
+                    dateStyle: "medium",
+                  })}
+                </p>
+              </div>
+              <span
+                className={`text-[11px] font-bold uppercase px-2 py-1 rounded-full border ${
+                  data.raffle.raffleStatus === "closed"
+                    ? "bg-red-500/15 text-red-300 border-red-400/30"
+                    : "bg-brand-green/30 text-brand-greenBright border-brand-greenBright/30"
+                }`}
+              >
+                {data.raffle.raffleStatus === "closed" ? "Cerrado" : "Abierto"}
+              </span>
+            </div>
+          </div>
+        </Panel>
+      )}
 
       {opsItems.length > 0 && (
         <Panel
@@ -207,7 +270,7 @@ export default function AdminDashboardPage() {
         <KpiCard label="Pendientes" value={String(kpis.ordersPending)} />
         <KpiCard label="Fallidos" value={String(kpis.ordersFailed)} />
         <KpiCard
-          label="Números emitidos"
+          label="Códigos emitidos"
           value={String(kpis.ticketsIssued)}
           hint={`${kpis.referralRatePct}% con referido`}
         />
@@ -215,8 +278,8 @@ export default function AdminDashboardPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 px-4 py-3">
         <p className="text-sm text-brand-muted m-0">
-          ¿Quieres ver si alcanza la plata para cada premio, qué pack vende más y
-          cómo van los códigos de amigos?
+          ¿Quieres ver si alcanza la plata para cada premio, qué pack vende más
+          y cómo van los códigos de amigos?
         </p>
         <Link
           href="/admin/analytics"
@@ -377,9 +440,7 @@ export default function AdminDashboardPage() {
 
       <div className="text-[11px] text-brand-muted flex gap-3 items-center">
         <StatusBadge status="paid" />
-        <span>
-          Solo los pedidos pagados cuentan en ingresos y comisiones.
-        </span>
+        <span>Solo los pedidos pagados cuentan en ingresos y comisiones.</span>
       </div>
     </div>
   );

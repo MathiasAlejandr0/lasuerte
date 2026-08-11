@@ -164,7 +164,7 @@ Esto es lo más importante para explicar “qué sumamos”.
 
 Archivo único:
 
-`supabase/migrations/20260808000000_init.sql`
+`supabase/migrations/20260811000000_init.sql`
 
 Incluye todo de una vez: sorteo, packs, pedidos, tickets, afiliados, liquidaciones, password de afiliados, flag de email, RLS y asignación segura de números.
 

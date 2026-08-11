@@ -82,4 +82,12 @@ export type DashboardData = {
     raffleStatus: "open" | "closed";
     winnerConfigured: boolean;
   };
+  raffle?: {
+    title: string;
+    prizeName: string;
+    code: string;
+    endsAt: string;
+    raffleStatus: "open" | "closed";
+    winnerTicketCode?: string;
+  };
 };

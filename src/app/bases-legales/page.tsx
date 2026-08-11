@@ -1,6 +1,19 @@
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LegalService",
+  name: "Bases legales — Sorteo MOTORRAD CORSA R150 0km 2026",
+  description:
+    "Bases protocolizadas ante notario en Puerto Montt del sorteo promocional SUERTU2S vinculado a la compra de packs de ilustración digital.",
+  areaServed: "Chile",
+};
+
 export default function BasesLegalesPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="font-title text-3xl md:text-5xl font-black text-white">
         Bases legales
       </h1>
@@ -26,8 +39,9 @@ export default function BasesLegalesPage() {
             ilustración digital.
           </li>
           <li>
-            Los números de sorteo se asignan automáticamente tras la
-            confirmación del pago.
+            Los códigos de participación (código del sorteo + 5 dígitos
+            aleatorios) se asignan automáticamente tras la confirmación del
+            pago.
           </li>
           <li>
             El sorteo se transmite en vivo mediante tómbola ante ministro de fe.

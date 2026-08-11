@@ -2,7 +2,12 @@
 
 import { FormEvent, useState } from "react";
 
-type Ticket = { number: number; orderId: string; createdAt: string };
+type Ticket = {
+  code: string;
+  number: number;
+  orderId: string;
+  createdAt: string;
+};
 
 export default function CheckTicketsPage() {
   const [tickets, setTickets] = useState<Ticket[] | null>(null);
@@ -35,10 +40,11 @@ export default function CheckTicketsPage() {
     <main className="max-w-xl mx-auto px-4 py-12 space-y-8">
       <div className="text-center space-y-3">
         <h1 className="font-title text-3xl md:text-4xl font-black text-white">
-          Consultar números
+          Consultar códigos
         </h1>
         <p className="text-brand-muted text-sm">
-          Ingresa el correo usado en la compra para ver tus números de sorteo.
+          Ingresa el correo usado en la compra para ver tus códigos de
+          participación del sorteo.
         </p>
       </div>
 
@@ -78,20 +84,20 @@ export default function CheckTicketsPage() {
         <div className="border border-brand-gold/20 rounded-2xl p-6 bg-brand-bg/80 space-y-4">
           {tickets.length === 0 ? (
             <p className="text-brand-muted text-center">
-              No encontramos números para este correo.
+              No encontramos códigos para este correo.
             </p>
           ) : (
             <>
               <h2 className="text-white font-bold">
-                Tus números ({tickets.length})
+                Tus códigos ({tickets.length})
               </h2>
               <div className="flex flex-wrap gap-2">
                 {tickets.map((t) => (
                   <span
-                    key={`${t.orderId}-${t.number}`}
-                    className="px-3 py-2 rounded-lg bg-brand-bgLight border border-brand-greenBright/30 text-brand-greenBright font-bold"
+                    key={`${t.orderId}-${t.code || t.number}`}
+                    className="px-3 py-2 rounded-lg bg-brand-bgLight border border-brand-greenBright/30 text-brand-greenBright font-bold tracking-wide"
                   >
-                    {String(t.number).padStart(5, "0")}
+                    {t.code || String(t.number).padStart(5, "0")}
                   </span>
                 ))}
               </div>

@@ -14,8 +14,8 @@ export default async function PagoExitoPage({
       </h1>
       <p className="text-brand-muted leading-relaxed">
         {pending
-          ? "Tu pago está siendo confirmado. Te enviaremos los números por correo apenas se acredite."
-          : "Gracias por participar. Tus números de sorteo e ilustraciones fueron enviados a tu correo."}
+          ? "Tu pago está siendo confirmado. Te enviaremos las ilustraciones y los códigos por correo apenas se acredite."
+          : "Gracias por participar. Tus ilustraciones y códigos de sorteo fueron enviados a tu correo."}
       </p>
       {orderId && (
         <p className="text-xs text-brand-muted/80">Pedido: {orderId}</p>
@@ -25,7 +25,7 @@ export default async function PagoExitoPage({
           href="/check-tickets"
           className="bg-gradient-to-r from-brand-gold to-brand-goldDark text-black font-bold uppercase px-6 py-3 rounded-full no-underline"
         >
-          Consultar números
+          Consultar códigos
         </Link>
         <Link
           href="/"

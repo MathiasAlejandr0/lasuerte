@@ -224,7 +224,7 @@ export default function AffiliatePortalPage() {
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <form
           onSubmit={onLogin}
-          className="w-full max-w-md border border-white/10 rounded-2xl p-8 bg-brand-bgLight/60 space-y-5"
+          className="w-full max-w-md gradient-border border border-white/10 rounded-2xl p-8 bg-brand-bgLight/60 space-y-5"
         >
           <div>
             <p className="text-brand-gold text-xs font-bold uppercase tracking-widest m-0">
@@ -308,7 +308,7 @@ export default function AffiliatePortalPage() {
         </button>
       </div>
 
-      <section className="border border-brand-greenBright/30 rounded-2xl p-5 bg-brand-green/10 space-y-5">
+      <section className="gradient-border border border-brand-greenBright/30 rounded-2xl p-5 bg-brand-green/10 space-y-5">
         <div className="space-y-3">
           <h2 className="text-white font-bold text-sm uppercase tracking-wide m-0">
             Comparte tu referido
@@ -368,8 +368,8 @@ export default function AffiliatePortalPage() {
               Código QR
             </h3>
             <p className="text-sm text-brand-muted m-0">
-              Ideal para Stories, afiches o WhatsApp. Quien lo escanee llega a tu
-              enlace con el código{" "}
+              Ideal para Stories, afiches o WhatsApp. Quien lo escanee llega a
+              tu enlace con el código{" "}
               <strong className="text-white">{affiliate.code}</strong>.
             </p>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2">
@@ -527,7 +527,7 @@ function Kpi({
     <div
       className={`rounded-2xl border p-4 ${
         accent
-          ? "border-brand-greenBright/40 bg-brand-green/15"
+          ? "gradient-border border-brand-greenBright/40 bg-brand-green/15"
           : "border-white/10 bg-brand-bgLight/50"
       }`}
     >
@@ -535,9 +535,7 @@ function Kpi({
         {label}
       </p>
       <p className="text-white font-black text-xl m-0 leading-tight">{value}</p>
-      {hint && (
-        <p className="text-[11px] text-brand-muted m-0 mt-2">{hint}</p>
-      )}
+      {hint && <p className="text-[11px] text-brand-muted m-0 mt-2">{hint}</p>}
     </div>
   );
 }

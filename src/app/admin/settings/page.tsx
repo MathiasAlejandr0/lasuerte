@@ -24,13 +24,14 @@ type SettingsData = {
     title: string;
     prizeName: string;
     endsAt: string;
+    code: string;
     ticketMin: number;
     ticketMax: number;
     estimatedPrizeCostClp: number;
     estimatedOpsCostClp: number;
     liveStreamUrl?: string;
     raffleStatus?: "open" | "closed";
-    winnerTicketNumber?: number | null;
+    winnerTicketCode?: string;
     winnerName?: string;
     winnerNote?: string;
   };
@@ -87,12 +88,13 @@ export default function AdminSettingsPage() {
     title: "",
     prizeName: "",
     endsAt: "",
+    code: "",
     ticketMin: "",
     ticketMax: "",
     estimatedOpsCostClp: "",
     liveStreamUrl: "",
     raffleStatus: "open" as "open" | "closed",
-    winnerTicketNumber: "",
+    winnerTicketCode: "",
     winnerName: "",
     winnerNote: "",
   });
@@ -115,16 +117,14 @@ export default function AdminSettingsPage() {
           title: json.raffle.title,
           prizeName: json.raffle.prizeName,
           endsAt: toDatetimeLocal(json.raffle.endsAt),
+          code: json.raffle.code || "",
           ticketMin: String(json.raffle.ticketMin),
           ticketMax: String(json.raffle.ticketMax),
           estimatedOpsCostClp: String(json.raffle.estimatedOpsCostClp),
           liveStreamUrl: json.raffle.liveStreamUrl || "",
           raffleStatus:
             json.raffle.raffleStatus === "closed" ? "closed" : "open",
-          winnerTicketNumber:
-            json.raffle.winnerTicketNumber == null
-              ? ""
-              : String(json.raffle.winnerTicketNumber),
+          winnerTicketCode: json.raffle.winnerTicketCode || "",
           winnerName: json.raffle.winnerName || "",
           winnerNote: json.raffle.winnerNote || "",
         });
@@ -186,14 +186,13 @@ export default function AdminSettingsPage() {
             title: raffleForm.title.trim(),
             prizeName: raffleForm.prizeName.trim(),
             endsAt: endsIso,
+            code: raffleForm.code.trim().toUpperCase(),
             ticketMin: Number(raffleForm.ticketMin),
             ticketMax: Number(raffleForm.ticketMax),
             estimatedOpsCostClp: Number(raffleForm.estimatedOpsCostClp),
             liveStreamUrl: raffleForm.liveStreamUrl.trim(),
             raffleStatus: raffleForm.raffleStatus,
-            winnerTicketNumber: raffleForm.winnerTicketNumber.trim()
-              ? Number(raffleForm.winnerTicketNumber)
-              : null,
+            winnerTicketCode: raffleForm.winnerTicketCode.trim().toUpperCase(),
             winnerName: raffleForm.winnerName.trim(),
             winnerNote: raffleForm.winnerNote.trim(),
           },
@@ -221,10 +220,8 @@ export default function AdminSettingsPage() {
         liveStreamUrl: json.raffle.liveStreamUrl || "",
         raffleStatus:
           json.raffle.raffleStatus === "closed" ? "closed" : "open",
-        winnerTicketNumber:
-          json.raffle.winnerTicketNumber == null
-            ? ""
-            : String(json.raffle.winnerTicketNumber),
+        code: json.raffle.code || "",
+        winnerTicketCode: json.raffle.winnerTicketCode || "",
         winnerName: json.raffle.winnerName || "",
         winnerNote: json.raffle.winnerNote || "",
       }));
@@ -315,19 +312,25 @@ export default function AdminSettingsPage() {
             />
           </label>
           <Field
-            label="Primer número posible"
-            value={raffleForm.ticketMin}
-            onChange={(v) => setRaffleForm((f) => ({ ...f, ticketMin: v }))}
-            type="number"
+            label="Código del sorteo"
+            value={raffleForm.code}
+            onChange={(v) =>
+              setRaffleForm((f) => ({
+                ...f,
+                code: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+              }))
+            }
             required
+            placeholder="ej. S2S26"
           />
-          <Field
-            label="Último número posible"
-            value={raffleForm.ticketMax}
-            onChange={(v) => setRaffleForm((f) => ({ ...f, ticketMax: v }))}
-            type="number"
-            required
-          />
+          <div className="sm:col-span-2 text-xs text-brand-muted space-y-1">
+            <p className="m-0">
+              Cada participación = <strong className="text-white">código del sorteo</strong>{" "}
+              + <strong className="text-white">5 dígitos aleatorios</strong> (ej.{" "}
+              {raffleForm.code || "S2S26"}48291). No son correlativos ni revelan
+              cuántas ventas hay.
+            </p>
+          </div>
           <label className="block space-y-1 sm:col-span-2">
             <span className="text-[11px] text-brand-muted uppercase font-semibold">
               Link de la transmisión en vivo
@@ -374,13 +377,15 @@ export default function AdminSettingsPage() {
             </select>
           </label>
           <Field
-            label="Número ganador"
-            value={raffleForm.winnerTicketNumber}
+            label="Código ganador (completo)"
+            value={raffleForm.winnerTicketCode}
             onChange={(v) =>
-              setRaffleForm((f) => ({ ...f, winnerTicketNumber: v }))
+              setRaffleForm((f) => ({
+                ...f,
+                winnerTicketCode: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+              }))
             }
-            type="number"
-            placeholder="ej. 12345"
+            placeholder={`ej. ${raffleForm.code || "S2S26"}48291`}
           />
           <Field
             label="Nombre del ganador (público)"
@@ -403,7 +408,7 @@ export default function AdminSettingsPage() {
               className="w-full bg-brand-bg border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-brand-gold/50 resize-y"
             />
             <span className="text-xs text-brand-muted block">
-              Si el sorteo está cerrado y hay número ganador, se muestra en la
+              Si el sorteo está cerrado y hay código ganador, se muestra en la
               portada.
             </span>
           </label>

@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ScrollReveal } from "@/components/layout/ScrollReveal";
+import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { ReferralCapture } from "@/components/referral/ReferralCapture";
 import "./globals.css";
 
@@ -40,6 +42,10 @@ export default function RootLayout({
       className={`${jakarta.variable} ${montserrat.variable} scroll-smooth`}
     >
       <body className="min-h-screen flex flex-col font-sans antialiased bg-brand-bg text-brand-cream">
+        <div aria-hidden="true" className="ambient-bg" />
+        <div aria-hidden="true" className="noise-overlay" />
+        <ScrollReveal />
+        <SmoothScroll />
         <Suspense fallback={null}>
           <ReferralCapture />
         </Suspense>

@@ -10,7 +10,8 @@ const NAV: Array<{ href: string; label: string; exact?: boolean }> = [
   { href: "/admin/analytics", label: "Analítica" },
   { href: "/admin/orders", label: "Pedidos" },
   { href: "/admin/customers", label: "Clientes" },
-  { href: "/admin/tickets", label: "Números" },
+  { href: "/admin/tickets", label: "Códigos" },
+  { href: "/admin/raffles", label: "Sorteos" },
   { href: "/admin/affiliates", label: "Afiliados" },
   { href: "/admin/settings", label: "Ajustes" },
 ];
@@ -61,7 +62,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               )
               .finally(() => setLoginBusy(false));
           }}
-          className="w-full max-w-md border border-white/10 rounded-2xl p-8 bg-brand-bgLight/60 space-y-5"
+          className="w-full max-w-md gradient-border border border-white/10 rounded-2xl p-8 bg-brand-bgLight/60 space-y-5"
         >
           <div>
             <p className="text-brand-gold text-xs font-bold uppercase tracking-widest m-0">
@@ -116,7 +117,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="admin-app min-h-screen flex bg-brand-bg text-brand-cream">
+    <div className="admin-app min-h-screen flex bg-transparent text-brand-cream">
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-64 border-r border-white/10 bg-[#041008] p-4 flex flex-col transition-transform md:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"

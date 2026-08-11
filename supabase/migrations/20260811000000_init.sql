@@ -1,7 +1,15 @@
 -- =============================================================================
--- Suertu2s — esquema completo (aplicar una sola vez en un proyecto nuevo)
--- Incluye: sorteo, packs, pedidos, tickets, afiliados, liquidaciones,
---          password portal afiliados, email de confirmación, RLS y RPC segura.
+-- Suertu2s — esquema completo (aplicar UNA sola vez en un proyecto Supabase nuevo)
+--
+-- Incluye:
+--   • Sorteo con código propio (ej. S2S26)
+--   • Packs / pedidos / ítems
+--   • Códigos de participación = código_sorteo + 5 dígitos ALEATORIOS
+--     (no secuenciales; no revelan cuántas ventas hay)
+--   • Afiliados + liquidaciones + password portal
+--   • Flag de email de confirmación
+--   • RLS + RPC assign_tickets (solo service_role)
+--   • Seeds con IDs fijos usados por el código Next.js
 -- =============================================================================
 
 create extension if not exists "pgcrypto";
@@ -16,8 +24,11 @@ create table public.raffles (
   ends_at timestamptz not null,
   status text not null default 'active'
     check (status in ('active', 'closed', 'draft')),
-  ticket_min int not null default 1,
-  ticket_max int not null default 100000,
+  -- Prefijo público del código de participación (ej. S2S26 + 5 dígitos)
+  code text not null unique
+    check (code ~ '^[A-Z0-9]{2,12}$'),
+  ticket_min int not null default 0,
+  ticket_max int not null default 99999,
   created_at timestamptz not null default now()
 );
 
@@ -62,7 +73,7 @@ create index affiliates_email_lower_idx
   where email is not null;
 
 -- -----------------------------------------------------------------------------
--- Pedidos, ítems y números
+-- Pedidos, ítems y códigos de participación
 -- -----------------------------------------------------------------------------
 create table public.orders (
   id uuid primary key default gen_random_uuid(),
@@ -99,13 +110,18 @@ create table public.tickets (
   id uuid primary key default gen_random_uuid(),
   raffle_id uuid not null references public.raffles(id) on delete cascade,
   order_id uuid not null references public.orders(id) on delete cascade,
-  number int not null,
+  -- Sufijo aleatorio 0..99999 (NO secuencial; no refleja ventas)
+  number int not null check (number >= 0 and number <= 99999),
+  -- Código completo: raffles.code || lpad(number, 5, '0')  → ej. S2S2648291
+  code text not null,
   email text not null,
   created_at timestamptz not null default now(),
-  unique (raffle_id, number)
+  unique (raffle_id, number),
+  unique (raffle_id, code)
 );
 
 create index tickets_email_idx on public.tickets (lower(email));
+create index tickets_code_idx on public.tickets (upper(code));
 create index orders_email_idx on public.orders (lower(email));
 create index orders_payment_external_id_idx on public.orders (payment_external_id);
 create index orders_referral_code_idx on public.orders (upper(referral_code));
@@ -155,12 +171,13 @@ create policy "Public read active packs"
 -- sin policies públicas → solo service_role vía API Next.js
 
 -- -----------------------------------------------------------------------------
--- Asignación atómica de números (solo service_role)
+-- Asignación atómica de códigos aleatorios (solo service_role)
+-- Retorna text[] con los códigos completos (ej. {S2S2648291,S2S2600317})
 -- -----------------------------------------------------------------------------
 create or replace function public.assign_tickets(
   p_order_id uuid,
   p_count int
-) returns int[]
+) returns text[]
 language plpgsql
 security definer
 set search_path = public
@@ -168,18 +185,20 @@ as $$
 declare
   v_raffle_id uuid;
   v_email text;
-  v_min int;
-  v_max int;
-  v_next int;
-  v_assigned int[] := '{}';
+  v_raffle_code text;
+  v_suffix int;
+  v_code text;
+  v_assigned text[] := '{}';
   i int;
+  v_attempts int;
+  v_issued int;
 begin
   if p_count is null or p_count < 1 then
     raise exception 'invalid ticket count';
   end if;
 
-  select o.raffle_id, o.email, r.ticket_min, r.ticket_max
-    into v_raffle_id, v_email, v_min, v_max
+  select o.raffle_id, o.email, upper(r.code)
+    into v_raffle_id, v_email, v_raffle_code
   from public.orders o
   join public.raffles r on r.id = o.raffle_id
   where o.id = p_order_id
@@ -189,19 +208,41 @@ begin
     raise exception 'order not found';
   end if;
 
-  select coalesce(max(number), v_min - 1) + 1
-    into v_next
+  if v_raffle_code is null or v_raffle_code !~ '^[A-Z0-9]{2,12}$' then
+    raise exception 'raffle code is not configured';
+  end if;
+
+  select count(*)::int into v_issued
   from public.tickets
   where raffle_id = v_raffle_id;
 
+  if v_issued + p_count > 100000 then
+    raise exception 'ticket pool exhausted';
+  end if;
+
   for i in 1..p_count loop
-    if v_next > v_max then
-      raise exception 'ticket pool exhausted';
-    end if;
-    insert into public.tickets (raffle_id, order_id, number, email)
-    values (v_raffle_id, p_order_id, v_next, v_email);
-    v_assigned := array_append(v_assigned, v_next);
-    v_next := v_next + 1;
+    v_attempts := 0;
+    loop
+      v_attempts := v_attempts + 1;
+      if v_attempts > 80 then
+        raise exception 'could not allocate unique ticket code';
+      end if;
+
+      -- 5 dígitos aleatorios: 00000..99999 (no correlativos)
+      v_suffix := floor(random() * 100000)::int;
+      v_code := v_raffle_code || lpad(v_suffix::text, 5, '0');
+
+      begin
+        insert into public.tickets (raffle_id, order_id, number, code, email)
+        values (v_raffle_id, p_order_id, v_suffix, v_code, v_email);
+        v_assigned := array_append(v_assigned, v_code);
+        exit;
+      exception
+        when unique_violation then
+          -- colisión rara: reintentar con otro aleatorio
+          null;
+      end;
+    end loop;
   end loop;
 
   return v_assigned;
@@ -216,15 +257,18 @@ grant execute on function public.assign_tickets(uuid, int) to service_role;
 -- -----------------------------------------------------------------------------
 -- Seeds (IDs fijos usados por el código Next.js)
 -- -----------------------------------------------------------------------------
-insert into public.raffles (id, title, prize_name, ends_at, status, ticket_min, ticket_max)
+insert into public.raffles (
+  id, title, prize_name, ends_at, status, code, ticket_min, ticket_max
+)
 values (
   'a0000000-0000-4000-8000-000000000001',
   'Sorteo MOTORRAD CORSA R150 0km 2026',
   'MOTORRAD CORSA R150 2026',
   '2026-10-01T00:00:00-03:00',
   'active',
-  1,
-  100000
+  'S2S26',
+  0,
+  99999
 );
 
 insert into public.packs (
@@ -270,7 +314,9 @@ values
   );
 
 -- Afiliados demo (sin password_hash: se setea en Admin → Afiliados)
-insert into public.affiliates (code, name, email, commission_type, commission_value, notes)
+insert into public.affiliates (
+  code, name, email, commission_type, commission_value, notes
+)
 values
   (
     'STJP48',

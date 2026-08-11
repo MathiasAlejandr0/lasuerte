@@ -137,11 +137,11 @@ export function HeroWavesCanvas() {
       }
       ctx.globalCompositeOperation = "source-over";
 
-      const spacing = w < 768 ? 42 : 52;
+      const spacing = w < 768 ? 64 : 84;
       const cols = Math.floor(w / spacing) + 2;
       const rows = Math.floor(h / spacing) + 2;
-      const baseRadiusMax = ((w < 768 ? 16 : 22) / 2.8) * 0.85;
-      const baseOpacityVal = w < 768 ? 0.12 : 0.22;
+      const baseRadiusMax = ((w < 768 ? 16 : 22) / 4) * 0.7;
+      const baseOpacityVal = w < 768 ? 0.05 : 0.08;
 
       const sweepDuration = 7.5;
       const localTime = time % 8;
@@ -157,10 +157,10 @@ export function HeroWavesCanvas() {
         const fadeX = Math.min(1, Math.min(x, w - x) / (w * 0.46));
         for (let r = 0; r < rows; r++) {
           const y = r * spacing;
-          let wave = 0.04 * Math.sin(x * 0.004 + y * 0.002 + time);
+          let wave = 0.03 * Math.sin(x * 0.004 + y * 0.002 + time);
           if (sweepCenter !== -9999) {
             const dist = Math.abs(y + x * 0.35 - sweepCenter);
-            if (dist < 180) wave += (1 - dist / 180) * 0.35;
+            if (dist < 180) wave += (1 - dist / 180) * 0.18;
           }
           for (const drop of drops) {
             const dx = x - drop.x;

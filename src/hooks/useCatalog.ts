@@ -42,10 +42,8 @@ export function useCatalog() {
             liveStreamUrl: data.raffle.liveStreamUrl ?? "",
             raffleStatus:
               data.raffle.raffleStatus === "closed" ? "closed" : "open",
-            winnerTicketNumber:
-              data.raffle.winnerTicketNumber == null
-                ? null
-                : Number(data.raffle.winnerTicketNumber),
+            code: data.raffle.code || RAFFLE.code,
+            winnerTicketCode: data.raffle.winnerTicketCode ?? "",
             winnerName: data.raffle.winnerName ?? "",
             winnerNote: data.raffle.winnerNote ?? "",
           });
