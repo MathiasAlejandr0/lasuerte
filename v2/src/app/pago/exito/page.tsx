@@ -1,11 +1,13 @@
-import Link from "next/link";
+"use client";
 
-export default async function PagoExitoPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ orderId?: string; pending?: string }>;
-}) {
-  const { orderId, pending } = await searchParams;
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function ExitoContent() {
+  const params = useSearchParams();
+  const orderId = params.get("orderId");
+  const pending = params.get("pending");
 
   return (
     <main className="max-w-xl mx-auto px-4 py-16 text-center space-y-6">
@@ -17,9 +19,9 @@ export default async function PagoExitoPage({
           ? "Tu pago está siendo confirmado. Te enviaremos las ilustraciones y los códigos por correo apenas se acredite."
           : "Gracias por participar. Tus ilustraciones y códigos de sorteo fueron enviados a tu correo."}
       </p>
-      {orderId && (
+      {orderId ? (
         <p className="text-xs text-brand-muted/80">Pedido: {orderId}</p>
-      )}
+      ) : null}
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
           href="/check-tickets"
@@ -35,5 +37,19 @@ export default async function PagoExitoPage({
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function PagoExitoPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="max-w-xl mx-auto px-4 py-16 text-center">
+          <p className="text-brand-muted">Cargando…</p>
+        </main>
+      }
+    >
+      <ExitoContent />
+    </Suspense>
   );
 }

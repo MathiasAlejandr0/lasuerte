@@ -16,7 +16,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "quality": "npm run typecheck && npm run lint && npm run format:check && npm run test"
+    "quality": "npm run typecheck && npm run lint && npm run format:check && npm run test",
+    "build:gh-pages": "node scripts/gh-pages-prepare.mjs prepare && next build && node -e \"require('fs').writeFileSync('out/.nojekyll','')\" && node scripts/gh-pages-prepare.mjs restore"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

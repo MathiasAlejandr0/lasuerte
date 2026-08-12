@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
+import { DemoBanner } from "@/components/layout/DemoBanner";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ContactFab } from "@/components/layout/ContactFab";
@@ -50,6 +51,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <ReferralCapture />
         </Suspense>
+        <DemoBanner />
         <Header />
         {children}
         <Footer />

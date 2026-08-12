@@ -10,11 +10,12 @@ export function Team() {
         <div className="relative group order-2 md:order-1">
           <div className="relative glass-card rounded-3xl overflow-hidden shadow-2xl p-2">
             <Image
-              src="/images/equipo-suertudos.webp"
-              alt="Equipo Suertudos"
-              width={800}
-              height={533}
+              src="/images/equipo-suertudos.png"
+              alt="Equipo Suertu2s"
+              width={900}
+              height={1200}
               className="w-full h-auto object-cover rounded-2xl"
+              priority
             />
           </div>
         </div>

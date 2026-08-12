@@ -2,8 +2,6 @@ import Link from "next/link";
 import { Countdown } from "@/components/home/Countdown";
 import { getRaffle } from "@/lib/catalog/store";
 
-export const dynamic = "force-dynamic";
-
 export default function SorteosActivosPage() {
   const raffle = getRaffle();
 

@@ -2,12 +2,18 @@ import type { NextConfig } from "next";
 
 // React solo usa eval() en desarrollo (debug de errores). En producción no.
 const isDev = process.env.NODE_ENV === "development";
+/** Demo estática en GitHub Pages (sin Node/server). */
+const isGhPages = process.env.GITHUB_PAGES === "1";
+const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1] || "lasuerte";
 
 const securityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
+  },
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
@@ -20,7 +26,6 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // unsafe-eval solo en desarrollo; producción queda estricto
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
@@ -37,14 +42,27 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: securityHeaders,
-      },
-    ];
-  },
+  ...(isGhPages
+    ? {
+        output: "export" as const,
+        basePath: `/${repoName}`,
+        assetPrefix: `/${repoName}/`,
+        trailingSlash: true,
+        images: { unoptimized: true },
+      }
+    : {}),
+  ...(!isGhPages
+    ? {
+        async headers() {
+          return [
+            {
+              source: "/:path*",
+              headers: securityHeaders,
+            },
+          ];
+        },
+      }
+    : {}),
 };
 
 export default nextConfig;

@@ -2,6 +2,14 @@
 
 Proyecto de sorteos online (Next.js). El repositorio contiene dos versiones del proyecto en carpetas separadas:
 
+## Demo en GitHub Pages
+
+Versión visual estática de **v2** (sin backend/pagos):
+
+**https://mathiasalejandr0.github.io/lasuerte/**
+
+> Es un demo de diseño y catálogo. Checkout, admin y APIs requieren el servidor Next.js completo (`cd v2 && npm run dev`).
+
 ## v1/ — Versión original
 
 Proyecto base que estaba publicado originalmente en este repositorio.

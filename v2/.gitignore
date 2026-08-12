@@ -42,6 +42,9 @@ yarn-error.log*
 # local catalog overrides (admin settings)
 .data/
 
+# stash temporal del build de GitHub Pages
+.gh-pages-stash/
+
 # vercel
 .vercel
 

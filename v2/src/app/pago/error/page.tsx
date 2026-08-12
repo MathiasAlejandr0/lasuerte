@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const REASON_MESSAGES: Record<string, string> = {
   mock_disabled:
@@ -6,12 +10,10 @@ const REASON_MESSAGES: Record<string, string> = {
   rate_limit: "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
 };
 
-export default async function PagoErrorPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ orderId?: string; reason?: string }>;
-}) {
-  const { orderId, reason } = await searchParams;
+function ErrorContent() {
+  const params = useSearchParams();
+  const orderId = params.get("orderId");
+  const reason = params.get("reason");
   const detail =
     (reason && REASON_MESSAGES[reason]) ||
     "Hubo un problema al procesar el pago. Puedes intentar nuevamente desde el carrito.";
@@ -22,9 +24,9 @@ export default async function PagoErrorPage({
         Pago no completado
       </h1>
       <p className="text-brand-muted leading-relaxed">{detail}</p>
-      {orderId && (
+      {orderId ? (
         <p className="text-xs text-brand-muted/80">Pedido: {orderId}</p>
-      )}
+      ) : null}
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
           href="/checkout"
@@ -40,5 +42,19 @@ export default async function PagoErrorPage({
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function PagoErrorPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="max-w-xl mx-auto px-4 py-16 text-center">
+          <p className="text-brand-muted">Cargando…</p>
+        </main>
+      }
+    >
+      <ErrorContent />
+    </Suspense>
   );
 }
