@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ContactFab } from "@/components/layout/ContactFab";
 import { ScrollReveal } from "@/components/layout/ScrollReveal";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { ReferralCapture } from "@/components/referral/ReferralCapture";
@@ -52,6 +53,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <ContactFab />
       </body>
     </html>
   );

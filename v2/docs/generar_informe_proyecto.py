@@ -646,7 +646,7 @@ def build():
         [
             [
                 "Sitio público",
-                "Landing, packs, FAQ, countdown, live, ganador",
+                "Landing, packs, FAQ, countdown, live, ganador, widget consulta, FAB soporte",
                 "Lo que ve cualquier visitante",
             ],
             [
@@ -656,7 +656,7 @@ def build():
             ],
             [
                 "Tickets",
-                "Asignación atómica, consulta por email",
+                "Asignación atómica, consulta por email (página y widget)",
                 "Entrega y consulta de números del sorteo",
             ],
             [
@@ -666,7 +666,7 @@ def build():
             ],
             [
                 "Admin",
-                "KPIs, pedidos, analítica, ajustes, afiliados",
+                "KPIs, pedidos, analítica, sorteos, ajustes, afiliados",
                 "Escritorio de control del negocio",
             ],
             [
@@ -676,14 +676,64 @@ def build():
             ],
             [
                 "Sorteo",
-                "Cierre, ganador, bloqueo de compras, live",
-                "Control del cierre y la transmisión",
+                "Ciclos, historial, cierre, ganador, bloqueo de compras, live",
+                "Control del ciclo activo y la transmisión",
             ],
         ],
         col_widths=[3, 6.5, 6.5],
     )
 
-    add_heading(doc, "5.4 Rutas relevantes", 2)
+    add_heading(doc, "5.4 Experiencia de landing (integraciones recientes v2)", 2)
+    add_plain(
+        doc,
+        "Además del flujo de compra, la versión 2 incorpora piezas de experiencia pensadas "
+        "para que el visitante consulte su pedido y contacte soporte sin salir de la home, "
+        "y para que el equipo pueda mostrar una demo más completa.",
+    )
+    add_table(
+        doc,
+        ["Pieza", "Qué hace", "Para el equipo significa…"],
+        [
+            [
+                "Título del hero",
+                "“Compra Tus Ilustraciones Digitales Y Participa En El Sorteo De Nuestra Moto”",
+                "Mensaje comercial claro en la primera pantalla",
+            ],
+            [
+                "Widget Consulta tu pedido",
+                "Email → busca códigos; FAQ rápida; botón WhatsApp",
+                "Menos fricción para quien ya compró",
+            ],
+            [
+                "Botón flotante (FAB)",
+                "Burbuja de soporte abajo a la derecha; abre el widget",
+                "Acceso permanente a consulta/contacto",
+            ],
+            [
+                "Carrusel hero",
+                "Flechas con hover dorado (marca)",
+                "Detalle visual alineado a la identidad",
+            ],
+            [
+                "Admin → Sorteos",
+                "Ciclo activo, nuevo ciclo e historial",
+                "Operar varios sorteos sin mezclar pedidos",
+            ],
+            [
+                "Repo v1 / v2",
+                "Carpetas independientes para comparar versiones",
+                "Elegir con cuál quedarse en reunión",
+            ],
+        ],
+        col_widths=[3.5, 6.5, 6],
+    )
+    add_plain(
+        doc,
+        "WhatsApp del widget: opcional vía NEXT_PUBLIC_WHATSAPP_NUMBER (dígitos con código de país). "
+        "Sin número configurado el botón igual abre WhatsApp con un mensaje prearmado.",
+    )
+
+    add_heading(doc, "5.5 Rutas relevantes", 2)
     add_plain(
         doc,
         "Una “ruta” es la dirección que se escribe después del dominio. "
@@ -698,8 +748,9 @@ def build():
             ["/checkout", "Pago", "Comprador"],
             ["/check-tickets", "Consulta de números", "Comprador"],
             ["/afiliados", "Portal afiliado", "Embajador"],
-            ["/admin", "Panel administrador", "Equipo interno"],
+            ["/admin", "Panel administrador (incluye Sorteos)", "Equipo interno"],
             ["/pago/exito o /pago/error", "Resultado de pago", "Comprador"],
+            ["/#consulta-codigos", "Widget consulta en la home", "Comprador"],
         ],
         col_widths=[5, 6, 5],
     )
@@ -1307,7 +1358,8 @@ def build():
         doc,
         [
             "Código fuente en GitHub (https://github.com/MathiasAlejandr0/lasuerte).",
-            "Aplicación funcional (landing, checkout, admin, afiliados).",
+            "Aplicación funcional (landing con widget/FAB, checkout, admin con Sorteos, afiliados).",
+            "Repositorio dual v1/ (original) y v2/ (versión actual) en GitHub.",
             "Migración SQL única: supabase/migrations/20260811000000_init.sql.",
             "Documentación de presentación y este informe formal.",
             "Pipeline CI (.github/workflows/ci.yml).",
@@ -1328,9 +1380,11 @@ def build():
     )
     add_plain(
         doc,
-        "Resumen para el equipo completo: la web ya está construida como producto serio. "
-        "Para abrirla al público con cobros reales necesitamos que nos den las llaves "
-        "(pagos, base de datos, correo, dominio). Después: probar, publicar y operar el sorteo.",
+        "Resumen para el equipo completo: la web ya está construida como producto serio, "
+        "con landing comercial, consulta de pedidos en la home, botón de soporte, panel de "
+        "ciclos de sorteo y comparación v1/v2. Para abrirla al público con cobros reales "
+        "necesitamos que nos den las llaves (pagos, base de datos, correo, dominio). "
+        "Después: probar, publicar y operar el sorteo.",
     )
     add_p(doc, "Se recomienda:", bold=True, space_after=6)
     add_numbered(

@@ -74,8 +74,11 @@ Sin Supabase configurado, la app puede correr en modo demo (memoria local).
 ### Landing (experiencia)
 
 - Marca Suertu2s y countdown al gran sorteo
+- Hero con mensaje: compra de ilustraciones + participación en el sorteo de la moto
 - Packs con precio y cantidad de números
 - Logos de medios de pago (confianza)
+- Carrusel 3D con navegación (hover dorado)
+- Widget “Consulta tu pedido” + botón flotante de soporte (FAQ / WhatsApp / códigos)
 - **Live:** al llegar el contador a 0, se ocultan foto y countdown y aparece el reproductor (YouTube/Twitch)
 - **Ganador:** si el admin cierra el sorteo y carga el número, se anuncia en la portada
 
@@ -168,6 +171,29 @@ Archivo único:
 
 Incluye todo de una vez: sorteo, packs, pedidos, tickets, afiliados, liquidaciones, password de afiliados, flag de email, RLS y asignación segura de números.
 
+### 7.9 Experiencia de la landing (integraciones recientes v2)
+
+Mejoras pensadas para la demo y la operación diaria frente al cliente:
+
+| Pieza | Qué hace |
+| ----- | -------- |
+| **Título del hero** | Mensaje comercial actualizado: *Compra Tus Ilustraciones Digitales Y Participa En El Sorteo De Nuestra Moto* (tipografía ajustada para no chocar con el carrusel). |
+| **Widget “Consulta tu pedido”** | Bloque en la home (`#consulta-codigos`) con email, búsqueda de códigos, FAQ rápida y botón a WhatsApp. |
+| **Botón flotante (FAB)** | Icono tipo burbuja de soporte (esquina inferior derecha). Abre el mismo widget de consulta sin salir de la página. |
+| **Carrusel del hero** | Flechas de navegación con hover dorado (alineado a la marca). |
+| **Panel admin — Sorteos** | Gestión de ciclo activo, creación de nuevo ciclo (archiva el anterior) e historial de sorteos. |
+
+Variable opcional: `NEXT_PUBLIC_WHATSAPP_NUMBER` (solo dígitos con código país) para el botón de WhatsApp.
+
+### 7.10 Repositorio dual (v1 / v2)
+
+El repo GitHub quedó organizado para comparar versiones:
+
+- `v1/` — versión original del proyecto en este repositorio.
+- `v2/` — versión actual con panel de Sorteos y las mejoras de landing anteriores.
+
+Cada carpeta es un proyecto Next.js independiente (`npm install` + `npm run dev`).
+
 ---
 
 ## 8. Mapa del panel administrador (`/admin`)
@@ -179,6 +205,7 @@ Incluye todo de una vez: sorteo, packs, pedidos, tickets, afiliados, liquidacion
 | Pedidos   | Buscar, filtrar, detalle y acciones                      |
 | Clientes  | Listado y export                                         |
 | Números   | Tickets emitidos                                         |
+| Sorteos   | Ciclo activo, nuevo ciclo, historial                     |
 | Afiliados | Altas, comisiones, liquidaciones, clave del portal       |
 | Ajustes   | Sorteo, premios, packs, live, cierre/ganador, estado env |
 
@@ -210,12 +237,13 @@ Con eso cargado, el cobro real ya está contemplado en el código.
 
 ## 11. Demo sugerida (5 minutos)
 
-1. Landing → packs → countdown  
-2. Carrito → checkout → mostrar selector Mercado Pago / Webpay  
-3. Pago de prueba (local) → éxito → consultar números  
-4. Admin → Resumen → Pedidos  
-5. Ajustes → live y cierre/ganador  
-6. Afiliados → generar clave → mencionar `/afiliados`  
+1. Landing → título comercial → countdown → carrusel (flechas doradas)  
+2. Widget / FAB “Consulta tu pedido” (email, FAQ, WhatsApp)  
+3. Packs → carrito → checkout → selector Mercado Pago / Webpay  
+4. Pago de prueba (local) → éxito → códigos en el widget o `/check-tickets`  
+5. Admin → Resumen → Pedidos → **Sorteos** (ciclo / historial)  
+6. Ajustes → live y cierre/ganador  
+7. Afiliados → generar clave → mencionar `/afiliados`  
 
 ---
 
@@ -223,10 +251,10 @@ Con eso cargado, el cobro real ya está contemplado en el código.
 
 Migramos Suertu2s de WordPress a una app Next.js propia: venta de packs, números de sorteo, pagos Mercado Pago/Webpay, emails, admin y afiliados.
 
-Después reforzamos seguridad, dejamos el checkout listo para cobros reales, agregamos live del sorteo, cierre/ganador, bloqueo de compras al cerrar, y emails con reintento.
+Después reforzamos seguridad, dejamos el checkout listo para cobros reales, agregamos live del sorteo, cierre/ganador, bloqueo de compras al cerrar, emails con reintento, **panel de ciclos de sorteo**, y en la landing el **widget de consulta + botón flotante de soporte** con el mensaje comercial actualizado.
 
-Falta que el cliente o infra cargue las claves de pago, Supabase y Resend. El código ya contempla ese go-live.
+El repositorio tiene **v1** (original) y **v2** (versión actual) para comparar. Falta que el cliente o infra cargue las claves de pago, Supabase y Resend. El código ya contempla ese go-live.
 
 ---
 
-*Uso interno / presentación laboral — repositorio Suertu2s.*
+*Uso interno / presentación laboral — repositorio Suertu2s (v2).*

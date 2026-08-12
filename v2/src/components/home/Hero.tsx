@@ -161,7 +161,7 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-fit md:min-h-[calc(100vh-100px)] flex items-center overflow-hidden bg-[#020503] py-4 md:py-0">
+    <div className="relative w-full min-h-fit md:min-h-[calc(100vh-100px)] flex items-center overflow-x-hidden bg-[#020503] py-4 md:py-0">
       <section
         id="inicio"
         className="relative z-10 w-full py-4 md:py-8 px-4 max-w-6xl mx-auto"
@@ -223,31 +223,31 @@ export function Hero() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center">
-            <div className="md:col-span-7 space-y-4 lg:space-y-6">
-              <div className="reveal">
+            <div className="md:col-span-7 min-w-0 space-y-4 lg:space-y-6">
+              <div>
                 <h1
                   ref={heroTitleRef}
-                  className="display-title text-4xl sm:text-5xl md:text-6xl lg:text-[4.4rem] font-black font-title text-white m-0"
+                  className="display-title text-[1.65rem] sm:text-3xl md:text-[2.15rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl"
                 >
-                  Gana increíbles
+                  Compra Tus Ilustraciones Digitales
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
-                    PREMIOS
+                    Y Participa En El Sorteo De Nuestra Moto
                   </span>
                 </h1>
               </div>
 
-              <p className="reveal reveal-delay-1 text-brand-muted text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0">
+              <p className="text-brand-muted text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0">
                 Adquiere hermosas ilustraciones de paisajes del sur de Chile.
                 Con cada pack que compres, obtendrás boletos de regalo para
                 participar en el sorteo de increíbles premios.
               </p>
 
-              <div className="reveal reveal-delay-2">
+              <div>
                 <Countdown endsAt={endsAt} />
               </div>
 
-              <div className="reveal reveal-delay-3">
+              <div>
                 <CtaButton>PARTICIPAR</CtaButton>
               </div>
             </div>
@@ -259,7 +259,7 @@ export function Hero() {
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
-              <div className="relative carousel-3d-stage h-[440px] sm:h-[500px] md:h-[560px] w-full">
+              <div className="relative carousel-3d-stage h-[380px] sm:h-[440px] md:h-[500px] w-full">
                 {CAROUSEL_IMAGES.map((img, i) => {
                   const style = computeSlideStyle(
                     i,
@@ -310,7 +310,7 @@ export function Hero() {
                               }
                             : undefined
                         }
-                        className={`w-[70%] max-w-[320px] rounded-[2rem] overflow-hidden border border-white/10 bg-brand-bgLight shadow-[0_50px_100px_-20px_rgba(0,0,0,0.85)] ${
+                        className={`w-[68%] max-w-[280px] rounded-[2rem] overflow-hidden border border-white/10 bg-brand-bgLight shadow-[0_50px_100px_-20px_rgba(0,0,0,0.85)] ${
                           sideClick ? "cursor-pointer" : "cursor-default"
                         } ${style.direction === 0 ? "gradient-border" : ""}`}
                       >
@@ -332,7 +332,7 @@ export function Hero() {
                 type="button"
                 onClick={goPrev}
                 aria-label="Imagen anterior"
-                className="absolute left-1 md:left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/15 text-brand-cream backdrop-blur-md transition-all duration-300 cursor-pointer hover:bg-brand-greenBright hover:text-black hover:border-brand-greenBright hover:scale-110"
+                className="absolute left-1 md:left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/15 text-brand-cream backdrop-blur-md transition-all duration-300 cursor-pointer hover:bg-brand-gold hover:text-black hover:border-brand-gold hover:scale-110"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -353,7 +353,7 @@ export function Hero() {
                 type="button"
                 onClick={goNext}
                 aria-label="Imagen siguiente"
-                className="absolute right-1 md:right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/15 text-brand-cream backdrop-blur-md transition-all duration-300 cursor-pointer hover:bg-brand-greenBright hover:text-black hover:border-brand-greenBright hover:scale-110"
+                className="absolute right-1 md:right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/15 text-brand-cream backdrop-blur-md transition-all duration-300 cursor-pointer hover:bg-brand-gold hover:text-black hover:border-brand-gold hover:scale-110"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
