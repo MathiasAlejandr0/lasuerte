@@ -46,9 +46,17 @@ const nextConfig: NextConfig = {
     ? {
         output: "export" as const,
         basePath: `/${repoName}`,
-        assetPrefix: `/${repoName}/`,
+        assetPrefix: `/${repoName}`,
         trailingSlash: true,
-        images: { unoptimized: true },
+        env: {
+          NEXT_PUBLIC_BASE_PATH: `/${repoName}`,
+          NEXT_PUBLIC_DEMO_STATIC: "1",
+        },
+        images: {
+          unoptimized: true,
+          loader: "custom",
+          loaderFile: "./src/lib/image-loader.ts",
+        },
       }
     : {}),
   ...(!isGhPages

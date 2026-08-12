@@ -41,10 +41,12 @@ jobs:
         env:
           GITHUB_PAGES: "1"
           NEXT_PUBLIC_DEMO_STATIC: "1"
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           node scripts/gh-pages-prepare.mjs prepare
           npx next build
+          node scripts/gh-pages-fix-paths.mjs
           touch out/.nojekyll
           node scripts/gh-pages-prepare.mjs restore
 
