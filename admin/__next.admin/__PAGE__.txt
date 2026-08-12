@@ -1,0 +1,24 @@
+1:"$Sreact.fragment"
+2:I[47257,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"ClientPageRoot"]
+3:I[72906,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js","/lasuerte/_next/static/chunks/1t5tz19ihzot6.js","/lasuerte/_next/static/chunks/0jb-llzjex_9f.js"],"default"]
+6:I[97367,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"OutletBoundary"]
+7:"$Sreact.suspense"
+b:I[97367,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"ViewportBoundary"]
+c:I[97367,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"MetadataBoundary"]
+d:I[27201,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"IconMark"]
+f:I[39314,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js","/lasuerte/_next/static/chunks/1t5tz19ihzot6.js"],"AdminProvider"]
+10:I[24285,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js","/lasuerte/_next/static/chunks/1t5tz19ihzot6.js"],"AdminShell"]
+11:I[39756,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"default"]
+12:I[37457,["/lasuerte/_next/static/chunks/3fntmmi971322.js","/lasuerte/_next/static/chunks/20dhr6oy_7b6w.js"],"default"]
+a:X
+0:{"buildId":"jmKKlkGpyViuLcyzw5YRf","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/lasuerte/_next/static/chunks/0jb-llzjex_9f.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$Lb",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$Lc",null,{"children":["$","$7",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Admin | Suertu2s"}],["$","meta","1",{"name":"description","content":"Adquiere ilustraciones digitales del sur de Chile y participa del sorteo de la MOTORRAD CORSA R150 0km 2026. Pago seguro con Webpay y Mercado Pago."}],["$","meta","2",{"name":"robots","content":"noindex, nofollow"}],["$","link","3",{"rel":"icon","href":"/favicon/trebol.webp"}],["$","link","4",{"rel":"apple-touch-icon","href":"/favicon/trebol.webp"}],["$","$Ld","5",{}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":"$@e","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[[["$","script","script-0",{"src":"/lasuerte/_next/static/chunks/1t5tz19ihzot6.js","async":true}]],["$","$Lf",null,{"children":["$","$L10",null,{"children":["$","$L11",null,{"parallelRouterKey":"children","template":["$","$L12",null,{}]}]}]}]]}],"isPartial":"$@13","staleTime":"$a","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@14","rootVaryParams":null,"needsRuntimeRequest":"$@15"}
+4:{}
+5:"$0:data:0:rsc:props:children:0:props:serverProvidedParams:params"
+8:null
+15:true
+a:300
+a:C
+14:0
+e:"$undefined"
+13:"$undefined"
+9:"$undefined"
