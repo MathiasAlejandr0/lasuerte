@@ -88,31 +88,7 @@ export function Hero() {
   const winnerName = (raffle.winnerName ?? RAFFLE.winnerName ?? "").trim();
   const winnerNote = (raffle.winnerNote ?? RAFFLE.winnerNote ?? "").trim();
   const [liveMode, setLiveMode] = useState(false);
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
-  const touchStartX = useRef(0);
-
-  const slideCount = CAROUSEL_IMAGES.length;
-  const goNext = useCallback(
-    () => setActive((prev) => (prev + 1) % slideCount),
-    [slideCount],
-  );
-  const goPrev = useCallback(
-    () => setActive((prev) => (prev - 1 + slideCount) % slideCount),
-    [slideCount],
-  );
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) < 40) return;
-    if (dx < 0) goNext();
-    else goPrev();
-  };
 
   const closed = raffleStatus === "closed";
   const hasWinner = winnerTicketCode.length >= 7;
@@ -131,12 +107,6 @@ export function Hero() {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [endsAt]);
-
-  useEffect(() => {
-    if (showWinner || showLive || paused) return;
-    const id = setInterval(goNext, 3200);
-    return () => clearInterval(id);
-  }, [showWinner, showLive, paused, goNext]);
 
   useEffect(() => {
     const title = heroTitleRef.current;
@@ -163,10 +133,25 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-fit md:min-h-[calc(100vh-100px)] flex items-center overflow-x-hidden py-4 md:py-0">
+    <div className="relative w-full min-h-[520px] md:min-h-[calc(100vh-100px)] flex items-center overflow-hidden py-8 md:py-12">
+      {/* Showroom Background Image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/hero-showroom.jpg"
+          alt="Suertu2s Showroom Moto Corsa R150"
+          fill
+          priority
+          className="object-cover object-[78%_center] md:object-center"
+          quality={92}
+        />
+        {/* Left-to-right dark gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#030a05] via-[#030a05]/90 to-transparent w-full md:w-[70%]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#030a05] via-transparent to-[#030a05]/70" />
+      </div>
+
       <section
         id="inicio"
-        className="relative z-10 w-full py-4 md:py-8 px-4 max-w-6xl mx-auto"
+        className="relative z-10 w-full py-6 md:py-12 px-4 max-w-6xl mx-auto"
       >
         {showWinner ? (
           <div className="space-y-5 max-w-3xl mx-auto text-center">
@@ -225,13 +210,15 @@ export function Hero() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center">
-            <div className="md:col-span-7 min-w-0 space-y-4 lg:space-y-6">
+            <div className="md:col-span-7 lg:col-span-6 min-w-0 space-y-5 md:space-y-6">
               <div>
                 <h1
                   ref={heroTitleRef}
-                  className="display-title text-[1.65rem] sm:text-3xl md:text-[2.15rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl"
+                  className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl drop-shadow-md"
                 >
-                  Compra Tus Ilustraciones Digitales
+                  Compra Tus
+                  <br />
+                  Ilustraciones Digitales
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
                     Y Participa En El Sorteo De Nuestra Moto
@@ -239,156 +226,22 @@ export function Hero() {
                 </h1>
               </div>
 
-              <p className="text-brand-muted text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0">
+              <p className="text-brand-muted text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-medium drop-shadow-sm">
                 Adquiere hermosas ilustraciones de paisajes del sur de Chile.
-                Con cada pack que compres, obtendrás boletos de regalo para
+                Con cada producto que compres, obtendrás boletos de regalo para
                 participar en el sorteo de increíbles premios.
               </p>
 
-              <div>
+              <div className="max-w-md">
                 <Countdown endsAt={endsAt} />
               </div>
 
-              <div>
+              <div className="max-w-md pt-1">
                 <CtaButton>PARTICIPAR</CtaButton>
               </div>
             </div>
 
-            <div
-              className="md:col-span-5 relative w-full max-w-lg mx-auto md:max-w-none select-none"
-              onMouseEnter={() => setPaused(true)}
-              onMouseLeave={() => setPaused(false)}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className="relative carousel-3d-stage h-[380px] sm:h-[440px] md:h-[500px] w-full">
-                {CAROUSEL_IMAGES.map((img, i) => {
-                  const style = computeSlideStyle(
-                    i,
-                    active,
-                    CAROUSEL_IMAGES.length,
-                  );
-                  const sideClick =
-                    style.direction === -1
-                      ? goPrev
-                      : style.direction === 1
-                        ? goNext
-                        : undefined;
-                  return (
-                    <div
-                      key={img.src}
-                      className="absolute inset-0 flex items-center justify-center"
-                      style={{
-                        transform: style.transform,
-                        opacity: style.opacity,
-                        zIndex: style.zIndex,
-                        pointerEvents: style.pointerEvents,
-                        transition: `transform 0.8s ${EASE}, opacity 0.8s ${EASE}`,
-                        transformStyle: "preserve-3d",
-                        backfaceVisibility: "hidden",
-                      }}
-                    >
-                      <div
-                        role={sideClick ? "button" : undefined}
-                        tabIndex={sideClick ? 0 : -1}
-                        aria-label={
-                          sideClick
-                            ? `Ver siguiente imagen de ${img.alt}`
-                            : img.alt
-                        }
-                        onClick={sideClick}
-                        onKeyDown={
-                          sideClick
-                            ? (e) => {
-                                if (
-                                  e.key === "Enter" ||
-                                  e.key === " " ||
-                                  e.key === "ArrowRight" ||
-                                  e.key === "ArrowLeft"
-                                ) {
-                                  e.preventDefault();
-                                  sideClick();
-                                }
-                              }
-                            : undefined
-                        }
-                        className={`w-[68%] max-w-[280px] rounded-[2rem] overflow-hidden border border-white/10 bg-brand-bgLight shadow-[0_50px_100px_-20px_rgba(0,0,0,0.85)] ${
-                          sideClick ? "cursor-pointer" : "cursor-default"
-                        } ${style.direction === 0 ? "gradient-border" : ""}`}
-                      >
-                        <Image
-                          src={img.src}
-                          alt={img.alt}
-                          width={600}
-                          height={800}
-                          className="w-full h-auto object-contain"
-                          priority={i === 0}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <button
-                type="button"
-                onClick={goPrev}
-                aria-label="Imagen anterior"
-                className="absolute left-1 md:left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/15 text-brand-cream backdrop-blur-md transition-all duration-300 cursor-pointer hover:bg-brand-gold hover:text-black hover:border-brand-gold hover:scale-110"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2.5"
-                  stroke="currentColor"
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 19.5 8.25 12l7.5-7.5"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={goNext}
-                aria-label="Imagen siguiente"
-                className="absolute right-1 md:right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/15 text-brand-cream backdrop-blur-md transition-all duration-300 cursor-pointer hover:bg-brand-gold hover:text-black hover:border-brand-gold hover:scale-110"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2.5"
-                  stroke="currentColor"
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </button>
-
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                {CAROUSEL_IMAGES.map((img, i) => (
-                  <button
-                    key={img.src}
-                    type="button"
-                    onClick={() => setActive(i)}
-                    aria-label={`Ver ${img.alt}`}
-                    className={`h-2 rounded-full border-none cursor-pointer transition-all duration-300 ${
-                      i === active
-                        ? "w-8 bg-brand-greenBright"
-                        : "w-2 bg-white/25 hover:bg-white/60"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+            <div className="hidden md:block md:col-span-5 lg:col-span-6 min-h-[380px]" />
           </div>
         )}
       </section>
