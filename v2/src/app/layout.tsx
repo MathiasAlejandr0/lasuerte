@@ -24,7 +24,7 @@ const montserrat = Montserrat({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#123820",
+  themeColor: "#175732",
 };
 
 export const metadata: Metadata = {
