@@ -65,12 +65,6 @@ export function PrizeShowcase() {
           documentación al día y transferida a su nombre.
         </p>
 
-        {/* Valor Total Destacado */}
-        <div className="reveal reveal-delay-2 mt-8">
-          <span className="inline-block glass-card rounded-full px-8 py-3 text-brand-gold font-title font-extrabold text-lg md:text-3xl tracking-tight border border-brand-gold/30 shadow-[0_0_25px_rgba(247,198,75,0.15)]">
-            Premio total: {formatClp(TOTAL_PRIZE_CLP)} CLP
-          </span>
-        </div>
 
         {/* Valor Comercial y Desglose */}
         <p className="reveal reveal-delay-3 text-xs text-brand-muted mt-3">
