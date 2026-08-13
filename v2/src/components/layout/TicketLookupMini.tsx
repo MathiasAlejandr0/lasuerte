@@ -67,7 +67,7 @@ export function TicketLookupMini({ large = false }: { large?: boolean }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="tu@correo.cl"
-          className={`w-full min-w-0 bg-[#07160b] border border-white/10 rounded-full text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-greenBright ${
+          className={`w-full min-w-0 bg-brand-bgLight border border-white/10 rounded-full text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-greenBright ${
             large ? "px-5 py-3 text-sm" : "px-4 py-2 text-xs"
           }`}
         />

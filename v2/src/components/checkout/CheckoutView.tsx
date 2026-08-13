@@ -169,7 +169,7 @@ export function CheckoutView() {
   if (!hydrated.length) {
     return (
       <main className="max-w-[500px] mx-auto py-10 md:py-20 px-4">
-        <div className="bg-[#07160b]/80 border border-[#f7c64b]/20 p-8 md:p-10 rounded-3xl text-center space-y-4">
+        <div className="bg-brand-bgLight/80 border border-[#f7c64b]/20 p-8 md:p-10 rounded-3xl text-center space-y-4">
           <h1 className="font-title text-[22px] font-black text-white m-0">
             Tu carrito está vacío
           </h1>
