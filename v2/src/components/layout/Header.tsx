@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { getCartItemCount, getCartTicketCount, useCart } from "@/store/cart";
+import { triggerLuckEffect } from "@/components/ui/GoldenCloverEffect";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
@@ -61,6 +62,7 @@ export function Header() {
           <div className="flex items-center gap-3 sm:gap-5 shrink-0">
             <Link
               href="/#comprar"
+              onClick={(e) => triggerLuckEffect(e.clientX, e.clientY)}
               className="btn-header-comprar hidden min-[1151px]:inline-flex bg-gradient-to-r from-brand-gold to-brand-goldDark text-black font-sans font-bold text-[13px] uppercase px-[22px] py-[10px] rounded-full no-underline shrink-0 whitespace-nowrap"
             >
               PARTICIPAR

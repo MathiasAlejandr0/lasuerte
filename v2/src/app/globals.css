@@ -583,3 +583,53 @@ body:has(.admin-app) footer {
     transform: translateY(0) scale(1);
   }
 }
+
+/* Animaciones del Trébol Dorado de la Suerte (Oro Macizo 3D) */
+@keyframes clover-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotateX(45deg) rotateY(-60deg) rotateZ(-30deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 0px rgba(247, 198, 75, 0));
+  }
+  35% {
+    transform: translate(-50%, calc(-50% - 50px)) scale(1.45) rotateX(15deg) rotateY(180deg) rotateZ(10deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 30px rgba(247, 198, 75, 1)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+  }
+  70% {
+    transform: translate(-50%, calc(-50% - 100px)) scale(1.15) rotateX(0deg) rotateY(320deg) rotateZ(0deg);
+    opacity: 0.95;
+    filter: drop-shadow(0 0 35px rgba(247, 198, 75, 0.95));
+  }
+  100% {
+    transform: translate(-50%, calc(-50% - 160px)) scale(0.5) rotateX(-20deg) rotateY(360deg) rotateZ(20deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 40px rgba(247, 198, 75, 0));
+  }
+}
+
+@keyframes clover-float {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2) rotateY(0deg) rotateZ(0deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 25px)) scale(1.15) rotateY(120deg) rotateZ(var(--rotation, 45deg));
+  }
+  100% {
+    transform: translate(calc(-50% + var(--target-x)), calc(-50% + var(--target-y))) scale(0.2) rotateY(360deg) rotateZ(calc(var(--rotation, 45deg) + 180deg));
+    opacity: 0;
+  }
+}
+
+.animate-clover-pop {
+  animation: clover-pop 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-style: preserve-3d;
+}
+
+.animate-clover-float {
+  animation: clover-float 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-style: preserve-3d;
+}
+

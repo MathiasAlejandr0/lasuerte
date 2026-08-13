@@ -2,7 +2,7 @@ name: Deploy v2 demo to GitHub Pages
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, feature/gh-pages-demo]
     paths:
       - "v2/**"
       - ".github/workflows/gh-pages.yml"

@@ -8,6 +8,7 @@ import { Countdown } from "./Countdown";
 import { LiveStreamPlayer } from "./LiveStreamPlayer";
 import { CAROUSEL_IMAGES, RAFFLE } from "@/data/packs";
 import { useCatalog } from "@/hooks/useCatalog";
+import { triggerLuckEffect } from "@/components/ui/GoldenCloverEffect";
 
 const EASE = "cubic-bezier(0.16,1,0.3,1)";
 
@@ -66,6 +67,7 @@ function CtaButton({ children }: { children: ReactNode }) {
   return (
     <Link
       href="#comprar"
+      onClick={(e) => triggerLuckEffect(e.clientX, e.clientY)}
       className="btn-header-comprar w-full max-w-md flex items-center justify-center bg-gradient-to-r from-brand-gold to-brand-goldDark text-black font-sans font-extrabold text-base md:text-lg uppercase py-3.5 sm:py-4 px-8 rounded-full no-underline text-center"
     >
       {children}

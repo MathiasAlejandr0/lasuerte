@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ContactFab } from "@/components/layout/ContactFab";
 import { ScrollReveal } from "@/components/layout/ScrollReveal";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { GoldenCloverEffect } from "@/components/ui/GoldenCloverEffect";
 import { ReferralCapture } from "@/components/referral/ReferralCapture";
 import "./globals.css";
 
@@ -56,6 +57,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <ContactFab />
+        <GoldenCloverEffect />
       </body>
     </html>
   );

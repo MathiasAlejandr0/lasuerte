@@ -1,3 +1,6 @@
+import { MotorcycleSplitAssemble } from "./MotorcycleSplitAssemble";
+import { MotorcycleVideoPlayer } from "./MotorcycleVideoPlayer";
+
 function formatClp(amount: number) {
   return new Intl.NumberFormat("es-CL", {
     style: "currency",
@@ -27,8 +30,9 @@ const stats = [
 
 export function PrizeShowcase() {
   return (
-    <section id="premio" className="py-20 md:py-28 px-4 relative overflow-hidden">
-      <div className="max-w-5xl mx-auto text-center relative">
+    <section id="premio" className="pt-16 pb-6 md:pt-24 md:pb-8 px-4 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto text-center relative">
+        {/* Título Principal */}
         <span className="reveal text-xs uppercase tracking-widest text-brand-greenBright font-bold block">
           El gran premio
         </span>
@@ -40,37 +44,58 @@ export function PrizeShowcase() {
           </span>{" "}
           2026
         </h2>
+
+        {/* Sección Showcase de 2 Columnas: Foto Animada (Izquierda) + Video HD (Derecha) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center my-10 max-w-5xl mx-auto">
+          {/* Columna Izquierda: Animación 4 Partes que se Unen con Scroll */}
+          <div className="w-full flex items-center justify-center">
+            <MotorcycleSplitAssemble />
+          </div>
+
+          {/* Columna Derecha: Video Editado en Vivo */}
+          <div className="w-full flex items-center justify-center">
+            <MotorcycleVideoPlayer />
+          </div>
+        </div>
+
+        {/* Información Detallada del Premio (Texto original conservado 100%) */}
         <p className="reveal reveal-delay-2 text-brand-muted max-w-2xl mx-auto mt-6 text-sm md:text-lg leading-relaxed">
           Por cada ilustración que adquieras recibes números de regalo. El
           ganador se lleva la motocicleta completamente pagada, con toda la
           documentación al día y transferida a su nombre.
         </p>
+
+        {/* Valor Total Destacado */}
         <div className="reveal reveal-delay-2 mt-8">
-          <span className="inline-block glass-card rounded-full px-8 py-3 text-brand-gold font-title font-extrabold text-lg md:text-3xl tracking-tight">
+          <span className="inline-block glass-card rounded-full px-8 py-3 text-brand-gold font-title font-extrabold text-lg md:text-3xl tracking-tight border border-brand-gold/30 shadow-[0_0_25px_rgba(247,198,75,0.15)]">
             Premio total: {formatClp(TOTAL_PRIZE_CLP)} CLP
           </span>
         </div>
+
+        {/* Valor Comercial y Desglose */}
         <p className="reveal reveal-delay-3 text-xs text-brand-muted mt-3">
           Valor comercial de la moto 0 km: {formatClp(MOTORCYCLE_VALUE_CLP)} CLP
           + documentación, kit de seguridad y traslado incluidos.
         </p>
 
+        {/* Badges de lo que incluye el Premio */}
         <div className="flex flex-wrap justify-center gap-2 mt-6">
           {includes.map((item) => (
             <span
               key={item}
-              className="reveal reveal-delay-3 text-xs px-4 py-2 rounded-full border border-white/10 bg-white/5 text-brand-cream"
+              className="reveal reveal-delay-3 text-xs px-4 py-2 rounded-full border border-white/10 bg-white/5 text-brand-cream hover:border-brand-greenBright/40 transition-colors"
             >
               {item}
             </span>
           ))}
         </div>
 
+        {/* Tarjetas de Estadísticas / Garantías del Premio */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className={`reveal reveal-delay-${i + 1} glass-card rounded-3xl p-6 space-y-2`}
+              className={`reveal reveal-delay-${i + 1} glass-card rounded-3xl p-6 space-y-2 hover:border-brand-gold/40 transition-all`}
             >
               <p className="text-xl md:text-2xl font-black text-brand-greenBright m-0">
                 {stat.value}
@@ -85,4 +110,3 @@ export function PrizeShowcase() {
     </section>
   );
 }
-
