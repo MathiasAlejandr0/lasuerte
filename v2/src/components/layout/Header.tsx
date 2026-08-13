@@ -120,7 +120,7 @@ export function Header() {
       </header>
 
       <div
-        className={`fixed inset-0 z-[100000] bg-[#020503]/95 backdrop-blur-md transition-opacity duration-300 flex flex-col items-center justify-center ${
+        className={`fixed inset-0 z-[100000] bg-brand-bg/95 backdrop-blur-md transition-opacity duration-300 flex flex-col items-center justify-center ${
           open
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"

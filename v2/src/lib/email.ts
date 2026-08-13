@@ -50,7 +50,7 @@ export async function sendOrderConfirmation(
   const site = escapeHtml(siteUrl);
 
   const html = `
-    <div style="font-family:sans-serif;background:#020503;color:#fff5d4;padding:24px">
+    <div style="font-family:sans-serif;background:#05140a;color:#fff5d4;padding:24px">
       <h1 style="color:#36f073">¡Gracias por tu compra, ${safeName}!</h1>
       <p>Tu pago fue confirmado. Aquí tienes tus <strong>ilustraciones digitales</strong> y tus <strong>códigos de participación</strong> del sorteo <strong>${safeRaffleCode}</strong>.</p>
       <p style="color:#d8c28a;font-size:13px">Cada código se forma con el código del sorteo más 5 dígitos aleatorios. Guárdalos: con ellos participas en el sorteo.</p>
