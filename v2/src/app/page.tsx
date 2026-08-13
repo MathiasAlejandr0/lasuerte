@@ -46,11 +46,12 @@ export default function HomePage() {
       <Marquee />
       <main className="w-full block">
         <Hero />
-        <Team />
         {divider}
         <PrizeShowcase />
         {divider}
         <Packs />
+        {divider}
+        <Team />
         {divider}
         <HowItWorks />
         {divider}
