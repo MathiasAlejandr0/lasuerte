@@ -133,20 +133,20 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-[520px] md:min-h-[calc(100vh-100px)] flex items-center overflow-hidden py-8 md:py-12">
-      {/* Showroom Background Image */}
-      <div className="absolute inset-0 z-0">
+    <div className="relative w-full min-h-[550px] md:min-h-[calc(100vh-100px)] flex items-center overflow-hidden py-8 md:py-12">
+      {/* Showroom Background Image - High-Res 334KB Uncompressed */}
+      <div className="absolute inset-0 z-0 select-none">
         <Image
           src="/images/hero-showroom.jpg"
           alt="Suertu2s Showroom Moto Corsa R150"
           fill
           priority
           unoptimized
-          className="object-cover object-[80%_center] md:object-center filter brightness-[1.08] contrast-[1.05]"
+          className="object-cover object-[82%_center] md:object-center filter brightness-[1.02] contrast-[1.04] saturate-[1.06] transform-gpu"
         />
         {/* Soft, localized gradient overlay behind left text only */}
-        <div className="absolute inset-y-0 left-0 w-full md:w-[52%] bg-gradient-to-r from-[#030a05]/95 via-[#030a05]/65 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-full md:w-[48%] bg-gradient-to-r from-[#030a05]/92 via-[#030a05]/50 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
       </div>
 
       <section
