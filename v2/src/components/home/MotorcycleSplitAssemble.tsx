@@ -16,17 +16,16 @@ export function MotorcycleSplitAssemble() {
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      // La animación comienza al entrar la tarjeta al viewport (top < 92% de la pantalla)
-      // Y se completa al 100% justo a la altura donde comienza el texto "Por cada ilustración..."
-      const startPos = windowHeight * 0.92;
-      const targetTextHeight = windowHeight * 0.70;
-      const endPos = targetTextHeight - rect.height;
+      // La animación comienza al entrar la tarjeta por abajo (top <= 95% de la pantalla)
+      // Y se completa al 100% exactamente cuando la tarjeta se ubica centrada en pantalla (top <= 42%)
+      const startPos = windowHeight * 0.95;
+      const endPos = windowHeight * 0.42;
 
       let progress = (startPos - rect.top) / (startPos - endPos);
       progress = Math.max(0, Math.min(1, progress));
 
       setScrollProgress(progress);
-      setIsJoined(progress >= 0.94);
+      setIsJoined(progress >= 0.92);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
