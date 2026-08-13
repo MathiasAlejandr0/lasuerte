@@ -30,12 +30,22 @@ function rewrite(content) {
     .replaceAll(`'${base}/images/`, `'@@BASE_IMAGES_SQ@@`)
     .replaceAll(`"${base}/favicon/`, `"@@BASE_FAV@@`)
     .replaceAll(`'${base}/favicon/`, `'@@BASE_FAV_SQ@@`)
+    .replaceAll(`"${base}/suertu2s_moto_hero.jpg`, `"@@BASE_HERO@@`)
+    .replaceAll(`'${base}/suertu2s_moto_hero.jpg`, `'@@BASE_HERO_SQ@@`)
+    .replaceAll(`"${base}/moto_fondo_desenfocado.mp4`, `"@@BASE_VIDEO@@`)
+    .replaceAll(`'${base}/moto_fondo_desenfocado.mp4`, `'@@BASE_VIDEO_SQ@@`)
     .replace(/(["'(=])\/images\//g, `$1${base}/images/`)
     .replace(/(["'(=])\/favicon\//g, `$1${base}/favicon/`)
+    .replace(/(["'(=])\/suertu2s_moto_hero\.jpg/g, `$1${base}/suertu2s_moto_hero.jpg`)
+    .replace(/(["'(=])\/moto_fondo_desenfocado\.mp4/g, `$1${base}/moto_fondo_desenfocado.mp4`)
     .replaceAll(`"@@BASE_IMAGES@@`, `"${base}/images/`)
     .replaceAll(`'@@BASE_IMAGES_SQ@@`, `'${base}/images/`)
     .replaceAll(`"@@BASE_FAV@@`, `"${base}/favicon/`)
-    .replaceAll(`'@@BASE_FAV_SQ@@`, `'${base}/favicon/`);
+    .replaceAll(`'@@BASE_FAV_SQ@@`, `'${base}/favicon/`)
+    .replaceAll(`"@@BASE_HERO@@`, `"${base}/suertu2s_moto_hero.jpg`)
+    .replaceAll(`'@@BASE_HERO_SQ@@`, `'${base}/suertu2s_moto_hero.jpg`)
+    .replaceAll(`"@@BASE_VIDEO@@`, `"${base}/moto_fondo_desenfocado.mp4`)
+    .replaceAll(`'@@BASE_VIDEO_SQ@@`, `'${base}/moto_fondo_desenfocado.mp4`);
 }
 
 if (!fs.existsSync(outDir)) {

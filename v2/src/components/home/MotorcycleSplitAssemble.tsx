@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { getAssetPath } from "@/lib/assets";
 
 export function MotorcycleSplitAssemble() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,7 +57,7 @@ export function MotorcycleSplitAssemble() {
   const opacity = 0.35 + easeProgress * 0.65;
   const blur = (1 - easeProgress) * 6;
 
-  const imageSrc = "/suertu2s_moto_hero.jpg";
+  const imageSrc = getAssetPath("/suertu2s_moto_hero.jpg");
 
   return (
     <div

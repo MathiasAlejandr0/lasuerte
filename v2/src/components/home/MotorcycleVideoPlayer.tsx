@@ -1,11 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { getAssetPath } from "@/lib/assets";
 
 export function MotorcycleVideoPlayer() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+
+  const videoSrc = getAssetPath("/moto_fondo_desenfocado.mp4");
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -37,7 +40,7 @@ export function MotorcycleVideoPlayer() {
           
           {/* Ambient blurred background for letterboxing effect */}
           <video
-            src="/moto_fondo_desenfocado.mp4"
+            src={videoSrc}
             autoPlay
             loop
             muted
@@ -48,7 +51,7 @@ export function MotorcycleVideoPlayer() {
           {/* Main Video Frame */}
           <video
             ref={videoRef}
-            src="/moto_fondo_desenfocado.mp4"
+            src={videoSrc}
             autoPlay
             loop
             muted={isMuted}
