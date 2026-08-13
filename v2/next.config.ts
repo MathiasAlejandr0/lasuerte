@@ -42,6 +42,46 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Desactivar source maps en producción para que nadie pueda ver el código original TSX
+  productionBrowserSourceMaps: false,
+  // Limpiar console.log en compilaciones de producción
+  compiler: {
+    removeConsole: !isDev ? { exclude: ["error", "warn"] } : false,
+  },
+  turbopack: {},
+  webpack: (config, { isServer, dev }) => {
+    if (!dev && !isServer) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const JavaScriptObfuscator = require("webpack-obfuscator");
+        config.plugins.push(
+          new JavaScriptObfuscator(
+            {
+              compact: true,
+              controlFlowFlattening: false,
+              deadCodeInjection: false,
+              debugProtection: false,
+              disableConsoleOutput: true,
+              identifierNamesGenerator: "hexadecimal",
+              log: false,
+              renameGlobals: false,
+              simplify: true,
+              stringArray: true,
+              stringArrayCallsTransform: true,
+              stringArrayEncoding: ["base64"],
+              stringArrayRotate: true,
+              stringArrayShuffle: true,
+              stringArrayThreshold: 0.75,
+            },
+            ["**/framework-*.js", "**/main-*.js", "**/webpack-*.js"],
+          ),
+        );
+      } catch {
+        // Fallback silencioso si no aplica
+      }
+    }
+    return config;
+  },
   ...(isGhPages
     ? {
         output: "export" as const,
