@@ -141,12 +141,12 @@ export function Hero() {
           alt="Suertu2s Showroom Moto Corsa R150"
           fill
           priority
-          className="object-cover object-[78%_center] md:object-center"
-          quality={92}
+          unoptimized
+          className="object-cover object-[80%_center] md:object-center filter brightness-[1.08] contrast-[1.05]"
         />
-        {/* Left-to-right dark gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#030a05] via-[#030a05]/90 to-transparent w-full md:w-[70%]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030a05] via-transparent to-[#030a05]/70" />
+        {/* Soft, localized gradient overlay behind left text only */}
+        <div className="absolute inset-y-0 left-0 w-full md:w-[52%] bg-gradient-to-r from-[#030a05]/95 via-[#030a05]/65 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
       </div>
 
       <section
