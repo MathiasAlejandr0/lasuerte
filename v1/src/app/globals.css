@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brand-bg: #020503;
-  --color-brand-bgLight: #07160b;
+  --color-brand-bg: #123820;
+  --color-brand-bgLight: #194d2d;
   --color-brand-green: #0e7a32;
   --color-brand-greenBright: #36f073;
   --color-brand-gold: #f7c64b;
@@ -25,7 +25,7 @@ body {
 }
 
 body {
-  background-color: #020503;
+  background-color: #123820;
   color: #fff5d4;
   overflow-x: hidden;
   padding-top: 100px;
