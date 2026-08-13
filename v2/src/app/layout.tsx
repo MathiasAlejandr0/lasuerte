@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { DemoBanner } from "@/components/layout/DemoBanner";
@@ -22,6 +22,10 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400", "600", "700", "800"],
 });
+
+export const viewport: Viewport = {
+  themeColor: "#0d2c1a",
+};
 
 export const metadata: Metadata = {
   title: "Suertudos Premios | Sorteo MOTORRAD CORSA R150 0km 2026",

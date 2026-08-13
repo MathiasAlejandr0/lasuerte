@@ -163,7 +163,7 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-fit md:min-h-[calc(100vh-100px)] flex items-center overflow-x-hidden bg-brand-bg py-4 md:py-0">
+    <div className="relative w-full min-h-fit md:min-h-[calc(100vh-100px)] flex items-center overflow-x-hidden py-4 md:py-0">
       <section
         id="inicio"
         className="relative z-10 w-full py-4 md:py-8 px-4 max-w-6xl mx-auto"

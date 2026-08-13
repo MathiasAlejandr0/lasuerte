@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brand-bg: #0a2113;
-  --color-brand-bgLight: #10301c;
+  --color-brand-bg: #0d2c1a;
+  --color-brand-bgLight: #133e25;
   --color-brand-green: #0e7a32;
   --color-brand-greenBright: #36f073;
   --color-brand-gold: #f7c64b;
@@ -25,7 +25,7 @@ body {
 }
 
 body {
-  background-color: #0a2113;
+  background-color: #0d2c1a;
   color: #fff5d4;
   overflow-x: hidden;
   padding-top: 100px;
@@ -63,7 +63,7 @@ section[id] {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(10, 33, 19, 0.94);
+  background: rgba(13, 44, 26, 0.94);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
   pointer-events: none;
@@ -79,7 +79,7 @@ section[id] {
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
 ) {
   .header-glass-bg {
-    background: rgba(10, 33, 19, 0.96);
+    background: rgba(13, 44, 26, 0.96);
   }
 }
 
@@ -415,20 +415,25 @@ html.lenis body {
 .ambient-bg {
   position: fixed;
   inset: 0;
-  z-index: -10;
+  z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(
-      38rem 38rem at 10% 12%,
-      rgba(54, 240, 115, 0.15),
-      transparent 65%
+      45rem 45rem at 15% 15%,
+      rgba(54, 240, 115, 0.22),
+      transparent 70%
     ),
     radial-gradient(
-      34rem 34rem at 88% 28%,
-      rgba(247, 198, 75, 0.10),
-      transparent 65%
+      40rem 40rem at 85% 30%,
+      rgba(14, 122, 50, 0.35),
+      transparent 70%
+    ),
+    radial-gradient(
+      50rem 50rem at 50% 80%,
+      rgba(247, 198, 75, 0.12),
+      transparent 70%
     );
-  background-size: 150% 150%;
+  background-size: 140% 140%;
   animation: ambient-drift 28s ease-in-out infinite alternate;
 }
 
