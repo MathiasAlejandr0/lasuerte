@@ -18,7 +18,6 @@ const includes = [
   "Moto CORSA R150 0 km",
   "Documentación y transferencia",
   "Kit de seguridad y casco",
-  "Traslado a tu región",
 ];
 
 const stats = [
@@ -69,7 +68,7 @@ export function PrizeShowcase() {
         {/* Valor Comercial y Desglose */}
         <p className="reveal reveal-delay-3 text-xs text-brand-muted mt-3">
           Valor comercial de la moto 0 km: {formatClp(MOTORCYCLE_VALUE_CLP)} CLP
-          + documentación, kit de seguridad y traslado incluidos.
+          + documentación y kit de seguridad incluidos.
         </p>
 
         {/* Badges de lo que incluye el Premio */}
