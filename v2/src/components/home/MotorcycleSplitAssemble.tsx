@@ -17,15 +17,15 @@ export function MotorcycleSplitAssemble() {
       const windowHeight = window.innerHeight;
 
       // La animación comienza al entrar la tarjeta por abajo (top <= 95% de la pantalla)
-      // Y se completa al 100% exactamente cuando la tarjeta se ubica centrada en pantalla (top <= 42%)
+      // Y se completa al 100% unos milímetros más abajo (top <= 34%), justo al centrarse las tarjetas en foco
       const startPos = windowHeight * 0.95;
-      const endPos = windowHeight * 0.42;
+      const endPos = windowHeight * 0.34;
 
       let progress = (startPos - rect.top) / (startPos - endPos);
       progress = Math.max(0, Math.min(1, progress));
 
       setScrollProgress(progress);
-      setIsJoined(progress >= 0.92);
+      setIsJoined(progress >= 0.95);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
