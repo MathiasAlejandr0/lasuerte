@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import {
-  createAdminSessionToken,
-  verifyAdminSessionToken,
-} from "./session";
+import { createAdminSessionToken, verifyAdminSessionToken } from "./session";
 import { verifyAdminSessionTokenEdge } from "./session-edge";
 
 describe("admin session", () => {

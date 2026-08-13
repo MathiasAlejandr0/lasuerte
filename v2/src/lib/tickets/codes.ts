@@ -61,7 +61,9 @@ export function ticketDisplayCode(
   ticket: { code?: string | null; number: number },
   raffleCode: string,
 ): string {
-  const existing = String(ticket.code || "").trim().toUpperCase();
+  const existing = String(ticket.code || "")
+    .trim()
+    .toUpperCase();
   if (existing) return existing;
   return formatTicketCode(raffleCode, ticket.number);
 }

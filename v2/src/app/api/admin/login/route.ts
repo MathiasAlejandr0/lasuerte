@@ -60,7 +60,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logServerError("admin/login", error);
     return NextResponse.json(
-      { error: publicError(error, "No se pudo iniciar sesión", { allowZod: true }) },
+      {
+        error: publicError(error, "No se pudo iniciar sesión", {
+          allowZod: true,
+        }),
+      },
       { status: 400 },
     );
   }

@@ -39,7 +39,9 @@ export function Tilt3D({
       glareRef.current.style.background = `radial-gradient(circle at ${(
         (px + 0.5) *
         100
-      ).toFixed(1)}% ${((py + 0.5) * 100).toFixed(1)}%, rgba(255,255,255,0.22), transparent 55%)`;
+      ).toFixed(
+        1,
+      )}% ${((py + 0.5) * 100).toFixed(1)}%, rgba(255,255,255,0.22), transparent 55%)`;
       glareRef.current.style.opacity = "1";
     }
   };

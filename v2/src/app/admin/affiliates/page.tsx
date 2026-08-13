@@ -255,9 +255,11 @@ export default function AdminAffiliatesPage() {
               type="button"
               disabled={!affForm.password}
               onClick={() => {
-                void navigator.clipboard.writeText(affForm.password).catch(() => {
-                  setError("No se pudo copiar la clave");
-                });
+                void navigator.clipboard
+                  .writeText(affForm.password)
+                  .catch(() => {
+                    setError("No se pudo copiar la clave");
+                  });
               }}
               className="text-xs font-bold text-brand-gold bg-transparent border border-brand-gold/40 rounded-lg px-3 py-1.5 cursor-pointer disabled:opacity-40"
             >

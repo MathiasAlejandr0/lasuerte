@@ -74,7 +74,15 @@ export default function AdminTicketsPage() {
           type="button"
           onClick={() =>
             exportCsv(`codigos_${from}_${to}.csv`, [
-              ["codigo", "sufijo", "correo", "nombre", "pedido_id", "estado", "fecha"],
+              [
+                "codigo",
+                "sufijo",
+                "correo",
+                "nombre",
+                "pedido_id",
+                "estado",
+                "fecha",
+              ],
               ...tickets.map((t) => [
                 t.code || String(t.number).padStart(5, "0"),
                 String(t.number).padStart(5, "0"),

@@ -197,8 +197,8 @@ export default function AdminAnalyticsPage() {
             realmente pagaron los clientes.
           </li>
           <li>
-            <strong className="text-white">Cantidad de compras</strong> = cuántas
-            personas pagaron (no es lo mismo que el dinero).
+            <strong className="text-white">Cantidad de compras</strong> =
+            cuántas personas pagaron (no es lo mismo que el dinero).
           </li>
           <li>
             <strong className="text-white">{goal.label}</strong> = plata que

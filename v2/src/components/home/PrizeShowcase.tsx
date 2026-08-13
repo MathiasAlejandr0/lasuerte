@@ -11,8 +11,6 @@ function formatClp(amount: number) {
 
 /** Valor comercial de la moto 0 km según concesionarias (referencia). */
 const MOTORCYCLE_VALUE_CLP = 2_190_000;
-/** Premio total presentado al cliente: moto + documentación + traslado + kit. */
-const TOTAL_PRIZE_CLP = 3_500_000;
 
 const includes = [
   "Moto CORSA R150 0 km",
@@ -29,7 +27,10 @@ const stats = [
 
 export function PrizeShowcase() {
   return (
-    <section id="premio" className="pt-16 pb-6 md:pt-24 md:pb-8 px-4 relative overflow-hidden">
+    <section
+      id="premio"
+      className="pt-16 pb-6 md:pt-24 md:pb-8 px-4 relative overflow-hidden"
+    >
       <div className="max-w-6xl mx-auto text-center relative">
         {/* Título Principal */}
         <span className="reveal text-xs uppercase tracking-widest text-brand-greenBright font-bold block">
@@ -63,7 +64,6 @@ export function PrizeShowcase() {
           ganador se lleva la motocicleta completamente pagada, con toda la
           documentación al día y transferida a su nombre.
         </p>
-
 
         {/* Valor Comercial y Desglose */}
         <p className="reveal reveal-delay-3 text-xs text-brand-muted mt-3">

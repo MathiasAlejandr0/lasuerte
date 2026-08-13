@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { normalizeReferralCode, saveReferralCode } from "@/lib/referral/storage";
+import {
+  normalizeReferralCode,
+  saveReferralCode,
+} from "@/lib/referral/storage";
 
 /** Captura ?ref=CODIGO en cualquier página pública. */
 export function ReferralCapture() {

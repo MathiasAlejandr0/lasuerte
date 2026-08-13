@@ -5,8 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 const REASON_MESSAGES: Record<string, string> = {
-  mock_disabled:
-    "Los pagos de prueba no están habilitados en este momento.",
+  mock_disabled: "Los pagos de prueba no están habilitados en este momento.",
   rate_limit: "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
 };
 

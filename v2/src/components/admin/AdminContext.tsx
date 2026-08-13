@@ -143,7 +143,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   );
 
   const readJson = useCallback(
-    async <T = Record<string, unknown>>(res: Response, label: string) => {
+    async <T = Record<string, unknown>,>(res: Response, label: string) => {
       const text = await res.text();
       let data: { error?: string } = {};
       if (text) {

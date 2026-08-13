@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  fulfillOrder,
-  getOrder,
-  paymentsMockEnabled,
-} from "@/lib/db/orders";
+import { fulfillOrder, getOrder, paymentsMockEnabled } from "@/lib/db/orders";
 import { deliverOrderConfirmation } from "@/lib/email/deliver-confirmation";
 import { verifyMockConfirmToken } from "@/lib/payments/mock-token";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";

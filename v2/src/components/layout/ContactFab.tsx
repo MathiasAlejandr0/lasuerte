@@ -41,7 +41,9 @@ export function ContactFab() {
         type="button"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        aria-label={open ? "Cerrar consulta de pedido" : "Abrir consulta de pedido"}
+        aria-label={
+          open ? "Cerrar consulta de pedido" : "Abrir consulta de pedido"
+        }
         onClick={() => setOpen((v) => !v)}
         className="group relative size-[58px] sm:size-[64px] cursor-pointer border-none bg-transparent p-0 transition-transform duration-300 ease-out hover:scale-105 active:scale-95"
       >

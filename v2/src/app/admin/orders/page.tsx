@@ -12,10 +12,7 @@ import {
   StatusBadge,
 } from "@/components/admin/ui";
 import type { OrderRow } from "@/components/admin/types";
-import {
-  orderStatusLabel,
-  paymentProviderLabel,
-} from "@/lib/i18n/labels";
+import { orderStatusLabel, paymentProviderLabel } from "@/lib/i18n/labels";
 
 type OrderDetail = {
   order: OrderRow;
@@ -66,7 +63,9 @@ export default function AdminOrdersPage() {
       } catch (err) {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "No se pudieron cargar los pedidos",
+            err instanceof Error
+              ? err.message
+              : "No se pudieron cargar los pedidos",
           );
         }
       }

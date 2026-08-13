@@ -76,7 +76,10 @@ export function Packs() {
   };
 
   return (
-    <section id="comprar" className="pt-2 pb-12 md:pt-4 md:pb-16 px-4 scroll-mt-24">
+    <section
+      id="comprar"
+      className="pt-2 pb-12 md:pt-4 md:pb-16 px-4 scroll-mt-24"
+    >
       <div className="max-w-6xl mx-auto">
         <div className="text-center space-y-2 mb-4">
           <h2 className="reveal display-title text-3xl md:text-5xl font-black font-title text-white">
@@ -135,7 +138,9 @@ export function Packs() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg md:text-xl font-black text-white">{pack.name}</h3>
+                  <h3 className="text-lg md:text-xl font-black text-white">
+                    {pack.name}
+                  </h3>
                   <p className="text-xs text-brand-muted mt-1">
                     +{pack.ticketCount} Número
                     {pack.ticketCount > 1 ? "s" : ""} de Sorteo Gratis

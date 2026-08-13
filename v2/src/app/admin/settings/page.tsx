@@ -218,8 +218,7 @@ export default function AdminSettingsPage() {
       setRaffleForm((f) => ({
         ...f,
         liveStreamUrl: json.raffle.liveStreamUrl || "",
-        raffleStatus:
-          json.raffle.raffleStatus === "closed" ? "closed" : "open",
+        raffleStatus: json.raffle.raffleStatus === "closed" ? "closed" : "open",
         code: json.raffle.code || "",
         winnerTicketCode: json.raffle.winnerTicketCode || "",
         winnerName: json.raffle.winnerName || "",
@@ -325,8 +324,9 @@ export default function AdminSettingsPage() {
           />
           <div className="sm:col-span-2 text-xs text-brand-muted space-y-1">
             <p className="m-0">
-              Cada participación = <strong className="text-white">código del sorteo</strong>{" "}
-              + <strong className="text-white">5 dígitos aleatorios</strong> (ej.{" "}
+              Cada participación ={" "}
+              <strong className="text-white">código del sorteo</strong> +{" "}
+              <strong className="text-white">5 dígitos aleatorios</strong> (ej.{" "}
               {raffleForm.code || "S2S26"}48291). No son correlativos ni revelan
               cuántas ventas hay.
             </p>
@@ -453,9 +453,7 @@ export default function AdminSettingsPage() {
                 value={prize.costClp}
                 onChange={(v) =>
                   setPrizesForm((list) =>
-                    list.map((p, i) =>
-                      i === idx ? { ...p, costClp: v } : p,
-                    ),
+                    list.map((p, i) => (i === idx ? { ...p, costClp: v } : p)),
                   )
                 }
                 type="number"
@@ -517,9 +515,7 @@ export default function AdminSettingsPage() {
                 value={pack.priceClp}
                 onChange={(v) =>
                   setPacksForm((list) =>
-                    list.map((p, i) =>
-                      i === idx ? { ...p, priceClp: v } : p,
-                    ),
+                    list.map((p, i) => (i === idx ? { ...p, priceClp: v } : p)),
                   )
                 }
                 type="number"
@@ -607,9 +603,7 @@ export default function AdminSettingsPage() {
           <Row
             label="Email (Resend)"
             value={
-              data.env.emailConfigured
-                ? "Configurado"
-                : "Falta RESEND_API_KEY"
+              data.env.emailConfigured ? "Configurado" : "Falta RESEND_API_KEY"
             }
             tone={data.env.emailConfigured ? "ok" : "warn"}
           />

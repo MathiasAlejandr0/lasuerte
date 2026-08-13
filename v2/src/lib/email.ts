@@ -10,9 +10,7 @@ export async function sendOrderConfirmation(
   packIds: string[],
 ) {
   const raffleCode = getRaffle().code;
-  const codes = tickets
-    .map((t) => ticketDisplayCode(t, raffleCode))
-    .join(", ");
+  const codes = tickets.map((t) => ticketDisplayCode(t, raffleCode)).join(", ");
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
   const packs = packIds

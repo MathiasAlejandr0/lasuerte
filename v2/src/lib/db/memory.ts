@@ -100,10 +100,7 @@ function store(): Store {
     if (a.password_hash === undefined) {
       a.password_hash = null;
     }
-    if (
-      !a.password_hash &&
-      (a.code === "STJP48" || a.code === "DEMO01")
-    ) {
+    if (!a.password_hash && (a.code === "STJP48" || a.code === "DEMO01")) {
       a.password_hash = hashPassword(demoAffiliatePassword());
     }
   }
@@ -367,7 +364,9 @@ function allocateRandomTickets(
   const s = store();
   const raffleCode = normalizeRaffleCode(getRaffle().code);
   const used = new Set(
-    s.tickets.filter((t) => t.raffle_id === order.raffle_id).map((t) => t.number),
+    s.tickets
+      .filter((t) => t.raffle_id === order.raffle_id)
+      .map((t) => t.number),
   );
 
   if (used.size + count > TICKET_SUFFIX_MAX) {
@@ -440,7 +439,10 @@ function packForTotal(total: number) {
   const packs = getPacks();
   if (total >= 15000 && packs.length >= 3) {
     return [
-      { pack: packs.find((p) => p.id === "pack-chiloe") || packs[2], quantity: 1 },
+      {
+        pack: packs.find((p) => p.id === "pack-chiloe") || packs[2],
+        quantity: 1,
+      },
       {
         pack: packs.find((p) => p.id === "pack-puerto-montt") || packs[0],
         quantity: 1,

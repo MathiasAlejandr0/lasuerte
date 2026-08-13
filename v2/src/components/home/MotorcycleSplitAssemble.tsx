@@ -188,7 +188,9 @@ export function MotorcycleSplitAssemble() {
         {/* 2. UNIFIED MASTER CARD: Active ONLY when progress >= 0.94 (100% clean single card, no double borders or ghosting!) */}
         <div
           className={`absolute inset-0 rounded-[32px] overflow-hidden glass-card border border-brand-gold/60 p-2 shadow-[0_20px_50px_rgba(247,198,75,0.25)] transition-all duration-500 ease-out ${
-            isJoined ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+            isJoined
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
           <div className="w-full h-full rounded-[24px] overflow-hidden relative bg-black">
@@ -205,7 +207,9 @@ export function MotorcycleSplitAssemble() {
             {/* Apple Specular Shimmer Streak */}
             <div
               className={`absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 transition-all duration-1000 ${
-                isJoined ? "translate-x-full opacity-100" : "-translate-x-full opacity-0"
+                isJoined
+                  ? "translate-x-full opacity-100"
+                  : "-translate-x-full opacity-0"
               }`}
             />
           </div>
@@ -214,7 +218,9 @@ export function MotorcycleSplitAssemble() {
         {/* Apple Capsule Badge when Assembled */}
         <div
           className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/85 backdrop-blur-xl border border-brand-gold/50 text-brand-gold text-[11px] font-title font-extrabold tracking-wider uppercase transition-all duration-500 flex items-center gap-2 shadow-2xl pointer-events-none z-30 ${
-            isJoined ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-90"
+            isJoined
+              ? "opacity-100 translate-y-0 scale-100"
+              : "opacity-0 translate-y-4 scale-90"
           }`}
         >
           <span className="relative flex h-2 w-2">

@@ -4,7 +4,12 @@ export function publicError(
   fallback: string,
   opts?: { allowZod?: boolean },
 ) {
-  if (opts?.allowZod && error && typeof error === "object" && "issues" in error) {
+  if (
+    opts?.allowZod &&
+    error &&
+    typeof error === "object" &&
+    "issues" in error
+  ) {
     return "Datos inválidos";
   }
   if (process.env.NODE_ENV !== "production" && error instanceof Error) {

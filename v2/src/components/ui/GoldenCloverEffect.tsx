@@ -110,7 +110,11 @@ export function triggerLuckEffect(x?: number, y?: number) {
 }
 
 // Imagen del Trébol 3D de Oro Macizo enviado por el usuario con fondo 100% transparente
-function UserSolidGoldClover({ className = "w-full h-full" }: { className?: string }) {
+function UserSolidGoldClover({
+  className = "w-full h-full",
+}: {
+  className?: string;
+}) {
   return (
     <img
       src="/images/golden-clover-user.png"
@@ -122,9 +126,17 @@ function UserSolidGoldClover({ className = "w-full h-full" }: { className?: stri
 }
 
 // Estrellita de Destello de Oro ✨
-function GoldSparkleStar({ className = "w-full h-full" }: { className?: string }) {
+function GoldSparkleStar({
+  className = "w-full h-full",
+}: {
+  className?: string;
+}) {
   return (
-    <svg viewBox="0 0 40 40" className={`${className} pointer-events-none select-none`} fill="none">
+    <svg
+      viewBox="0 0 40 40"
+      className={`${className} pointer-events-none select-none`}
+      fill="none"
+    >
       <path
         d="M20,0 C20,11 29,20 40,20 C29,20 20,29 20,40 C20,29 11,20 0,20 C11,20 20,11 20,0 Z"
         fill="#FFF7C2"
@@ -147,7 +159,8 @@ export function GoldenCloverEffect() {
 
       for (let i = 0; i < particleCount; i++) {
         const isStar = i % 3 === 0;
-        const angle = (i / particleCount) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+        const angle =
+          (i / particleCount) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
         const distanceX = (Math.random() - 0.5) * 160;
         const distanceY = -120 - Math.random() * 110;
 
@@ -166,7 +179,10 @@ export function GoldenCloverEffect() {
       }
 
       const burstId = Date.now() + Math.random();
-      setBursts((prev) => [...prev, { id: burstId, x: originX, y: originY, particles: newParticles }]);
+      setBursts((prev) => [
+        ...prev,
+        { id: burstId, x: originX, y: originY, particles: newParticles },
+      ]);
 
       setTimeout(() => {
         setBursts((prev) => prev.filter((b) => b.id !== burstId));
@@ -203,17 +219,19 @@ export function GoldenCloverEffect() {
             <div
               key={p.id}
               className="absolute -translate-x-1/2 -translate-y-1/2 animate-clover-float"
-              style={{
-                left: `${p.x}px`,
-                top: `${p.y}px`,
-                width: `${p.size}px`,
-                height: `${p.size}px`,
-                "--target-x": `${p.targetX - p.x}px`,
-                "--target-y": `${p.targetY - p.y}px`,
-                "--rotation": `${p.rotation}deg`,
-                animationDelay: `${p.delay}s`,
-                animationDuration: `${p.duration}s`,
-              } as React.CSSProperties}
+              style={
+                {
+                  left: `${p.x}px`,
+                  top: `${p.y}px`,
+                  width: `${p.size}px`,
+                  height: `${p.size}px`,
+                  "--target-x": `${p.targetX - p.x}px`,
+                  "--target-y": `${p.targetY - p.y}px`,
+                  "--rotation": `${p.rotation}deg`,
+                  animationDelay: `${p.delay}s`,
+                  animationDuration: `${p.duration}s`,
+                } as React.CSSProperties
+              }
             >
               {p.isStar ? (
                 <GoldSparkleStar className="w-full h-full drop-shadow-[0_0_12px_rgba(255,255,255,0.95)]" />

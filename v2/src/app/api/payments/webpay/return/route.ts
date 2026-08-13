@@ -47,9 +47,7 @@ async function handle(req: NextRequest) {
     if (buyOrder && buyOrder !== expectedBuyOrder) {
       logServerError(
         "payments/webpay/return",
-        new Error(
-          `buy_order no coincide: ${buyOrder} vs ${expectedBuyOrder}`,
-        ),
+        new Error(`buy_order no coincide: ${buyOrder} vs ${expectedBuyOrder}`),
       );
       await markOrderFailed(orderId);
       return NextResponse.redirect(`${site}/pago/error?orderId=${orderId}`);

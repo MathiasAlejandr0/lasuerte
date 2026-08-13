@@ -33,16 +33,17 @@ export function CheckoutView() {
   const clear = useCart((s) => s.clear);
   const removeItem = useCart((s) => s.removeItem);
   const setQuantity = useCart((s) => s.setQuantity);
-  const { packs, payments, acceptsOrders, loaded: catalogLoaded } =
-    useCatalog();
+  const {
+    packs,
+    payments,
+    acceptsOrders,
+    loaded: catalogLoaded,
+  } = useCatalog();
   const hydrated = useMemo(
     () => getHydratedItems(items, packs),
     [items, packs],
   );
-  const subtotal = useMemo(
-    () => getCartSubtotal(items, packs),
-    [items, packs],
-  );
+  const subtotal = useMemo(() => getCartSubtotal(items, packs), [items, packs]);
   const [mounted, setMounted] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -81,9 +82,7 @@ export function CheckoutView() {
   useEffect(() => {
     if (!catalogLoaded) return;
     setProvider((current) =>
-      availableProviders.includes(current)
-        ? current
-        : payments.defaultProvider,
+      availableProviders.includes(current) ? current : payments.defaultProvider,
     );
   }, [catalogLoaded, availableProviders, payments.defaultProvider]);
 
@@ -92,7 +91,9 @@ export function CheckoutView() {
     setError(null);
 
     if (!acceptsOrders) {
-      setError("El sorteo ya está cerrado. No se pueden realizar nuevas compras.");
+      setError(
+        "El sorteo ya está cerrado. No se pueden realizar nuevas compras.",
+      );
       return;
     }
 
@@ -131,7 +132,8 @@ export function CheckoutView() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo procesar el pedido");
+      if (!res.ok)
+        throw new Error(data.error || "No se pudo procesar el pedido");
 
       if (data.method === "webpay_form" && data.token && data.redirectUrl) {
         const formEl = document.createElement("form");
@@ -444,8 +446,8 @@ export function CheckoutView() {
 
           {acceptsOrders && availableProviders.length === 0 && (
             <div className="mt-5 rounded-[14px] px-[18px] py-[14px] border border-brand-gold/40 bg-brand-gold/10 text-brand-cream text-sm">
-              No hay métodos de pago configurados todavía. Falta conectar Mercado
-              Pago o Webpay.
+              No hay métodos de pago configurados todavía. Falta conectar
+              Mercado Pago o Webpay.
             </div>
           )}
 

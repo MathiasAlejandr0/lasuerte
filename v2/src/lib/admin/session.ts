@@ -28,7 +28,8 @@ export function getAllowedAdminEmails() {
 
 export function adminAuthConfigured() {
   const hasPassword = Boolean(
-    process.env.ADMIN_PASSWORD_HASH?.trim() || process.env.ADMIN_PASSWORD?.trim(),
+    process.env.ADMIN_PASSWORD_HASH?.trim() ||
+    process.env.ADMIN_PASSWORD?.trim(),
   );
   return Boolean(hasPassword && getAllowedAdminEmails().length);
 }

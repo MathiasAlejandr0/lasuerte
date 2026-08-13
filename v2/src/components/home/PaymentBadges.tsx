@@ -1,7 +1,6 @@
 /** Iconos de pago estáticos: SVG nítido, sin cajas. */
 
-const ICON =
-  "h-7 w-auto max-h-7 pointer-events-none select-none shrink-0";
+const ICON = "h-7 w-auto max-h-7 pointer-events-none select-none shrink-0";
 /** Mercado Pago un poco más grande; Visa solo un toque sobre el resto. */
 const ICON_MP =
   "h-8 w-auto max-h-8 pointer-events-none select-none shrink-0 sm:h-9 sm:max-h-9";
@@ -36,10 +35,7 @@ function MastercardIcon() {
     >
       <circle cx="13.5" cy="11" r="9" fill="#EB001B" />
       <circle cx="22.5" cy="11" r="9" fill="#F79E1B" />
-      <path
-        fill="#FF5F00"
-        d="M18 3.7a9 9 0 0 0 0 14.6 9 9 0 0 0 0-14.6z"
-      />
+      <path fill="#FF5F00" d="M18 3.7a9 9 0 0 0 0 14.6 9 9 0 0 0 0-14.6z" />
     </svg>
   );
 }

@@ -56,9 +56,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            err instanceof Error
-              ? err.message
-              : "El sorteo ya está cerrado",
+            err instanceof Error ? err.message : "El sorteo ya está cerrado",
         },
         { status: 403 },
       );
@@ -101,9 +99,8 @@ export async function POST(req: NextRequest) {
 
     if (provider === "mock") {
       await setPaymentExternal(order.id, `mock_${order.id}`, "mock");
-      const { createMockConfirmToken } = await import(
-        "@/lib/payments/mock-token"
-      );
+      const { createMockConfirmToken } =
+        await import("@/lib/payments/mock-token");
       const token = createMockConfirmToken(order.id);
       return NextResponse.json({
         orderId: order.id,

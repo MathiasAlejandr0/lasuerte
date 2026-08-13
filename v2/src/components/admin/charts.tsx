@@ -19,7 +19,14 @@ import {
 } from "recharts";
 import { formatClp } from "@/data/packs";
 
-const COLORS = ["#36f073", "#f7c64b", "#0e7a32", "#d8c28a", "#b87817", "#5ec8ff"];
+const COLORS = [
+  "#36f073",
+  "#f7c64b",
+  "#0e7a32",
+  "#d8c28a",
+  "#b87817",
+  "#5ec8ff",
+];
 
 const tooltipStyle = {
   background: "#07160b",
@@ -201,7 +208,10 @@ export function DonutChart({
         </Pie>
         <Tooltip
           contentStyle={tooltipStyle}
-          formatter={(value, name) => [formatClp(Number(value) || 0), String(name)]}
+          formatter={(value, name) => [
+            formatClp(Number(value) || 0),
+            String(name),
+          ]}
         />
         <Legend />
       </PieChart>

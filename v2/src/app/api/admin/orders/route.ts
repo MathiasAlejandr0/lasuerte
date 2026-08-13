@@ -69,7 +69,11 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = (await req.json()) as { id?: string; action?: string };
-    if (!body.id || !body.action || !ACTIONS.includes(body.action as OrderAction)) {
+    if (
+      !body.id ||
+      !body.action ||
+      !ACTIONS.includes(body.action as OrderAction)
+    ) {
       return NextResponse.json({ error: "Acción inválida" }, { status: 400 });
     }
 
@@ -83,7 +87,10 @@ export async function PATCH(req: NextRequest) {
           { status: 404 },
         );
       }
-      return NextResponse.json({ order, message: "Pedido marcado como fallido" });
+      return NextResponse.json({
+        order,
+        message: "Pedido marcado como fallido",
+      });
     }
 
     if (action === "fulfill") {
@@ -96,7 +103,9 @@ export async function PATCH(req: NextRequest) {
       }
       if (current.status !== "pending") {
         return NextResponse.json(
-          { error: "Solo se pueden marcar como pagados los pedidos pendientes" },
+          {
+            error: "Solo se pueden marcar como pagados los pedidos pendientes",
+          },
           { status: 400 },
         );
       }

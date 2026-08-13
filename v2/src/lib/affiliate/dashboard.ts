@@ -1,9 +1,5 @@
 import { calcCommission } from "@/lib/admin/analytics";
-import type {
-  DbAffiliate,
-  DbAffiliatePayout,
-  DbOrder,
-} from "@/lib/db/types";
+import type { DbAffiliate, DbAffiliatePayout, DbOrder } from "@/lib/db/types";
 import { publicAffiliate } from "./public";
 
 function maskEmail(email: string) {
