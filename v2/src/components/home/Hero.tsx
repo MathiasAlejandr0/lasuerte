@@ -142,7 +142,7 @@ export function Hero() {
           fill
           priority
           unoptimized
-          className="object-cover object-center filter brightness-[1.04] contrast-[1.06] saturate-[1.12] transform-gpu"
+          className="object-cover object-center transform-gpu"
         />
         {/* Soft gradient overlay behind left text only */}
         <div className="absolute inset-y-0 left-0 w-full md:w-[45%] bg-gradient-to-r from-[#030a05]/90 via-[#030a05]/40 to-transparent pointer-events-none" />
