@@ -222,16 +222,17 @@ export function Hero() {
                 </h1>
               </div>
 
-              <div className="bg-[#030a05]/75 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/15 shadow-2xl max-w-xl">
-                <p
-                  style={{ textShadow: "0 2px 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,1)" }}
-                  className="text-white text-sm sm:text-base md:text-lg leading-relaxed m-0 font-extrabold"
-                >
-                  Adquiere hermosas ilustraciones de paisajes del sur de Chile.
-                  Con cada producto que compres, obtendrás boletos de regalo para
-                  participar en el sorteo de increíbles premios.
-                </p>
-              </div>
+              <p
+                style={{
+                  textShadow: "0 3px 12px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1)",
+                  WebkitTextStroke: "0.3px rgba(0,0,0,0.6)",
+                }}
+                className="text-white text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-extrabold"
+              >
+                Adquiere hermosas ilustraciones de paisajes del sur de Chile.
+                Con cada producto que compres, obtendrás boletos de regalo para
+                participar en el sorteo de increíbles premios.
+              </p>
 
               <div className="max-w-md">
                 <Countdown endsAt={endsAt} />
