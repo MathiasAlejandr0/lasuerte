@@ -141,11 +141,11 @@ export function Hero() {
           alt="Suertu2s Showroom Moto Corsa R150"
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transform-gpu"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transform-gpu filter saturate-[1.40] contrast-[1.12] brightness-[1.05]"
         />
-        {/* Soft, minimal gradient overlay behind left text only */}
-        <div className="absolute inset-y-0 left-0 w-full md:w-[42%] bg-gradient-to-r from-[#030a05]/85 via-[#030a05]/30 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
+        {/* Soft, minimal text shadow overlay leaving green neon lights 100% vibrant */}
+        <div className="absolute inset-y-0 left-0 w-full md:w-[35%] bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
 
         <section
           id="inicio"
