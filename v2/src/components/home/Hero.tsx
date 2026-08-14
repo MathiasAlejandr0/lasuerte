@@ -133,26 +133,25 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-[550px] md:min-h-[calc(100vh-100px)] flex items-center overflow-hidden py-8 md:py-12">
-      {/* Showroom Background Image - Ultra Vivid Color & Intensity */}
-      <div className="absolute inset-0 z-0 select-none">
+    <div className="relative w-full bg-[#030a05] overflow-hidden">
+      {/* Showroom Background Image - Preserves full 16:9 composition matching Screenshot 2 */}
+      <div className="relative w-full aspect-[16/9] min-h-[500px] max-h-[88vh] flex items-center justify-center overflow-hidden mx-auto">
         <Image
           src="/images/hero-showroom.jpg"
           alt="Suertu2s Showroom Moto Corsa R150"
           fill
           priority
           unoptimized
-          className="object-cover object-[80%_center] md:object-center filter brightness-[1.06] contrast-[1.08] saturate-[1.18] transform-gpu"
+          className="object-cover object-center filter brightness-[1.04] contrast-[1.06] saturate-[1.12] transform-gpu"
         />
-        {/* Soft, minimal gradient overlay behind text only to preserve 100% background image intensity */}
-        <div className="absolute inset-y-0 left-0 w-full md:w-[42%] bg-gradient-to-r from-[#030a05]/82 via-[#030a05]/35 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
-      </div>
+        {/* Soft gradient overlay behind left text only */}
+        <div className="absolute inset-y-0 left-0 w-full md:w-[45%] bg-gradient-to-r from-[#030a05]/90 via-[#030a05]/40 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
 
-      <section
-        id="inicio"
-        className="relative z-10 w-full py-6 md:py-12 px-4 max-w-6xl mx-auto"
-      >
+        <section
+          id="inicio"
+          className="relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-4 md:py-8"
+        >
         {showWinner ? (
           <div className="space-y-5 max-w-3xl mx-auto text-center">
             <h1 className="display-title text-4xl sm:text-5xl md:text-6xl font-black font-title text-white leading-tight m-0">
@@ -245,6 +244,7 @@ export function Hero() {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }
