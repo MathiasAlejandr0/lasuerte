@@ -136,13 +136,12 @@ export function Hero() {
     <div className="relative w-full bg-[#030a05] overflow-hidden">
       {/* Showroom Background Image - Preserves full 16:9 composition matching Screenshot 2 */}
       <div className="relative w-full aspect-[16/9] min-h-[500px] max-h-[88vh] flex items-center justify-center overflow-hidden mx-auto">
-        <Image
-          src="/images/hero-showroom.jpg"
+        <img
+          src="/images/hero-showroom.png"
           alt="Suertu2s Showroom Moto Corsa R150"
-          fill
-          priority
-          unoptimized
-          className="object-cover object-center filter saturate-[1.10] contrast-[1.05] transform-gpu"
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transform-gpu"
         />
         {/* Soft, minimal gradient overlay behind left text only */}
         <div className="absolute inset-y-0 left-0 w-full md:w-[42%] bg-gradient-to-r from-[#030a05]/85 via-[#030a05]/30 to-transparent pointer-events-none" />
