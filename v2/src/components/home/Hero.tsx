@@ -137,7 +137,7 @@ export function Hero() {
       {/* Showroom Background Image - Preserves full 16:9 composition matching Screenshot 2 */}
       <div className="relative w-full aspect-[16/9] min-h-[500px] max-h-[88vh] flex items-center justify-center overflow-hidden mx-auto">
         <img
-          src="/images/hero-showroom.png"
+          src="/images/hero-showroom.webp"
           alt="Suertu2s Showroom Moto Corsa R150"
           decoding="async"
           fetchPriority="high"
