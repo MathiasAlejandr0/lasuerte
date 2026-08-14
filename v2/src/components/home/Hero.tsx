@@ -142,11 +142,11 @@ export function Hero() {
           fill
           priority
           unoptimized
-          className="object-cover object-center transform-gpu"
+          className="object-cover object-center filter saturate-[1.10] contrast-[1.05] transform-gpu"
         />
-        {/* Soft gradient overlay behind left text only */}
-        <div className="absolute inset-y-0 left-0 w-full md:w-[45%] bg-gradient-to-r from-[#030a05]/90 via-[#030a05]/40 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
+        {/* Soft, minimal gradient overlay behind left text only */}
+        <div className="absolute inset-y-0 left-0 w-full md:w-[42%] bg-gradient-to-r from-[#030a05]/85 via-[#030a05]/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#030a05] to-transparent pointer-events-none" />
 
         <section
           id="inicio"
