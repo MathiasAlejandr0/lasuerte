@@ -209,19 +209,19 @@ export function Hero() {
               <div>
                 <h1
                   ref={heroTitleRef}
-                  className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl drop-shadow-md"
+                  className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_1px_4px_rgba(0,0,0,1)]"
                 >
                   Compra Tus
                   <br />
                   Ilustraciones Digitales
                   <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
                     Y Participa En El Sorteo De Nuestra Moto
                   </span>
                 </h1>
               </div>
 
-              <p className="text-brand-muted text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-medium drop-shadow-sm">
+              <p className="text-gray-100 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] drop-shadow-[0_1px_3px_rgba(0,0,0,1)]">
                 Adquiere hermosas ilustraciones de paisajes del sur de Chile.
                 Con cada producto que compres, obtendrás boletos de regalo para
                 participar en el sorteo de increíbles premios.
