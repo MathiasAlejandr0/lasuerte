@@ -206,22 +206,26 @@ export function Hero() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center">
             <div className="md:col-span-7 lg:col-span-6 min-w-0 space-y-5 md:space-y-6">
-              <div>
+              <div className="filter drop-shadow-[0_4px_16px_rgba(0,0,0,1)] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
                 <h1
                   ref={heroTitleRef}
-                  className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_1px_4px_rgba(0,0,0,1)]"
+                  style={{ textShadow: "0 4px 16px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1)" }}
+                  className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl"
                 >
                   Compra Tus
                   <br />
                   Ilustraciones Digitales
                   <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
+                  <span className="text-brand-greenBright font-black">
                     Y Participa En El Sorteo De Nuestra Moto
                   </span>
                 </h1>
               </div>
 
-              <p className="text-gray-100 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] drop-shadow-[0_1px_3px_rgba(0,0,0,1)]">
+              <p
+                style={{ textShadow: "0 2px 12px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,1)" }}
+                className="text-white text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-bold"
+              >
                 Adquiere hermosas ilustraciones de paisajes del sur de Chile.
                 Con cada producto que compres, obtendrás boletos de regalo para
                 participar en el sorteo de increíbles premios.
