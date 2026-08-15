@@ -281,39 +281,44 @@ export function OrderLookupCard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5 pt-1">
-          <a
-            href={process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://facebook.com"}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook"
-            className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-2xl bg-[#1877F2] p-2 text-white no-underline shadow-md transition-transform duration-200 hover:scale-105 hover:brightness-110 active:scale-95"
-          >
-            <FacebookIcon className="size-6 shrink-0" />
-            <span className="text-[11px] font-extrabold tracking-wide">Facebook</span>
-          </a>
+        <div className="pt-2 border-t border-neutral-100 space-y-2">
+          <p className="text-center text-[11px] font-bold uppercase tracking-wider text-neutral-400 m-0">
+            Síguenos en redes sociales
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <a
+              href={process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://facebook.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[#1877F2] py-2.5 px-2 text-[12px] font-bold text-white no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(24,119,242,0.35)] active:translate-y-0"
+            >
+              <FacebookIcon className="size-4 shrink-0" />
+              <span>Facebook</span>
+            </a>
 
-          <a
-            href={process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com"}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-tr from-[#f09433] via-[#e6683c] to-[#bc1888] p-2 text-white no-underline shadow-md transition-transform duration-200 hover:scale-105 hover:brightness-110 active:scale-95"
-          >
-            <InstagramIcon className="size-6 shrink-0" />
-            <span className="text-[11px] font-extrabold tracking-wide">Instagram</span>
-          </a>
+            <a
+              href={process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] py-2.5 px-2 text-[12px] font-bold text-white no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(220,39,67,0.35)] active:translate-y-0"
+            >
+              <InstagramIcon className="size-4 shrink-0" />
+              <span>Instagram</span>
+            </a>
 
-          <a
-            href={process.env.NEXT_PUBLIC_TIKTOK_URL || "https://tiktok.com"}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="TikTok"
-            className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-2xl bg-black p-2 text-white no-underline shadow-md ring-1 ring-white/15 transition-transform duration-200 hover:scale-105 hover:brightness-125 active:scale-95"
-          >
-            <TikTokIcon className="size-6 shrink-0" />
-            <span className="text-[11px] font-extrabold tracking-wide">TikTok</span>
-          </a>
+            <a
+              href={process.env.NEXT_PUBLIC_TIKTOK_URL || "https://tiktok.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="TikTok"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-black border border-neutral-800 py-2.5 px-2 text-[12px] font-bold text-white no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-600 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] active:translate-y-0"
+            >
+              <TikTokIcon className="size-4 shrink-0" />
+              <span>TikTok</span>
+            </a>
+          </div>
         </div>
       </div>
     </article>
