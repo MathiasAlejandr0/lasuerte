@@ -2,9 +2,12 @@
   "name": "suertu2s-root",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "v2"
+  ],
   "scripts": {
-    "build": "cd v2 && npm install && npm run build",
-    "dev": "cd v2 && npm run dev",
-    "start": "cd v2 && npm run start"
+    "build": "npm run build --workspace=v2",
+    "dev": "npm run dev --workspace=v2",
+    "start": "npm run start --workspace=v2"
   }
 }
