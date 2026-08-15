@@ -16,6 +16,39 @@ export function toLiveEmbedUrl(
 
   const host = url.hostname.replace(/^www\./, "").toLowerCase();
 
+  // TikTok
+  if (
+    host === "tiktok.com" ||
+    host === "m.tiktok.com" ||
+    host === "vm.tiktok.com" ||
+    host === "vt.tiktok.com"
+  ) {
+    if (url.pathname.includes("/embed/")) {
+      return url.toString();
+    }
+
+    const parts = url.pathname.split("/").filter(Boolean);
+
+    // Formato: /@usuario/live o /@usuario
+    if (parts[0] && parts[0].startsWith("@")) {
+      const username = parts[0];
+      return `https://www.tiktok.com/embed/v2/live/${encodeURIComponent(username)}`;
+    }
+
+    // Formato: /live/usuario o /live/@usuario
+    if (parts[0] === "live" && parts[1]) {
+      const username = parts[1].startsWith("@") ? parts[1] : `@${parts[1]}`;
+      return `https://www.tiktok.com/embed/v2/live/${encodeURIComponent(username)}`;
+    }
+
+    // Formato video individual: /@usuario/video/1234567890
+    if (parts[0] && parts[1] === "video" && parts[2]) {
+      return `https://www.tiktok.com/embed/v2/${encodeURIComponent(parts[2])}`;
+    }
+
+    return url.toString();
+  }
+
   // YouTube
   if (
     host === "youtube.com" ||

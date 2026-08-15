@@ -148,105 +148,109 @@ export function Hero() {
           id="inicio"
           className="relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-4 md:py-8"
         >
-        {showWinner ? (
-          <div className="space-y-5 max-w-3xl mx-auto text-center">
-            <h1 className="display-title text-4xl sm:text-5xl md:text-6xl font-black font-title text-white leading-tight m-0">
-              ¡Ya tenemos{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
-                GANADOR
-              </span>
-              !
-            </h1>
-            <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-3">
-              <p className="text-xs text-brand-gold uppercase tracking-wider font-bold m-0">
-                Código ganador
-              </p>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-greenBright m-0 font-title tracking-wide break-all">
-                {winnerTicketCode}
-              </p>
-              {winnerName ? (
-                <p className="text-white text-lg sm:text-xl font-bold m-0">
-                  {winnerName}
-                </p>
-              ) : null}
-              {winnerNote ? (
-                <p className="text-brand-muted text-sm sm:text-base m-0">
-                  {winnerNote}
-                </p>
-              ) : null}
-            </div>
-            {liveStreamUrl.trim() ? (
-              <LiveStreamPlayer url={liveStreamUrl} />
-            ) : null}
-            <div className="flex justify-center">
-              <CtaButton>VER PACKS</CtaButton>
-            </div>
-          </div>
-        ) : showLive ? (
-          <div className="space-y-5 max-w-4xl mx-auto">
-            <div className="text-center space-y-2">
+          {showWinner ? (
+            <div className="space-y-5 max-w-3xl mx-auto text-center">
               <h1 className="display-title text-4xl sm:text-5xl md:text-6xl font-black font-title text-white leading-tight m-0">
-                ¡El{" "}
+                ¡Ya tenemos{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
-                  SORTEO
-                </span>{" "}
-                {closed ? "terminó!" : "está en vivo!"}
+                  GANADOR
+                </span>
+                !
               </h1>
-              <p className="text-brand-muted text-sm sm:text-base m-0">
-                {closed
-                  ? "Mira la transmisión o espera el anuncio del ganador."
-                  : "Mira la transmisión del sorteo en directo."}
-              </p>
+              <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-3">
+                <p className="text-xs text-brand-gold uppercase tracking-wider font-bold m-0">
+                  Código ganador
+                </p>
+                <p className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-greenBright m-0 font-title tracking-wide break-all">
+                  {winnerTicketCode}
+                </p>
+                {winnerName ? (
+                  <p className="text-white text-lg sm:text-xl font-bold m-0">
+                    {winnerName}
+                  </p>
+                ) : null}
+                {winnerNote ? (
+                  <p className="text-brand-muted text-sm sm:text-base m-0">
+                    {winnerNote}
+                  </p>
+                ) : null}
+              </div>
+              {liveStreamUrl.trim() ? (
+                <LiveStreamPlayer url={liveStreamUrl} />
+              ) : null}
+              <div className="flex justify-center">
+                <CtaButton>VER PACKS</CtaButton>
+              </div>
             </div>
-            <LiveStreamPlayer url={liveStreamUrl} />
-            <div className="flex justify-center">
-              <CtaButton>VER PACKS</CtaButton>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center">
-            <div className="md:col-span-7 lg:col-span-6 min-w-0 space-y-5 md:space-y-6">
-              <div className="filter drop-shadow-[0_4px_16px_rgba(0,0,0,1)] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
-                <h1
-                  ref={heroTitleRef}
-                  style={{ textShadow: "0 4px 16px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1)" }}
-                  className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl"
-                >
-                  Compra Tus
-                  <br />
-                  Ilustraciones Digitales
-                  <br />
-                  <span className="text-brand-greenBright font-black">
-                    Y Participa En El Sorteo De Nuestra Moto
-                  </span>
+          ) : showLive ? (
+            <div className="space-y-5 max-w-4xl mx-auto">
+              <div className="text-center space-y-2">
+                <h1 className="display-title text-4xl sm:text-5xl md:text-6xl font-black font-title text-white leading-tight m-0">
+                  ¡El{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
+                    SORTEO
+                  </span>{" "}
+                  {closed ? "terminó!" : "está en vivo!"}
                 </h1>
+                <p className="text-brand-muted text-sm sm:text-base m-0">
+                  {closed
+                    ? "Mira la transmisión o espera el anuncio del ganador."
+                    : "Mira la transmisión del sorteo en directo."}
+                </p>
               </div>
-
-              <p
-                style={{
-                  textShadow: "0 3px 12px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1)",
-                  WebkitTextStroke: "0.3px rgba(0,0,0,0.6)",
-                }}
-                className="text-white text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-extrabold"
-              >
-                Adquiere hermosas ilustraciones de paisajes del sur de Chile.
-                Con cada producto que compres, obtendrás boletos de regalo para
-                participar en el sorteo de increíbles premios.
-              </p>
-
-              <div className="max-w-md">
-                <Countdown endsAt={endsAt} />
-              </div>
-
-              <div className="max-w-md pt-1">
-                <CtaButton>PARTICIPAR</CtaButton>
+              <LiveStreamPlayer url={liveStreamUrl} />
+              <div className="flex justify-center">
+                <CtaButton>VER PACKS</CtaButton>
               </div>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center">
+              <div className="md:col-span-7 lg:col-span-6 min-w-0 space-y-5 md:space-y-6">
+                <div className="filter drop-shadow-[0_4px_16px_rgba(0,0,0,1)] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                  <h1
+                    ref={heroTitleRef}
+                    style={{
+                      textShadow:
+                        "0 4px 16px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1)",
+                    }}
+                    className="display-title text-2xl sm:text-3xl md:text-[2.1rem] lg:text-[2.45rem] font-black font-title text-white m-0 leading-[1.18] tracking-tight max-w-[22ch] sm:max-w-xl"
+                  >
+                    Compra Tus
+                    <br />
+                    Ilustraciones Digitales
+                    <br />
+                    <span className="text-brand-greenBright font-black">
+                      Y Participa En El Sorteo De Nuestra Moto
+                    </span>
+                  </h1>
+                </div>
 
-            <div className="hidden md:block md:col-span-5 lg:col-span-6 min-h-[380px]" />
-          </div>
-        )}
-      </section>
+                <p
+                  style={{
+                    textShadow:
+                      "0 3px 12px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1)",
+                    WebkitTextStroke: "0.3px rgba(0,0,0,0.6)",
+                  }}
+                  className="text-white text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-extrabold"
+                >
+                  Adquiere hermosas ilustraciones de paisajes del sur de Chile.
+                  Con cada producto que compres, obtendrás boletos de regalo
+                  para participar en el sorteo de increíbles premios.
+                </p>
+
+                <div className="max-w-md">
+                  <Countdown endsAt={endsAt} />
+                </div>
+
+                <div className="max-w-md pt-1">
+                  <CtaButton>PARTICIPAR</CtaButton>
+                </div>
+              </div>
+
+              <div className="hidden md:block md:col-span-5 lg:col-span-6 min-h-[380px]" />
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

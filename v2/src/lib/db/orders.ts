@@ -1,8 +1,10 @@
+import { randomUUID } from "crypto";
+import type mysql from "mysql2/promise";
 import { RAFFLE } from "@/data/packs";
 import { assertRaffleAcceptsOrders } from "@/lib/catalog/orders-guard";
-import { getPackById, getRaffle } from "@/lib/catalog/store";
-import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/server";
+import { getPackById } from "@/lib/catalog/store";
 import { hashPassword } from "@/lib/security/password";
+import { isDbConfigured, query, transaction } from "./mysql";
 import {
   memoryCreateOrder,
   memoryCreatePayout,
@@ -27,11 +29,13 @@ import {
 } from "./memory";
 import type {
   CheckoutInput,
+  CommissionType,
   DbAffiliate,
   DbAffiliatePayout,
   DbOrder,
   DbOrderItem,
   DbTicket,
+  OrderStatus,
   PaymentProvider,
 } from "./types";
 
@@ -47,8 +51,118 @@ const PACK_ID_BY_UUID: Record<string, string> = Object.fromEntries(
   Object.entries(PACK_UUID).map(([id, uuid]) => [uuid, id]),
 );
 
+type SqlRow = mysql.RowDataPacket;
+
+function mapOrder(row: SqlRow): DbOrder {
+  return {
+    id: String(row.id),
+    email: String(row.email),
+    full_name: String(row.full_name),
+    rut: String(row.rut),
+    phone: String(row.phone),
+    status: row.status as OrderStatus,
+    payment_provider: (row.payment_provider as PaymentProvider) ?? null,
+    payment_external_id: row.payment_external_id
+      ? String(row.payment_external_id)
+      : null,
+    total_clp: Number(row.total_clp),
+    raffle_id: String(row.raffle_id),
+    referral_code: row.referral_code ? String(row.referral_code) : null,
+    referral_name: row.referral_name ? String(row.referral_name) : null,
+    affiliate_id: row.affiliate_id ? String(row.affiliate_id) : null,
+    created_at:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : String(row.created_at),
+    paid_at: row.paid_at
+      ? row.paid_at instanceof Date
+        ? row.paid_at.toISOString()
+        : String(row.paid_at)
+      : null,
+    confirmation_email_sent_at: row.confirmation_email_sent_at
+      ? row.confirmation_email_sent_at instanceof Date
+        ? row.confirmation_email_sent_at.toISOString()
+        : String(row.confirmation_email_sent_at)
+      : null,
+  };
+}
+
+function mapOrderItem(row: SqlRow): DbOrderItem {
+  return {
+    id: String(row.id),
+    order_id: String(row.order_id),
+    pack_id: String(row.pack_id),
+    quantity: Number(row.quantity),
+    unit_price_clp: Number(row.unit_price_clp),
+    ticket_count: Number(row.ticket_count),
+  };
+}
+
+function mapTicket(row: SqlRow): DbTicket {
+  return {
+    id: String(row.id),
+    raffle_id: String(row.raffle_id),
+    order_id: String(row.order_id),
+    number: Number(row.number),
+    code: String(row.code),
+    email: String(row.email),
+    created_at:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : String(row.created_at),
+  };
+}
+
+function mapAffiliate(row: SqlRow): DbAffiliate {
+  return {
+    id: String(row.id),
+    code: String(row.code),
+    name: String(row.name),
+    email: row.email ? String(row.email) : null,
+    phone: row.phone ? String(row.phone) : null,
+    commission_type: row.commission_type as CommissionType,
+    commission_value: Number(row.commission_value),
+    active: Boolean(row.active),
+    notes: row.notes ? String(row.notes) : null,
+    password_hash: row.password_hash ? String(row.password_hash) : null,
+    created_at:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : String(row.created_at),
+    updated_at:
+      row.updated_at instanceof Date
+        ? row.updated_at.toISOString()
+        : String(row.updated_at),
+  };
+}
+
+function mapPayout(row: SqlRow): DbAffiliatePayout {
+  return {
+    id: String(row.id),
+    affiliate_id: String(row.affiliate_id),
+    amount_clp: Number(row.amount_clp),
+    period_from:
+      row.period_from instanceof Date
+        ? row.period_from.toISOString().slice(0, 10)
+        : String(row.period_from).slice(0, 10),
+    period_to:
+      row.period_to instanceof Date
+        ? row.period_to.toISOString().slice(0, 10)
+        : String(row.period_to).slice(0, 10),
+    note: row.note ? String(row.note) : null,
+    paid_at:
+      row.paid_at instanceof Date
+        ? row.paid_at.toISOString()
+        : String(row.paid_at),
+    created_at:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : String(row.created_at),
+  };
+}
+
 /** Solo asocia un afiliado existente; no crea fichas desde la compra pública. */
-async function resolveAffiliateId(code?: string, _name?: string) {
+async function resolveAffiliateId(code?: string) {
   if (!code?.trim()) {
     return {
       affiliateId: null as string | null,
@@ -57,24 +171,21 @@ async function resolveAffiliateId(code?: string, _name?: string) {
   }
   const normalized = code.toUpperCase().trim();
 
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     const { memoryFindAffiliateByCode } = await import("./memory");
     const aff = memoryFindAffiliateByCode(normalized);
     return { affiliateId: aff?.id ?? null, code: normalized };
   }
 
-  const sb = getSupabaseAdmin();
-  const { data: existing } = await sb
-    .from("affiliates")
-    .select("*")
-    .ilike("code", normalized)
-    .eq("active", true)
-    .maybeSingle();
+  const rows = await query<SqlRow[]>(
+    "SELECT id, code FROM affiliates WHERE UPPER(code) = ? AND active = 1 LIMIT 1",
+    [normalized],
+  );
 
-  if (existing) {
+  if (rows.length > 0) {
     return {
-      affiliateId: existing.id as string,
-      code: existing.code as string,
+      affiliateId: String(rows[0].id),
+      code: String(rows[0].code),
     };
   }
 
@@ -84,14 +195,14 @@ async function resolveAffiliateId(code?: string, _name?: string) {
 export async function createOrder(input: CheckoutInput) {
   assertRaffleAcceptsOrders();
 
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     return memoryCreateOrder(input);
   }
 
-  const sb = getSupabaseAdmin();
   let total = 0;
   let ticketTotal = 0;
   const lines: Array<{
+    id: string;
     pack_id: string;
     quantity: number;
     unit_price_clp: number;
@@ -108,6 +219,7 @@ export async function createOrder(input: CheckoutInput) {
     const tickets = pack.ticketCount * item.quantity;
     ticketTotal += tickets;
     lines.push({
+      id: randomUUID(),
       pack_id: packUuid,
       quantity: item.quantity,
       unit_price_clp: pack.priceClp,
@@ -117,49 +229,64 @@ export async function createOrder(input: CheckoutInput) {
 
   if (!lines.length) throw new Error("Carrito vacío");
 
-  const referral = await resolveAffiliateId(
-    input.referralCode,
-    input.referralName,
-  );
+  const referral = await resolveAffiliateId(input.referralCode);
 
-  const { data: order, error } = await sb
-    .from("orders")
-    .insert({
-      email: input.email.toLowerCase().trim(),
-      full_name: input.fullName.trim(),
-      rut: input.rut.trim(),
-      phone: input.phone.trim(),
-      status: "pending",
-      payment_provider: input.provider,
-      total_clp: total,
-      raffle_id: RAFFLE_UUID,
-      referral_code: referral.code,
-      referral_name: input.referralName?.trim() || null,
-      affiliate_id: referral.affiliateId,
-      confirmation_email_sent_at: null,
-    })
-    .select("*")
-    .single();
+  const orderId = randomUUID();
+  const createdAt = new Date();
 
-  if (error || !order)
-    throw new Error(error?.message || "No se pudo crear el pedido");
+  await transaction(async (conn) => {
+    await conn.execute(
+      `INSERT INTO orders (
+        id, email, full_name, rut, phone, status, payment_provider,
+        total_clp, raffle_id, referral_code, referral_name, affiliate_id,
+        created_at, paid_at, confirmation_email_sent_at
+      ) VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, NULL, NULL)`,
+      [
+        orderId,
+        input.email.toLowerCase().trim(),
+        input.fullName.trim(),
+        input.rut.trim(),
+        input.phone.trim(),
+        input.provider,
+        total,
+        RAFFLE_UUID,
+        referral.code,
+        input.referralName?.trim() || null,
+        referral.affiliateId,
+        createdAt,
+      ],
+    );
 
-  const { error: itemsError } = await sb
-    .from("order_items")
-    .insert(lines.map((l) => ({ ...l, order_id: order.id })));
-  if (itemsError) throw new Error(itemsError.message);
+    for (const line of lines) {
+      await conn.execute(
+        `INSERT INTO order_items (id, order_id, pack_id, quantity, unit_price_clp, ticket_count)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          line.id,
+          orderId,
+          line.pack_id,
+          line.quantity,
+          line.unit_price_clp,
+          line.ticket_count,
+        ],
+      );
+    }
+  });
 
-  return { order: order as DbOrder, ticketTotal, items: lines };
+  const createdOrder = await getOrder(orderId);
+  if (!createdOrder)
+    throw new Error("No se pudo crear el pedido en la base de datos");
+
+  return { order: createdOrder, ticketTotal, items: lines };
 }
 
 export async function getOrder(id: string) {
-  if (!isSupabaseConfigured()) return memoryGetOrder(id);
-  const { data } = await getSupabaseAdmin()
-    .from("orders")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  return (data as DbOrder | null) ?? null;
+  if (!isDbConfigured()) return memoryGetOrder(id);
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM orders WHERE id = ? LIMIT 1",
+    [id],
+  );
+  return rows.length > 0 ? mapOrder(rows[0]) : null;
 }
 
 export async function setPaymentExternal(
@@ -167,159 +294,217 @@ export async function setPaymentExternal(
   externalId: string,
   provider: PaymentProvider,
 ) {
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     return memorySetPaymentExternal(orderId, externalId, provider);
   }
-  const { data, error } = await getSupabaseAdmin()
-    .from("orders")
-    .update({ payment_external_id: externalId, payment_provider: provider })
-    .eq("id", orderId)
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return data as DbOrder;
+  await query(
+    "UPDATE orders SET payment_external_id = ?, payment_provider = ? WHERE id = ?",
+    [externalId, provider, orderId],
+  );
+  const order = await getOrder(orderId);
+  if (!order) throw new Error("Pedido no encontrado");
+  return order;
 }
 
 export async function fulfillOrder(orderId: string) {
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     return memoryFulfillOrder(orderId);
   }
 
-  const sb = getSupabaseAdmin();
-  const order = await getOrder(orderId);
-  if (!order) throw new Error("Pedido no encontrado");
+  return transaction(async (conn) => {
+    // Atomic claim within transaction — FOR UPDATE locks order row
+    const [orderRows] = await conn.execute<SqlRow[]>(
+      "SELECT * FROM orders WHERE id = ? FOR UPDATE",
+      [orderId],
+    );
 
-  if (order.status === "paid") {
-    const { data: tickets } = await sb
-      .from("tickets")
-      .select("*")
-      .eq("order_id", orderId)
-      .order("number");
-    return { order, tickets: tickets ?? [], alreadyPaid: true };
-  }
-
-  if (order.status !== "pending") {
-    throw new Error("El pedido no está pendiente de pago");
-  }
-
-  // Atomic claim — only one concurrent fulfiller wins
-  const paidAt = new Date().toISOString();
-  const { data: claimed, error: claimError } = await sb
-    .from("orders")
-    .update({ status: "paid", paid_at: paidAt })
-    .eq("id", orderId)
-    .eq("status", "pending")
-    .select("*")
-    .maybeSingle();
-
-  if (claimError) throw new Error(claimError.message);
-
-  if (!claimed) {
-    const again = await getOrder(orderId);
-    if (again?.status === "paid") {
-      const { data: tickets } = await sb
-        .from("tickets")
-        .select("*")
-        .eq("order_id", orderId)
-        .order("number");
-      return { order: again, tickets: tickets ?? [], alreadyPaid: true };
+    if (orderRows.length === 0) {
+      throw new Error("Pedido no encontrado");
     }
-    throw new Error("No se pudo confirmar el pago del pedido");
-  }
 
-  const { data: existingTickets } = await sb
-    .from("tickets")
-    .select("*")
-    .eq("order_id", orderId)
-    .order("number");
+    const order = mapOrder(orderRows[0]);
 
-  if (existingTickets?.length) {
-    return {
-      order: claimed as DbOrder,
-      tickets: existingTickets,
-      alreadyPaid: false,
+    if (order.status === "paid") {
+      const [ticketRows] = await conn.execute<SqlRow[]>(
+        "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
+        [orderId],
+      );
+      return {
+        order,
+        tickets: ticketRows.map(mapTicket),
+        alreadyPaid: true,
+      };
+    }
+
+    if (order.status !== "pending") {
+      throw new Error("El pedido no está pendiente de pago");
+    }
+
+    const paidAt = new Date();
+
+    const [updateResult] = await conn.execute<mysql.ResultSetHeader>(
+      "UPDATE orders SET status = 'paid', paid_at = ? WHERE id = ? AND status = 'pending'",
+      [paidAt, orderId],
+    );
+
+    if (updateResult.affectedRows === 0) {
+      // Perdió la carrera de concurrencia
+      const [retryRows] = await conn.execute<SqlRow[]>(
+        "SELECT * FROM orders WHERE id = ?",
+        [orderId],
+      );
+      const retryOrder = mapOrder(retryRows[0]);
+      const [ticketRows] = await conn.execute<SqlRow[]>(
+        "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
+        [orderId],
+      );
+      return {
+        order: retryOrder,
+        tickets: ticketRows.map(mapTicket),
+        alreadyPaid: true,
+      };
+    }
+
+    // Comprobar si ya existen tickets para este pedido
+    const [existingTickets] = await conn.execute<SqlRow[]>(
+      "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
+      [orderId],
+    );
+
+    if (existingTickets.length > 0) {
+      const updatedOrder = {
+        ...order,
+        status: "paid" as const,
+        paid_at: paidAt.toISOString(),
+      };
+      return {
+        order: updatedOrder,
+        tickets: existingTickets.map(mapTicket),
+        alreadyPaid: false,
+      };
+    }
+
+    // Obtener la cantidad total de boletos a generar
+    const [items] = await conn.execute<SqlRow[]>(
+      "SELECT * FROM order_items WHERE order_id = ?",
+      [orderId],
+    );
+
+    const totalTickets = items.reduce(
+      (acc: number, item: SqlRow) => acc + Number(item.ticket_count),
+      0,
+    );
+
+    // Obtener código de sorteo
+    const [raffleRows] = await conn.execute<SqlRow[]>(
+      "SELECT code FROM raffles WHERE id = ?",
+      [order.raffle_id],
+    );
+    const raffleCode =
+      raffleRows.length > 0 ? String(raffleRows[0].code) : "S2S26";
+
+    // Generar tickets aleatorios de manera atómica
+    const assignedCodes: string[] = [];
+    for (let i = 0; i < totalTickets; i++) {
+      let attempts = 0;
+      let inserted = false;
+
+      while (!inserted) {
+        attempts++;
+        if (attempts > 100) {
+          throw new Error("No se pudo asignar código único de boleto");
+        }
+
+        const suffix = Math.floor(Math.random() * 100000);
+        const ticketCode = raffleCode + String(suffix).padStart(5, "0");
+        const ticketId = randomUUID();
+
+        try {
+          await conn.execute(
+            `INSERT INTO tickets (id, raffle_id, order_id, number, code, email, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+            [
+              ticketId,
+              order.raffle_id,
+              orderId,
+              suffix,
+              ticketCode,
+              order.email,
+            ],
+          );
+          assignedCodes.push(ticketCode);
+          inserted = true;
+        } catch (err: unknown) {
+          // Si es error de clave duplicada (ER_DUP_ENTRY / 1062 en MySQL), reintentamos con otro sufijo aleatorio
+          const sqlErr = err as { code?: string; errno?: number };
+          if (
+            sqlErr.code === "ER_DUP_ENTRY" ||
+            sqlErr.errno === 1062 ||
+            String(err).includes("Duplicate entry")
+          ) {
+            continue;
+          }
+          throw err;
+        }
+      }
+    }
+
+    const [finalTickets] = await conn.execute<SqlRow[]>(
+      "SELECT * FROM tickets WHERE order_id = ? ORDER BY code",
+      [orderId],
+    );
+
+    const finalOrder = {
+      ...order,
+      status: "paid" as const,
+      paid_at: paidAt.toISOString(),
     };
-  }
 
-  const { data: items, error: itemsError } = await sb
-    .from("order_items")
-    .select("*")
-    .eq("order_id", orderId);
-  if (itemsError) throw new Error(itemsError.message);
-
-  const count = (items ?? []).reduce(
-    (acc, i) => acc + (i.ticket_count as number),
-    0,
-  );
-
-  const { data: codes, error: assignError } = await sb.rpc("assign_tickets", {
-    p_order_id: orderId,
-    p_count: count,
+    return {
+      order: finalOrder,
+      tickets: finalTickets.map(mapTicket),
+      alreadyPaid: false,
+      assignedCodes,
+    };
   });
-  if (assignError) throw new Error(assignError.message);
-
-  const { data: tickets } = await sb
-    .from("tickets")
-    .select("*")
-    .eq("order_id", orderId)
-    .order("code");
-
-  return {
-    order: claimed as DbOrder,
-    tickets: tickets ?? [],
-    alreadyPaid: false,
-    assignedCodes: codes as string[],
-  };
 }
 
 export async function lookupTicketsByEmail(email: string) {
-  if (!isSupabaseConfigured()) return memoryLookupTickets(email);
-  const { data, error } = await getSupabaseAdmin()
-    .from("tickets")
-    .select("*")
-    .eq("email", email.toLowerCase().trim())
-    .order("number");
-  if (error) throw new Error(error.message);
-  return data ?? [];
+  if (!isDbConfigured()) return memoryLookupTickets(email);
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM tickets WHERE LOWER(email) = LOWER(?) ORDER BY number",
+    [email.trim()],
+  );
+  return rows.map(mapTicket);
 }
 
 function ensureDemoSeed() {
-  if (!isSupabaseConfigured()) memorySeedDemoSales();
+  if (!isDbConfigured()) memorySeedDemoSales();
 }
 
 export async function listOrders() {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) return memoryListOrders();
-  const { data, error } = await getSupabaseAdmin()
-    .from("orders")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(1000);
-  if (error) throw new Error(error.message);
-  return (data as DbOrder[]) ?? [];
+  if (!isDbConfigured()) return memoryListOrders();
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM orders ORDER BY created_at DESC LIMIT 1000",
+  );
+  return rows.map(mapOrder);
 }
 
 export async function listOrderItems() {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) return memoryListOrderItems();
-  const { data, error } = await getSupabaseAdmin()
-    .from("order_items")
-    .select("*")
-    .limit(5000);
-  if (error) throw new Error(error.message);
-  return (data as DbOrderItem[]) ?? [];
+  if (!isDbConfigured()) return memoryListOrderItems();
+  const rows = await query<SqlRow[]>("SELECT * FROM order_items LIMIT 5000");
+  return rows.map(mapOrderItem);
 }
 
 export async function listTickets() {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) return memoryListTickets();
-  const { data, error } = await getSupabaseAdmin()
-    .from("tickets")
-    .select("*")
-    .order("number", { ascending: false })
-    .limit(5000);
-  if (error) throw new Error(error.message);
-  return (data as DbTicket[]) ?? [];
+  if (!isDbConfigured()) return memoryListTickets();
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM tickets ORDER BY number DESC LIMIT 5000",
+  );
+  return rows.map(mapTicket);
 }
 
 /** Pack IDs del catálogo asociados a un pedido (para email de ilustraciones). */
@@ -336,7 +521,7 @@ export async function getOrderPackIds(orderId: string): Promise<string[]> {
 
 export async function getOrderDetail(orderId: string) {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     const order = memoryGetOrder(orderId);
     if (!order) return null;
     return {
@@ -346,80 +531,60 @@ export async function getOrderDetail(orderId: string) {
     };
   }
 
-  const sb = getSupabaseAdmin();
-  const { data: order } = await sb
-    .from("orders")
-    .select("*")
-    .eq("id", orderId)
-    .maybeSingle();
+  const order = await getOrder(orderId);
   if (!order) return null;
 
-  const [{ data: items }, { data: tickets }] = await Promise.all([
-    sb.from("order_items").select("*").eq("order_id", orderId),
-    sb.from("tickets").select("*").eq("order_id", orderId).order("number"),
+  const [itemsRows, ticketsRows] = await Promise.all([
+    query<SqlRow[]>("SELECT * FROM order_items WHERE order_id = ?", [orderId]),
+    query<SqlRow[]>(
+      "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
+      [orderId],
+    ),
   ]);
 
   return {
-    order: order as DbOrder,
-    items: (items as DbOrderItem[]) ?? [],
-    tickets: (tickets as DbTicket[]) ?? [],
+    order,
+    items: itemsRows.map(mapOrderItem),
+    tickets: ticketsRows.map(mapTicket),
   };
 }
 
 export async function listAffiliates() {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) return memoryListAffiliates();
-  const { data, error } = await getSupabaseAdmin()
-    .from("affiliates")
-    .select("*")
-    .order("code");
-  if (error) throw new Error(error.message);
-  return ((data as DbAffiliate[]) ?? []).map((a) => ({
-    ...a,
-    password_hash: a.password_hash ?? null,
-  }));
+  if (!isDbConfigured()) return memoryListAffiliates();
+  const rows = await query<SqlRow[]>("SELECT * FROM affiliates ORDER BY code");
+  return rows.map(mapAffiliate);
 }
 
 export async function getAffiliateById(id: string) {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) return memoryGetAffiliateById(id);
-  const { data, error } = await getSupabaseAdmin()
-    .from("affiliates")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) return null;
-  const a = data as DbAffiliate;
-  return { ...a, password_hash: a.password_hash ?? null };
+  if (!isDbConfigured()) return memoryGetAffiliateById(id);
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM affiliates WHERE id = ? LIMIT 1",
+    [id],
+  );
+  return rows.length > 0 ? mapAffiliate(rows[0]) : null;
 }
 
 export async function findAffiliateByEmail(email: string) {
   ensureDemoSeed();
   const normalized = email.toLowerCase().trim();
   if (!normalized) return null;
-  if (!isSupabaseConfigured()) return memoryFindAffiliateByEmail(normalized);
-  const { data, error } = await getSupabaseAdmin()
-    .from("affiliates")
-    .select("*")
-    .ilike("email", normalized)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) return null;
-  const a = data as DbAffiliate;
-  return { ...a, password_hash: a.password_hash ?? null };
+  if (!isDbConfigured()) return memoryFindAffiliateByEmail(normalized);
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM affiliates WHERE LOWER(email) = LOWER(?) LIMIT 1",
+    [normalized],
+  );
+  return rows.length > 0 ? mapAffiliate(rows[0]) : null;
 }
 
 export async function listPayouts() {
   ensureDemoSeed();
-  if (!isSupabaseConfigured()) return memoryListPayouts();
-  const { data, error } = await getSupabaseAdmin()
-    .from("affiliate_payouts")
-    .select("*")
-    .order("paid_at", { ascending: false })
-    .limit(1000);
-  if (error) throw new Error(error.message);
-  return (data as DbAffiliatePayout[]) ?? [];
+  if (!isDbConfigured()) return memoryListPayouts();
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM affiliate_payouts ORDER BY paid_at DESC LIMIT 1000",
+  );
+  return rows.map(mapPayout);
 }
 
 export async function createPayout(input: {
@@ -429,22 +594,27 @@ export async function createPayout(input: {
   period_to: string;
   note?: string | null;
 }) {
-  if (!isSupabaseConfigured()) return memoryCreatePayout(input);
+  if (!isDbConfigured()) return memoryCreatePayout(input);
 
-  const { data, error } = await getSupabaseAdmin()
-    .from("affiliate_payouts")
-    .insert({
-      affiliate_id: input.affiliate_id,
-      amount_clp: Math.round(input.amount_clp),
-      period_from: input.period_from.slice(0, 10),
-      period_to: input.period_to.slice(0, 10),
-      note: input.note?.trim() || null,
-    })
-    .select("*")
-    .single();
+  const payoutId = randomUUID();
+  const paidAt = new Date();
+  const amount = Math.round(input.amount_clp);
+  const from = input.period_from.slice(0, 10);
+  const to = input.period_to.slice(0, 10);
+  const note = input.note?.trim() || null;
 
-  if (error) throw new Error(error.message);
-  return data as DbAffiliatePayout;
+  await query(
+    `INSERT INTO affiliate_payouts (
+      id, affiliate_id, amount_clp, period_from, period_to, note, paid_at, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [payoutId, input.affiliate_id, amount, from, to, note, paidAt, paidAt],
+  );
+
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM affiliate_payouts WHERE id = ? LIMIT 1",
+    [payoutId],
+  );
+  return mapPayout(rows[0]);
 }
 
 export async function upsertAffiliate(
@@ -459,75 +629,93 @@ export async function upsertAffiliate(
       ? hashPassword(input.password)
       : input.password_hash;
 
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     return memoryUpsertAffiliate({
       ...input,
       password_hash: password_hash !== undefined ? password_hash : undefined,
     });
   }
 
-  const sb = getSupabaseAdmin();
   const code = input.code.toUpperCase().trim();
-  const payload: Record<string, unknown> = {
-    code,
-    name: input.name,
-    email: input.email ?? null,
-    phone: input.phone ?? null,
-    commission_type: input.commission_type ?? "percent",
-    commission_value: input.commission_value ?? 10,
-    active: input.active ?? true,
-    notes: input.notes ?? null,
-    updated_at: new Date().toISOString(),
-  };
-  if (password_hash !== undefined) {
-    payload.password_hash = password_hash;
+  const existingRows = await query<SqlRow[]>(
+    "SELECT id FROM affiliates WHERE UPPER(code) = ? LIMIT 1",
+    [code],
+  );
+
+  if (existingRows.length > 0) {
+    const affiliateId = String(existingRows[0].id);
+    let sql = `UPDATE affiliates SET name = ?, email = ?, phone = ?, commission_type = ?, commission_value = ?, active = ?, notes = ?, updated_at = NOW()`;
+    const params: unknown[] = [
+      input.name,
+      input.email ?? null,
+      input.phone ?? null,
+      input.commission_type ?? "percent",
+      input.commission_value ?? 10,
+      (input.active ?? true) ? 1 : 0,
+      input.notes ?? null,
+    ];
+
+    if (password_hash !== undefined) {
+      sql += `, password_hash = ?`;
+      params.push(password_hash);
+    }
+    sql += ` WHERE id = ?`;
+    params.push(affiliateId);
+
+    await query(sql, params);
+    const updated = await getAffiliateById(affiliateId);
+    return updated!;
+  } else {
+    const affiliateId = randomUUID();
+    await query(
+      `INSERT INTO affiliates (
+        id, code, name, email, phone, commission_type, commission_value, active, notes, password_hash, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        affiliateId,
+        code,
+        input.name,
+        input.email ?? null,
+        input.phone ?? null,
+        input.commission_type ?? "percent",
+        input.commission_value ?? 10,
+        (input.active ?? true) ? 1 : 0,
+        input.notes ?? null,
+        password_hash ?? null,
+      ],
+    );
+    const created = await getAffiliateById(affiliateId);
+    return created!;
   }
-
-  const { data, error } = await sb
-    .from("affiliates")
-    .upsert(payload, { onConflict: "code" })
-    .select("*")
-    .single();
-
-  if (error) throw new Error(error.message);
-  const a = data as DbAffiliate;
-  return { ...a, password_hash: a.password_hash ?? null };
 }
 
 export async function markOrderFailed(orderId: string) {
-  if (!isSupabaseConfigured()) return memoryMarkFailed(orderId);
-  const { data } = await getSupabaseAdmin()
-    .from("orders")
-    .update({ status: "failed" })
-    .eq("id", orderId)
-    .eq("status", "pending")
-    .select("*")
-    .maybeSingle();
-  return data as DbOrder | null;
+  if (!isDbConfigured()) return memoryMarkFailed(orderId);
+  await query(
+    "UPDATE orders SET status = 'failed' WHERE id = ? AND status = 'pending'",
+    [orderId],
+  );
+  return getOrder(orderId);
 }
 
 export async function getOrderByPaymentExternal(externalId: string) {
-  if (!isSupabaseConfigured()) return memoryGetOrderByPayment(externalId);
-  const { data } = await getSupabaseAdmin()
-    .from("orders")
-    .select("*")
-    .eq("payment_external_id", externalId)
-    .maybeSingle();
-  return (data as DbOrder | null) ?? null;
+  if (!isDbConfigured()) return memoryGetOrderByPayment(externalId);
+  const rows = await query<SqlRow[]>(
+    "SELECT * FROM orders WHERE payment_external_id = ? LIMIT 1",
+    [externalId],
+  );
+  return rows.length > 0 ? mapOrder(rows[0]) : null;
 }
 
 export async function markConfirmationEmailSent(orderId: string) {
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     return memoryMarkConfirmationEmailSent(orderId);
   }
-  const { data, error } = await getSupabaseAdmin()
-    .from("orders")
-    .update({ confirmation_email_sent_at: new Date().toISOString() })
-    .eq("id", orderId)
-    .select("*")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  return (data as DbOrder | null) ?? null;
+  await query(
+    "UPDATE orders SET confirmation_email_sent_at = NOW() WHERE id = ?",
+    [orderId],
+  );
+  return getOrder(orderId);
 }
 
 /**
@@ -543,7 +731,7 @@ export function paymentsMockEnabled() {
 
 /** Conteo de pedidos y códigos emitidos para un ciclo de sorteo. */
 export async function getRaffleCycleStats(raffleId: string) {
-  if (!isSupabaseConfigured()) {
+  if (!isDbConfigured()) {
     return {
       ordersCount: memoryListOrders().filter((o) => o.raffle_id === raffleId)
         .length,
@@ -551,19 +739,19 @@ export async function getRaffleCycleStats(raffleId: string) {
         .length,
     };
   }
-  const [orders, tickets] = await Promise.all([
-    getSupabaseAdmin()
-      .from("orders")
-      .select("id", { count: "exact", head: true })
-      .eq("raffle_id", raffleId),
-    getSupabaseAdmin()
-      .from("tickets")
-      .select("id", { count: "exact", head: true })
-      .eq("raffle_id", raffleId),
+
+  const [ordersRes, ticketsRes] = await Promise.all([
+    query<SqlRow[]>("SELECT COUNT(*) as count FROM orders WHERE raffle_id = ?", [
+      raffleId,
+    ]),
+    query<SqlRow[]>("SELECT COUNT(*) as count FROM tickets WHERE raffle_id = ?", [
+      raffleId,
+    ]),
   ]);
+
   return {
-    ordersCount: orders.count ?? 0,
-    ticketsCount: tickets.count ?? 0,
+    ordersCount: Number(ordersRes[0]?.count ?? 0),
+    ticketsCount: Number(ticketsRes[0]?.count ?? 0),
   };
 }
 

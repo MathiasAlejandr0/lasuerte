@@ -20,11 +20,10 @@
     "build:gh-pages": "node scripts/gh-pages-prepare.mjs prepare && next build && node -e \"require('fs').writeFileSync('out/.nojekyll','')\" && node scripts/gh-pages-prepare.mjs restore"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.12.4",
-    "@supabase/supabase-js": "^2.112.2",
     "date-fns": "^4.4.0",
     "lenis": "^1.3.26",
     "mercadopago": "^3.3.0",
+    "mysql2": "^3.23.3",
     "next": "^16.3.0",
     "qrcode": "^1.5.4",
     "react": "19.2.8",

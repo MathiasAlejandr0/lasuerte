@@ -6,8 +6,7 @@ import {
   paymentsMockEnabled,
   setPaymentExternal,
 } from "@/lib/db/orders";
-import { createMercadoPagoPreference } from "@/lib/payments/mercadopago";
-import { createWebpayTransaction } from "@/lib/payments/webpay";
+import { createFlowPayment } from "@/lib/payments/flow";
 import { isMockProviderAllowed } from "@/lib/payments/mock-guard";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { logServerError, publicError } from "@/lib/security/errors";
@@ -17,7 +16,7 @@ const schema = z.object({
   fullName: z.string().min(2).max(120),
   rut: z.string().min(3).max(32),
   phone: z.string().min(3).max(32),
-  provider: z.enum(["mercadopago", "webpay", "mock"]),
+  provider: z.enum(["flow", "mock"]),
   referralCode: z.string().max(32).optional(),
   referralName: z.string().max(120).optional(),
   items: z
@@ -72,23 +71,21 @@ export async function POST(req: NextRequest) {
     }
 
     if (paymentsMockEnabled()) {
-      if (provider === "mercadopago" && !process.env.MERCADOPAGO_ACCESS_TOKEN) {
-        provider = "mock";
-      }
       if (
-        provider === "webpay" &&
-        (process.env.PAYMENTS_MOCK === "true" ||
-          !process.env.WEBPAY_API_KEY ||
-          process.env.WEBPAY_ENV === "integration")
+        provider === "flow" &&
+        (!process.env.FLOW_API_KEY || !process.env.FLOW_SECRET_KEY)
       ) {
-        if (process.env.PAYMENTS_MOCK === "true") provider = "mock";
+        provider = "mock";
       }
     }
 
-    if (provider !== "mock" && provider === "mercadopago") {
-      if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
+    if (provider !== "mock") {
+      if (
+        provider === "flow" &&
+        (!process.env.FLOW_API_KEY || !process.env.FLOW_SECRET_KEY)
+      ) {
         return NextResponse.json(
-          { error: "Mercado Pago no está configurado aún" },
+          { error: "Flow no está configurado aún" },
           { status: 503 },
         );
       }
@@ -109,31 +106,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    if (provider === "mercadopago") {
-      const pref = await createMercadoPagoPreference({
-        orderId: order.id,
-        title: "Packs Suertu2s",
-        amount: order.total_clp,
-        email: order.email,
-      });
-      await setPaymentExternal(order.id, pref.id, "mercadopago");
-      return NextResponse.json({
-        orderId: order.id,
-        redirectUrl: pref.initPoint,
-      });
-    }
-
-    const webpay = await createWebpayTransaction({
-      orderId: order.id,
+    const flowRes = await createFlowPayment({
+      commerceOrder: order.id,
+      subject: "Ilustraciones Suertu2s",
       amount: order.total_clp,
-      sessionId: order.id,
+      email: order.email,
     });
-    await setPaymentExternal(order.id, webpay.token, "webpay");
+    await setPaymentExternal(order.id, flowRes.token, "flow");
     return NextResponse.json({
       orderId: order.id,
-      redirectUrl: webpay.url,
-      token: webpay.token,
-      method: "webpay_form",
+      redirectUrl: flowRes.redirectUrl,
     });
   } catch (error) {
     logServerError("checkout", error);

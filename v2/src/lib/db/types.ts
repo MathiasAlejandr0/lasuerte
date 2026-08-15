@@ -1,5 +1,5 @@
 export type OrderStatus = "pending" | "paid" | "failed" | "cancelled";
-export type PaymentProvider = "mercadopago" | "webpay" | "mock";
+export type PaymentProvider = "flow" | "mock";
 export type CommissionType = "percent" | "fixed";
 
 export type DbAffiliate = {

@@ -49,7 +49,8 @@ type SettingsData = {
   }>;
   env: {
     paymentsMock: boolean;
-    supabaseConfigured: boolean;
+    dbConfigured: boolean;
+    supabaseConfigured?: boolean;
     adminAuthConfigured: boolean;
     mercadoPagoConfigured: boolean;
     webpayConfigured: boolean;
@@ -574,31 +575,26 @@ export default function AdminSettingsPage() {
             tone={data.env.adminAuthConfigured ? "ok" : "warn"}
           />
           <Row
-            label="Mercado Pago"
+            label="Flow.cl"
             value={
-              data.env.mercadoPagoConfigured
-                ? "Claves listas"
-                : "Todavía no (las da el cliente)"
+              (data.env as any).flowConfigured
+                ? "Configurado (API Key + Secret Key)"
+                : "Sin claves (FLOW_API_KEY / FLOW_SECRET_KEY)"
             }
-            tone={data.env.mercadoPagoConfigured ? "ok" : "warn"}
+            tone={(data.env as any).flowConfigured ? "ok" : "warn"}
           />
           <Row
-            label="Webpay en vivo"
+            label="Base de datos Hostinger MySQL"
             value={
-              data.env.webpayConfigured
-                ? "Claves de producción"
-                : "Todavía no / modo prueba"
-            }
-            tone={data.env.webpayConfigured ? "ok" : "warn"}
-          />
-          <Row
-            label="Base de datos Supabase"
-            value={
-              data.env.supabaseConfigured
+              data.env.dbConfigured || data.env.supabaseConfigured
                 ? "Conectada"
-                : "Modo local (archivo .data)"
+                : "Modo demo (memoria local)"
             }
-            tone={data.env.supabaseConfigured ? "ok" : "warn"}
+            tone={
+              data.env.dbConfigured || data.env.supabaseConfigured
+                ? "ok"
+                : "warn"
+            }
           />
           <Row
             label="Email (Resend)"

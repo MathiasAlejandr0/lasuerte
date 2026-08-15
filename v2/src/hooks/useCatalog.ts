@@ -7,8 +7,7 @@ import type { PublicPaymentOptions } from "@/lib/payments/available";
 export type CatalogRaffle = typeof RAFFLE;
 
 const DEFAULT_PAYMENTS: PublicPaymentOptions = {
-  mercadopago: false,
-  webpay: false,
+  flow: false,
   mock: true,
   defaultProvider: "mock",
 };

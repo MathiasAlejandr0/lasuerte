@@ -1,6 +1,6 @@
 # Suertu2s (lasuerte)
 
-Migración de WordPress/WooCommerce a **Next.js 16 + Supabase**.
+Migración de WordPress/WooCommerce a **Next.js 16 + Hostinger MySQL**.
 
 ## Desarrollo
 
@@ -14,8 +14,8 @@ En local el checkout puede simular el pago (mock con token firmado) y redirigir 
 
 ## Stack
 
-- Next.js (App Router) + TypeScript + Tailwind CSS 4
-- Supabase (Postgres + RLS) — ver `supabase/migrations/`
+- Next.js 16 (App Router) + TypeScript + Tailwind CSS 4
+- Hostinger MySQL (driver `mysql2` con pool de conexiones y transacciones)
 - Mercado Pago Checkout Pro + Transbank Webpay Plus
 - Resend (emails)
 - Zustand (carrito)
@@ -30,23 +30,24 @@ En local el checkout puede simular el pago (mock con token firmado) y redirigir 
 | `/check-tickets`   | Consulta de números |
 | `/sorteos-activos` | Sorteo vigente      |
 | `/bases-legales`   | Bases               |
-| `/admin`           | Pedidos             |
+| `/admin`           | Panel de control    |
+| `/afiliados`       | Portal de afiliados |
 
-## Supabase
+## Base de Datos (Hostinger MySQL)
 
-1. Crea un proyecto en Supabase
-2. Aplica **una sola** migración (esquema completo):  
-   `supabase/migrations/20260811000000_init.sql`  
-   (SQL Editor → pegar → Run, o `supabase db push` / link + migrate)
-3. Completa en `.env.local`:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-4. En Admin → Afiliados, asigna contraseña a `embajador@suertu2s.cl` / `demo@suertu2s.cl` para el portal `/afiliados`
+1. En el panel de **Hostinger (hPanel)** o phpMyAdmin:
+   - Crea una base de datos MySQL y un usuario con permisos.
+   - Abre phpMyAdmin -> Selecciona la BD -> pestaña **Importar** o **SQL**.
+   - Ejecuta el script `schema_hostinger.sql`.
+2. Completa en `.env.local` (o panel de variables de entorno de tu servidor):
+   - `MYSQL_HOST=localhost` (o el host/IP de Hostinger)
+   - `MYSQL_PORT=3306`
+   - `MYSQL_DATABASE=u123456789_suertu2s`
+   - `MYSQL_USER=u123456789_suertu2s_user`
+   - `MYSQL_PASSWORD=tu_contraseña_segura`
+3. En Admin → Afiliados, asigna contraseña a los afiliados demo para habilitar su acceso al portal `/afiliados`.
 
-Sin Supabase, la app usa un store en memoria (útil para demo local).
-
-> Si ya habías aplicado migraciones viejas en un proyecto, parte de un proyecto limpio o resetea el schema: este archivo reemplaza el historial fragmentado anterior.
+> Sin variables `MYSQL_*` configuradas, la app funciona automáticamente en modo demo (memoria local).
 
 ## Pagos reales
 

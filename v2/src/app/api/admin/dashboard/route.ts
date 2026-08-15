@@ -16,7 +16,7 @@ import {
   listTickets,
   paymentsMockEnabled,
 } from "@/lib/db/orders";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isDbConfigured } from "@/lib/db/mysql";
 
 export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) {
@@ -54,13 +54,14 @@ export async function GET(req: NextRequest) {
     );
 
     const raffle = getRaffle();
+    const dbOk = isDbConfigured();
     const ops = {
       paymentsMock: paymentsMockEnabled(),
-      mercadoPagoConfigured: Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN),
-      webpayConfigured: Boolean(
-        process.env.WEBPAY_API_KEY && process.env.WEBPAY_ENV === "production",
+      flowConfigured: Boolean(
+        process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,
       ),
-      supabaseConfigured: isSupabaseConfigured(),
+      dbConfigured: dbOk,
+      supabaseConfigured: dbOk,
       emailConfigured: Boolean(process.env.RESEND_API_KEY),
       liveStreamConfigured: Boolean(raffle.liveStreamUrl?.trim()),
       raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",

@@ -74,9 +74,9 @@ export type DashboardData = {
   };
   ops?: {
     paymentsMock: boolean;
-    mercadoPagoConfigured: boolean;
-    webpayConfigured: boolean;
-    supabaseConfigured: boolean;
+    flowConfigured?: boolean;
+    dbConfigured: boolean;
+    supabaseConfigured?: boolean;
     emailConfigured: boolean;
     liveStreamConfigured: boolean;
     raffleStatus: "open" | "closed";

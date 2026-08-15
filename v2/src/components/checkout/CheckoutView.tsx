@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { formatClp } from "@/data/packs";
 import { useCatalog } from "@/hooks/useCatalog";
 import { readReferralCode } from "@/lib/referral/storage";
+import type { PaymentProvider } from "@/lib/db/types";
 import { getCartSubtotal, getHydratedItems, useCart } from "@/store/cart";
 import { ReferralBox } from "./ReferralBox";
 
@@ -49,9 +50,7 @@ export function CheckoutView() {
   const [email, setEmail] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [referralName, setReferralName] = useState("");
-  const [provider, setProvider] = useState<"mercadopago" | "webpay" | "mock">(
-    "mercadopago",
-  );
+  const [provider, setProvider] = useState<PaymentProvider>("flow");
   const [acceptPrivacy, setAcceptPrivacy] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptAge, setAcceptAge] = useState(false);
@@ -59,9 +58,8 @@ export function CheckoutView() {
   const [error, setError] = useState<string | null>(null);
 
   const availableProviders = useMemo(() => {
-    const list: Array<"mercadopago" | "webpay" | "mock"> = [];
-    if (payments.mercadopago) list.push("mercadopago");
-    if (payments.webpay) list.push("webpay");
+    const list: Array<PaymentProvider> = [];
+    if (payments.flow) list.push("flow");
     if (payments.mock) list.push("mock");
     return list;
   }, [payments]);
@@ -366,10 +364,10 @@ export function CheckoutView() {
               <legend className="text-[14px] font-bold text-white mb-2 px-0">
                 Método de pago
               </legend>
-              {payments.mercadopago && (
+              {payments.flow && (
                 <label
                   className={`flex items-center justify-between gap-3 rounded-[14px] px-[18px] py-[14px] cursor-pointer border ${
-                    provider === "mercadopago"
+                    provider === "flow"
                       ? "border-[#36f073]/70 bg-[rgba(13,17,14,0.9)]"
                       : "border-white/10 bg-[rgba(255,255,255,0.02)]"
                   }`}
@@ -378,41 +376,16 @@ export function CheckoutView() {
                     <input
                       type="radio"
                       name="payment-provider"
-                      checked={provider === "mercadopago"}
-                      onChange={() => setProvider("mercadopago")}
+                      checked={provider === "flow"}
+                      onChange={() => setProvider("flow")}
                       className="accent-[#36f073]"
                     />
                     <span className="text-white text-[15px] font-bold">
-                      Mercado Pago
+                      Flow.cl
                     </span>
                   </span>
                   <span className="text-[12px] text-brand-muted font-semibold">
-                    Tarjetas y más
-                  </span>
-                </label>
-              )}
-              {payments.webpay && (
-                <label
-                  className={`flex items-center justify-between gap-3 rounded-[14px] px-[18px] py-[14px] cursor-pointer border ${
-                    provider === "webpay"
-                      ? "border-[#36f073]/70 bg-[rgba(13,17,14,0.9)]"
-                      : "border-white/10 bg-[rgba(255,255,255,0.02)]"
-                  }`}
-                >
-                  <span className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment-provider"
-                      checked={provider === "webpay"}
-                      onChange={() => setProvider("webpay")}
-                      className="accent-[#36f073]"
-                    />
-                    <span className="text-white text-[15px] font-bold">
-                      Webpay
-                    </span>
-                  </span>
-                  <span className="text-[12px] text-brand-muted font-semibold">
-                    Transbank
+                    Webpay, Servipag y tarjetas
                   </span>
                 </label>
               )}
@@ -446,8 +419,7 @@ export function CheckoutView() {
 
           {acceptsOrders && availableProviders.length === 0 && (
             <div className="mt-5 rounded-[14px] px-[18px] py-[14px] border border-brand-gold/40 bg-brand-gold/10 text-brand-cream text-sm">
-              No hay métodos de pago configurados todavía. Falta conectar
-              Mercado Pago o Webpay.
+              No hay métodos de pago configurados todavía. Falta conectar Flow.cl.
             </div>
           )}
 

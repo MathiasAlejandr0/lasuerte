@@ -14,7 +14,7 @@ import {
   updateRaffle,
 } from "@/lib/catalog/store";
 import { paymentsMockEnabled } from "@/lib/db/orders";
-import { isSupabaseConfigured, getSupabaseAdmin } from "@/lib/supabase/server";
+import { isDbConfigured, query } from "@/lib/db/mysql";
 import { logServerError, publicError } from "@/lib/security/errors";
 import {
   isValidRaffleCode,
@@ -24,15 +24,16 @@ import {
 
 const RAFFLE_UUID = "a0000000-0000-4000-8000-000000000001";
 
-async function syncRaffleCodeToSupabase(code: string) {
-  if (!isSupabaseConfigured()) return;
-  const { error } = await getSupabaseAdmin()
-    .from("raffles")
-    .update({ code: normalizeRaffleCode(code) })
-    .eq("id", RAFFLE_UUID);
-  if (error) {
+async function syncRaffleCodeToDb(code: string) {
+  if (!isDbConfigured()) return;
+  try {
+    await query("UPDATE raffles SET code = ? WHERE id = ?", [
+      normalizeRaffleCode(code),
+      RAFFLE_UUID,
+    ]);
+  } catch (err: any) {
     throw new Error(
-      `No se pudo sincronizar el código del sorteo en la base de datos: ${error.message}`,
+      `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${err.message}`,
     );
   }
 }
@@ -46,13 +47,14 @@ export const dynamic = "force-dynamic";
 
 function envPayload() {
   const adminEmails = getAllowedAdminEmails();
+  const dbOk = isDbConfigured();
   return {
     paymentsMock: paymentsMockEnabled(),
-    supabaseConfigured: isSupabaseConfigured(),
+    dbConfigured: dbOk,
+    supabaseConfigured: dbOk,
     adminAuthConfigured: adminAuthConfigured(),
-    mercadoPagoConfigured: Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN),
-    webpayConfigured: Boolean(
-      process.env.WEBPAY_API_KEY && process.env.WEBPAY_ENV === "production",
+    flowConfigured: Boolean(
+      process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,
     ),
     emailConfigured: emailConfigured(),
     adminSessionSecretConfigured: Boolean(
@@ -192,7 +194,7 @@ export async function PUT(req: NextRequest) {
       });
 
       if (body.raffle.code) {
-        await syncRaffleCodeToSupabase(updated.code);
+        await syncRaffleCodeToDb(updated.code);
       }
     }
 

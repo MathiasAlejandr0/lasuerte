@@ -64,25 +64,18 @@ export default function AdminDashboardPage() {
             : "Desactivado",
         },
         {
-          label: "Mercado Pago",
-          ok: ops.mercadoPagoConfigured,
-          detail: ops.mercadoPagoConfigured
-            ? "Claves listas"
-            : "Falta configurar",
-        },
-        {
-          label: "Webpay en vivo",
-          ok: ops.webpayConfigured,
-          detail: ops.webpayConfigured
-            ? "Producción"
-            : "Todavía no / modo prueba",
+          label: "Flow.cl",
+          ok: Boolean(ops.flowConfigured),
+          detail: ops.flowConfigured
+            ? "API Key + Secret Key listas"
+            : "Falta configurar FLOW_API_KEY",
         },
         {
           label: "Base de datos",
-          ok: ops.supabaseConfigured,
-          detail: ops.supabaseConfigured
-            ? "Supabase conectada"
-            : "Modo local (.data)",
+          ok: Boolean(ops.dbConfigured ?? ops.supabaseConfigured),
+          detail: Boolean(ops.dbConfigured ?? ops.supabaseConfigured)
+            ? "Hostinger MySQL conectada"
+            : "Modo demo (memoria local)",
         },
         {
           label: "Email (Resend)",
