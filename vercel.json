@@ -1,4 +1,0 @@
-{
-  "buildCommand": "npm run build --workspace=v2",
-  "outputDirectory": "v2/.next"
-}
