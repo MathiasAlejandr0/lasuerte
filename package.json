@@ -1,0 +1,10 @@
+{
+  "name": "suertu2s-root",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "cd v2 && npm install && npm run build",
+    "dev": "cd v2 && npm run dev",
+    "start": "cd v2 && npm run start"
+  }
+}
