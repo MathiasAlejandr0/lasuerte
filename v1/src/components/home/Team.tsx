@@ -11,7 +11,7 @@ export function Team() {
           <div className="absolute inset-0 bg-gradient-to-br from-brand-greenBright/20 to-brand-gold/10 rounded-3xl blur-xl group-hover:from-brand-greenBright/30 group-hover:to-brand-gold/20 transition-all duration-500 pointer-events-none" />
           <div className="relative bg-brand-bgLight border border-brand-gold/20 rounded-3xl overflow-hidden shadow-2xl p-2 transition-all duration-500 hover:border-brand-greenBright/50">
             <Image
-              src="/images/equipo-suertudos.webp"
+              src="/images/equipo-suertudos.jpg"
               alt="Equipo Suertudos"
               width={800}
               height={533}
