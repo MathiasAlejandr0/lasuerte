@@ -16,8 +16,8 @@ function ExitoContent() {
       </h1>
       <p className="text-brand-muted leading-relaxed">
         {pending
-          ? "Tu pago está siendo confirmado. Te enviaremos las ilustraciones y los códigos por correo apenas se acredite."
-          : "Gracias por participar. Tus ilustraciones y códigos de sorteo fueron enviados a tu correo."}
+          ? "Tu pago está siendo confirmado. Te enviaremos las ilustraciones y los tickets por correo apenas se acredite."
+          : "Gracias por tu compra. Tus ilustraciones y tickets de participación fueron enviados a tu correo."}
       </p>
       {orderId ? (
         <p className="text-xs text-brand-muted/80">Pedido: {orderId}</p>
@@ -27,7 +27,7 @@ function ExitoContent() {
           href="/check-tickets"
           className="bg-gradient-to-r from-brand-gold to-brand-goldDark text-black font-bold uppercase px-6 py-3 rounded-full no-underline"
         >
-          Consultar códigos
+          Consultar tickets
         </Link>
         <Link
           href="/"

@@ -5,16 +5,16 @@ import { useId, useState } from "react";
 
 const faqs = [
   {
-    q: "¿Cómo sé cuáles son mis códigos?",
-    a: "Tras el pago recibirás tus ilustraciones y códigos por correo. También puedes consultarlos aquí con el email de la compra.",
+    q: "¿Cómo sé cuáles son mis tickets?",
+    a: "Recibirás tus ilustraciones digitales y tus tickets gratuitos por correo. También puedes consultarlos aquí con el correo de la compra.",
   },
   {
-    q: "¿Es legal este sorteo en Chile?",
-    a: "Sí. Vendemos productos digitales y, de forma promocional, regalamos boletos de participación. Las bases están protocolizadas ante notario.",
+    q: "¿Es legal esta dinámica en Chile?",
+    a: "Sí. Vendemos productos digitales y, de forma promocional, regalamos tickets de participación. Las bases están protocolizadas ante notario.",
   },
   {
     q: "¿Qué medios de pago aceptan?",
-    a: "Débito, crédito y cuenta RUT vía Mercado Pago y Webpay.",
+    a: "Débito, crédito y cuenta RUT vía Flow (Webpay, Servipag y tarjetas).",
   },
 ];
 
@@ -287,7 +287,10 @@ export function OrderLookupCard() {
           </p>
           <div className="grid grid-cols-3 gap-2">
             <a
-              href={process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://facebook.com"}
+              href={
+                process.env.NEXT_PUBLIC_FACEBOOK_URL ||
+                "https://www.facebook.com/profile.php?id=61590580826151"
+              }
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -298,7 +301,10 @@ export function OrderLookupCard() {
             </a>
 
             <a
-              href={process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com"}
+              href={
+                process.env.NEXT_PUBLIC_INSTAGRAM_URL ||
+                "https://www.instagram.com/suertu2s/"
+              }
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"

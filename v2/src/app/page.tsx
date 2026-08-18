@@ -13,7 +13,7 @@ const jsonLd = {
   "@type": "Product",
   name: "Packs de Ilustración del Sur de Chile",
   description:
-    "Adquiere ilustraciones digitales de paisajes del sur de Chile y participa del sorteo de una MOTORRAD CORSA R150 0km 2026.",
+    "Adquiere ilustraciones digitales de paisajes del sur de Chile y participa por una MOTORRAD CORSA R150 0km 2026.",
   brand: { "@type": "Brand", name: "Suertudos Premios" },
   offers: {
     "@type": "Offer",
@@ -24,11 +24,11 @@ const jsonLd = {
       name: p.name,
       price: p.priceClp,
       priceCurrency: "CLP",
-      url: `https://suertudospremios.cl/#comprar`,
+      url: `https://suertu2s.com/#comprar`,
       itemOffered: {
         "@type": "Product",
         name: p.name,
-        image: `https://suertudospremios.cl${p.image}`,
+        image: `https://suertu2s.com${p.image}`,
       },
     })),
   },
@@ -65,7 +65,7 @@ export default function HomePage() {
                 Consulta tus códigos de participación con el correo que usaste
                 en tu compra:
               </p>
-              <div className="max-w-md mx-auto">
+              <div className="max-w-xl mx-auto">
                 <TicketLookupMini large />
               </div>
             </div>

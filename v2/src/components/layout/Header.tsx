@@ -65,7 +65,7 @@ export function Header() {
               onClick={(e) => triggerLuckEffect(e.clientX, e.clientY)}
               className="btn-header-comprar hidden min-[1151px]:inline-flex bg-gradient-to-r from-brand-gold to-brand-goldDark text-black font-sans font-bold text-[13px] uppercase px-[22px] py-[10px] rounded-full no-underline shrink-0 whitespace-nowrap"
             >
-              PARTICIPAR
+              COMPRAR
             </Link>
 
             <Link
@@ -161,7 +161,7 @@ export function Header() {
             onClick={() => setOpen(false)}
             className="font-title text-white no-underline text-xl font-bold"
           >
-            Sorteos activos
+            Premios activos
           </Link>
           <Link
             href="/#comprar"
@@ -219,7 +219,7 @@ export function Header() {
               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 110 4 2 2 0 010-4z"
             />
           </svg>
-          Ir al pago ({ticketCount} códigos)
+          Ir al pago ({ticketCount} tickets)
         </Link>
       </div>
     </>

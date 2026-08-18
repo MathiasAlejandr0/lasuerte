@@ -46,7 +46,7 @@ export function Countdown({ endsAt }: { endsAt?: string }) {
   return (
     <div className="border border-brand-gold/25 rounded-2xl p-3 sm:p-4 bg-brand-bgLight/90 max-w-md w-full">
       <span className="text-xs text-brand-gold uppercase tracking-wider font-bold block mb-2">
-        Tiempo restante para el gran sorteo:
+        Tiempo restante para la gran premiación:
       </span>
       <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center">
         {cells.map((cell) => (

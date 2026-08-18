@@ -1,9 +1,9 @@
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LegalService",
-  name: "Bases legales — Sorteo MOTORRAD CORSA R150 0km 2026",
+  name: "Bases legales — MOTORRAD CORSA R150 0km 2026",
   description:
-    "Bases protocolizadas ante notario en Puerto Montt del sorteo promocional SUERTU2S vinculado a la compra de packs de ilustración digital.",
+    "Bases protocolizadas ante notario de la premiación promocional SUERTU2S vinculada a la compra de packs de ilustración digital.",
   areaServed: "Chile",
 };
 
@@ -21,14 +21,13 @@ export default function BasesLegalesPage() {
         <p>
           SUERTU2S comercializa productos digitales (ilustraciones fotográficas
           del sur de Chile / Patagonia). De forma promocional y completamente
-          legal, se entregan boletos de participación para el sorteo asociado a
-          cada campaña vigente.
+          legal, se entregan tickets de participación asociados a cada campaña
+          vigente.
         </p>
         <p>
-          Las bases del sorteo de la{" "}
+          Las bases de la entrega de la{" "}
           <strong className="text-brand-cream">MOTORRAD CORSA R150 2026</strong>{" "}
-          están protocolizadas ante notario en Puerto Montt, Región de Los
-          Lagos, Chile.
+          están protocolizadas ante notario.
         </p>
         <h2 className="text-white font-title text-xl font-bold pt-4">
           Condiciones generales
@@ -39,25 +38,26 @@ export default function BasesLegalesPage() {
             ilustración digital.
           </li>
           <li>
-            Los códigos de participación (código del sorteo + 5 dígitos
+            Los tickets de participación (código de campaña + 5 dígitos
             aleatorios) se asignan automáticamente tras la confirmación del
             pago.
           </li>
           <li>
-            El sorteo se transmite en vivo mediante tómbola ante ministro de fe.
+            La premiación se transmite en vivo mediante tómbola ante ministro de
+            fe.
           </li>
           <li>
             El premio se entrega con documentación al día y transferencia a
-            nombre del ganador, pagada por el equipo SUERTU2S.
+            nombre del ganador, cubierto por el equipo SUERTU2S.
           </li>
         </ul>
         <p className="pt-4">
           Para consultas:{" "}
           <a
-            href="mailto:contacto@suertudospremios.cl"
+            href="mailto:contacto@suertu2s.com"
             className="text-brand-greenBright"
           >
-            contacto@suertudospremios.cl
+            contacto@suertu2s.com
           </a>
         </p>
         <p className="text-xs opacity-70">

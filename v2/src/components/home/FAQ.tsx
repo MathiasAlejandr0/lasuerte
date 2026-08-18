@@ -4,20 +4,20 @@ import { useState } from "react";
 
 const faqs = [
   {
-    q: "¿Cómo sé cuáles son mis códigos de participación?",
-    a: "Una vez finalizado el pago (Mercado Pago o Webpay), recibirás tus ilustraciones digitales y tus códigos de participación por correo. Cada código une el código del sorteo con 5 dígitos aleatorios (no correlativos). También puedes consultarlos en CONSULTAR CÓDIGOS con el correo de la compra.",
+    q: "¿Cómo sé cuáles son mis tickets de participación?",
+    a: "Recibirás tus ilustraciones digitales y tu ticket(s) gratuitos de participación en el premio por la moto. Cada Ticket viene constituido con 5 dígitos aleatorios (no correlativos) acompañado de la abreviatura correspondiente a la campaña activa. También puedes consultarlos en Consultar Ticket con el correo de Compra.",
   },
   {
-    q: "¿Es legal este sorteo en Chile?",
-    a: "Sí. Comercializamos productos digitales (ilustraciones fotográficas de la Patagonia). De forma promocional y completamente legal, regalamos boletos de participación para el sorteo, cuyas bases están protocolizadas ante notario en Puerto Montt.",
+    q: "¿Es legal esta dinámica y premiación en Chile?",
+    a: "Sí. Comercializamos productos digitales (ilustraciones fotográficas de la Patagonia). De forma promocional y completamente legal, regalamos tickets de participación, cuyas bases están protocolizadas ante notario.",
   },
   {
     q: "¿Qué incluye la MOTORRAD CORSA R150 2026?",
-    a: "Se entrega la motocicleta año 2026, con toda su documentación al día, transferida completamente a tu nombre, pagada por el equipo de SUERTU2S.",
+    a: "Se entrega la motocicleta año 2026, con toda su documentación al día, transferida completamente al nombre del ganador(a), cubierto por el equipo de SUERTU2S.",
   },
   {
     q: "¿Cuáles son los medios de pago disponibles?",
-    a: "Aceptamos tarjetas de débito (Redcompra), cuenta RUT y tarjetas de crédito de cualquier banco nacional mediante la pasarela segura e integrada de Mercado Pago y Webpay.",
+    a: "Aceptamos tarjetas de débito (Redcompra), cuenta RUT y tarjetas de crédito de cualquier banco nacional mediante la pasarela segura de Flow (Webpay, Servipag y tarjetas).",
   },
 ];
 

@@ -17,7 +17,7 @@ export function LiveStreamPlayer({ url }: { url: string }) {
     return (
       <div className="w-full aspect-video rounded-2xl border border-brand-gold/30 bg-brand-bgLight/90 flex items-center justify-center p-6 text-center">
         <p className="text-brand-cream text-sm sm:text-base m-0 max-w-md">
-          El sorteo ya comenzó. La transmisión en vivo se mostrará aquí cuando
+          El evento ya comenzó. La transmisión en vivo se mostrará aquí cuando
           se configure el enlace.
         </p>
       </div>
@@ -52,7 +52,7 @@ export function LiveStreamPlayer({ url }: { url: string }) {
     <div className="w-full rounded-2xl border-2 border-brand-gold/40 overflow-hidden bg-black shadow-2xl">
       <div className="px-3 py-2 bg-brand-bgLight/95 border-b border-brand-gold/20">
         <span className="text-xs text-brand-gold uppercase tracking-wider font-bold">
-          En vivo · Sorteo
+          En vivo · Transmisión oficial
         </span>
       </div>
       <div className="relative w-full aspect-video">

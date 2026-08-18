@@ -186,16 +186,16 @@ export function Hero() {
             <div className="space-y-5 max-w-4xl mx-auto">
               <div className="text-center space-y-2">
                 <h1 className="display-title text-4xl sm:text-5xl md:text-6xl font-black font-title text-white leading-tight m-0">
-                  ¡El{" "}
+                  ¡La{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-greenBright to-brand-gold">
-                    SORTEO
+                    PREMIACIÓN
                   </span>{" "}
                   {closed ? "terminó!" : "está en vivo!"}
                 </h1>
                 <p className="text-brand-muted text-sm sm:text-base m-0">
                   {closed
                     ? "Mira la transmisión o espera el anuncio del ganador."
-                    : "Mira la transmisión del sorteo en directo."}
+                    : "Mira la transmisión en vivo de la premiación."}
                 </p>
               </div>
               <LiveStreamPlayer url={liveStreamUrl} />
@@ -220,7 +220,7 @@ export function Hero() {
                     Ilustraciones Digitales
                     <br />
                     <span className="text-brand-greenBright font-black">
-                      Y Participa En El Sorteo De Nuestra Moto
+                      Y Participa Por Nuestra Moto 0KM
                     </span>
                   </h1>
                 </div>
@@ -234,8 +234,8 @@ export function Hero() {
                   className="text-white text-sm sm:text-base md:text-lg max-w-xl leading-relaxed m-0 font-extrabold"
                 >
                   Adquiere hermosas ilustraciones de paisajes del sur de Chile.
-                  Con cada producto que compres, obtendrás boletos de regalo
-                  para participar en el sorteo de increíbles premios.
+                  Con cada producto que compres, obtendrás tickets de regalo
+                  para participar por increíbles premios.
                 </p>
 
                 <div className="max-w-md">
@@ -243,7 +243,7 @@ export function Hero() {
                 </div>
 
                 <div className="max-w-md pt-1">
-                  <CtaButton>PARTICIPAR</CtaButton>
+                  <CtaButton>COMPRAR</CtaButton>
                 </div>
               </div>
 

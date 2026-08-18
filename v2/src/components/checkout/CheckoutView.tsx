@@ -277,8 +277,8 @@ export function CheckoutView() {
                         </div>
                         <div className="text-[12px] text-white/50 mt-0.5">
                           {formatClp(item.pack.priceClp)} · +
-                          {item.pack.ticketCount} número
-                          {item.pack.ticketCount > 1 ? "s" : ""}
+                          {item.pack.ticketCount} ticket
+                          {item.pack.ticketCount > 1 ? "s" : ""} gratis
                         </div>
                       </td>
                       <td className="px-2 sm:px-3 py-[1.1rem] text-center">
@@ -355,7 +355,7 @@ export function CheckoutView() {
 
           {!acceptsOrders && (
             <div className="mt-5 rounded-[14px] px-[18px] py-[14px] border border-red-400/40 bg-red-500/10 text-red-200 text-sm font-semibold">
-              El sorteo ya está cerrado. No se pueden realizar nuevas compras.
+              La campaña de premiación ya está cerrada. No se pueden realizar nuevas compras.
             </div>
           )}
 

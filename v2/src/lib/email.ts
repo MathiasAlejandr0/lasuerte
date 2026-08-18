@@ -52,13 +52,13 @@ export async function sendOrderConfirmation(
   const html = `
     <div style="font-family:sans-serif;background:#05140a;color:#fff5d4;padding:24px">
       <h1 style="color:#36f073">¡Gracias por tu compra, ${safeName}!</h1>
-      <p>Tu pago fue confirmado. Aquí tienes tus <strong>ilustraciones digitales</strong> y tus <strong>códigos de participación</strong> del sorteo <strong>${safeRaffleCode}</strong>.</p>
-      <p style="color:#d8c28a;font-size:13px">Cada código se forma con el código del sorteo más 5 dígitos aleatorios. Guárdalos: con ellos participas en el sorteo.</p>
-      <h2 style="color:#36f073;font-size:18px;margin-top:24px">Tus códigos</h2>
+      <p>Tu pago fue confirmado. Aquí tienes tus <strong>ilustraciones digitales</strong> y tus <strong>tickets de participación</strong> de la campaña <strong>${safeRaffleCode}</strong>.</p>
+      <p style="color:#d8c28a;font-size:13px">Cada ticket se forma con el código de campaña más 5 dígitos aleatorios. Guárdalos: con ellos participas en la premiación.</p>
+      <h2 style="color:#36f073;font-size:18px;margin-top:24px">Tus tickets</h2>
       ${codesHtml}
       <p>Puedes consultarlos cuando quieras en
-        <a href="${site}/check-tickets" style="color:#36f073">Consultar códigos</a>
-        con el correo <strong>${safeEmail}</strong>.
+        <a href="${site}/check-tickets" style="color:#36f073">Consultar tickets</a>
+        ingresando tu correo (<strong>${safeEmail}</strong>).
       </p>
       <h2 style="color:#36f073;font-size:18px;margin-top:28px">Tus ilustraciones digitales</h2>
       ${illustrationsHtml}

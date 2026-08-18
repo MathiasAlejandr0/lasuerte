@@ -22,7 +22,7 @@ const stats = [
   { value: "0 km", label: "Cero kilómetros" },
   { value: "2026", label: "Año del modelo" },
   { value: "100%", label: "Transferida a tu nombre" },
-  { value: "Ante notario", label: "Sorteo transmitido en vivo" },
+  { value: "Ante notario", label: "Premiación transmitida en vivo" },
 ];
 
 export function PrizeShowcase() {

@@ -26,7 +26,7 @@ export const DEFAULT_PRIZES: AnalysisPrize[] = [
 
 export const RAFFLE = {
   id: "raffle-corsa-2026",
-  title: "Sorteo MOTORRAD CORSA R150 0km 2026",
+  title: "Gran Premio MOTORRAD CORSA R150 0km 2026",
   prizeName: "MOTORRAD CORSA R150 2026",
   endsAt: "2026-10-01T00:00:00-03:00",
   /**

@@ -11,12 +11,12 @@ const steps = [
   {
     n: 2,
     title: "Inscripción y Pago Seguro",
-    body: "Llena tus datos para vincular tu nombre a los códigos de participación incluidos. El pago es inmediato y seguro a través de Mercado Pago.",
+    body: "Llena tus datos para vincular tu nombre a los tickets de participación incluidos. El pago es inmediato y seguro a través de Flow.",
   },
   {
     n: 3,
     title: "¡Gánate la Moto!",
-    body: "Tus códigos de participación e ilustraciones te llegan de inmediato por correo. El sorteo se transmitirá en vivo ante ministro de fe.",
+    body: "Tus tickets de participación e ilustraciones te llegan de inmediato por correo. La gran premiación se transmitirá en vivo ante ministro de fe.",
   },
 ];
 

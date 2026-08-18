@@ -31,19 +31,20 @@ export function Team() {
           <p className="reveal reveal-delay-2 text-brand-muted text-base leading-relaxed">
             Somos un equipo de tres emprendedores de Puerto Montt, Región de Los
             Lagos. Creemos que comprar ilustraciones digitales de calidad y
-            participar de un sorteo transparente no debería ser complicado. Por
-            eso creamos Suertu2s: una plataforma que une el arte del sur de
-            Chile con sorteos 100% protocolizados ante notario.
+            participar por grandes premios de forma transparente no debería ser
+            complicado. Por eso creamos Suertu2s: una plataforma que une el arte
+            del sur de Chile con eventos de premiación 100% protocolizados ante
+            notario.
           </p>
           <p className="reveal reveal-delay-2 text-brand-muted text-base leading-relaxed">
-            Cada pack vendido está vinculado a un sorteo público, transmitido en
-            vivo y con bases legales notariadas. Nuestro compromiso es simple:
-            que todos los participantes jueguen bajo las mismas reglas y que el
-            ganador reciba su premio tal como se publica.
+            Cada pack adquirido está vinculado a una premiación pública,
+            transmitida en vivo y con bases legales notariadas. Nuestro
+            compromiso es simple: que todos los participantes jueguen bajo las
+            mismas reglas y que el ganador reciba su premio tal como se publica.
           </p>
           <ul className="space-y-3 mt-4">
             {[
-              "Sorteos 100% legales y ante notario",
+              "Bases 100% legales y ante notario",
               "Entrega garantizada del premio",
               "Transmisiones en vivo para todos",
             ].map((item) => (

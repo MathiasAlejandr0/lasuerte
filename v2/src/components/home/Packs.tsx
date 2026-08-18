@@ -11,9 +11,9 @@ import { PaymentBadges } from "./PaymentBadges";
 import { Tilt3D } from "@/components/ui/Tilt3D";
 
 const TRUST_ITEMS = [
-  "Bases protocolizadas ante notario de Puerto Montt",
-  "Pago 100% seguro con Webpay y Mercado Pago",
-  "Premio garantizado y entregado por sorteo en vivo",
+  "Bases protocolizadas ante notario",
+  "Pago 100% seguro con Flow",
+  "Premio garantizado y entregado en transmisión en vivo",
 ];
 
 function TrustRibbon() {
@@ -89,7 +89,8 @@ export function Packs() {
           <p className="reveal reveal-delay-1 text-brand-muted max-w-lg mx-auto text-xs md:text-sm leading-relaxed">
             Elige uno de nuestros 3 paquetes oficiales. Con cada pack recibirás
             espectaculares ilustraciones digitales de paisajes del sur de Chile
-            y números de regalo para participar:
+            y participaciones gratuitas para tener la oportunidad de llevarte
+            una moto.
           </p>
         </div>
 
@@ -142,8 +143,8 @@ export function Packs() {
                     {pack.name}
                   </h3>
                   <p className="text-xs text-brand-muted mt-1">
-                    +{pack.ticketCount} Número
-                    {pack.ticketCount > 1 ? "s" : ""} de Sorteo Gratis
+                    +{pack.ticketCount} ticket
+                    {pack.ticketCount > 1 ? "s" : ""} gratis
                   </p>
                   <p className="text-white font-extrabold text-2xl md:text-3xl mt-3">
                     {formatClp(pack.priceClp)}{" "}
@@ -180,7 +181,7 @@ export function Packs() {
                       ¡Listo! En carrito
                     </span>
                   ) : (
-                    "Participar"
+                    "Comprar"
                   )}
                 </button>
               </div>

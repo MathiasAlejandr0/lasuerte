@@ -8,6 +8,7 @@ import { ContactFab } from "@/components/layout/ContactFab";
 import { ScrollReveal } from "@/components/layout/ScrollReveal";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { GoldenCloverEffect } from "@/components/ui/GoldenCloverEffect";
+import { LivePurchaseToast } from "@/components/ui/LivePurchaseToast";
 import { ReferralCapture } from "@/components/referral/ReferralCapture";
 import "./globals.css";
 
@@ -28,9 +29,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Suertudos Premios | Sorteo MOTORRAD CORSA R150 0km 2026",
+  title: "Suertudos Premios | MOTORRAD CORSA R150 0km 2026",
   description:
-    "Adquiere ilustraciones digitales del sur de Chile y participa del sorteo de la MOTORRAD CORSA R150 0km 2026. Pago seguro con Webpay y Mercado Pago.",
+    "Adquiere ilustraciones digitales del sur de Chile y participa por la MOTORRAD CORSA R150 0km 2026. Pago 100% seguro con Flow.",
   icons: {
     icon: "/favicon/trebol.webp",
     apple: "/favicon/trebol.webp",
@@ -61,6 +62,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <ContactFab />
+        <LivePurchaseToast />
         <GoldenCloverEffect />
       </body>
     </html>
