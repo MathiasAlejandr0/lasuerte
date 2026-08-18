@@ -1,38 +1,45 @@
 # Suertu2s
 
-Proyecto de sorteos online (Next.js). El repositorio contiene dos versiones del proyecto en carpetas separadas:
+Plataforma de adquisición de arte digital e ilustraciones con tickets de participación en premios oficiales (Next.js).
 
-## Demo en GitHub Pages
+## Estructura del Proyecto
 
-Versión visual estática de **v2** (sin backend/pagos):
+El proyecto principal activo se encuentra en la carpeta **`v2/`**.
 
-**https://mathiasalejandr0.github.io/lasuerte/**
+- **Frontend & App:** Next.js 16 (Turbopack) con React 19, TypeScript y Tailwind CSS.
+- **Pasarela de Pagos:** Integración oficial con **Flow.cl** (Webpay, Tarjetas de Crédito/Débito, Cuenta RUT, Servipag).
+- **Notificaciones en Vivo:** Avisos interactivos de compras de clientes recientes en tiempo real.
+- **Panel de Administración (`/admin`):** Gestión de pedidos, historial de campañas de premiación, clientes, ajustes y pagos a afiliados.
+- **Portal de Afiliados (`/afiliados`):** Registro, links de referidos (`?ref=CODIGO`), generación de códigos QR automáticos y métricas de comisiones.
+- **Consulta de Tickets (`/check-tickets`):** Búsqueda de tickets de participación asociados al correo de compra.
 
-> Es un demo de diseño y catálogo. Checkout, admin y APIs requieren el servidor Next.js completo (`cd v2 && npm run dev`).
+## Cómo levantar el proyecto en local
 
-## v1/ — Versión original
+1. Entra en la carpeta `v2`:
+   ```bash
+   cd v2
+   ```
 
-Proyecto base que estaba publicado originalmente en este repositorio.
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
 
-- Estructura y funcionalidad original (checkout, admin, afiliados, pagos).
-- Se mantiene intacta por si se quiere conservar esa versión.
+3. Configura tus variables de entorno en `v2/.env.local` (puedes basarte en `v2/.env.example`):
+   - Llaves de Flow (`FLOW_API_KEY`, `FLOW_SECRET_KEY`, `FLOW_ENV`)
+   - URL del sitio (`NEXT_PUBLIC_SITE_URL=http://localhost:3000`)
+   - Redes sociales y correos de contacto
 
-## v2/ — Versión 2
+4. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
 
-Versión actual con el trabajo más reciente.
+5. Abre en tu navegador:
+   - Sitio web: [http://localhost:3000](http://localhost:3000)
+   - Portal de Afiliados: [http://localhost:3000/afiliados](http://localhost:3000/afiliados)
+   - Panel de Administración: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-- Nuevo panel **Sorteos** en el administrador: ciclo activo, creación de un nuevo ciclo de sorteo (archiva el anterior con sus pedidos/códigos en un historial) y consulta del historial de sorteos.
-- Acceso rápido al ciclo activo desde el Resumen del admin.
-- El catálogo local (`catalog.json`) se guarda en `.data/` (ignorado por git).
+## Despliegue en Vercel
 
-## Cómo correr cada versión
-
-Cada carpeta es un proyecto Next.js independiente.
-
-```bash
-cd v1   # o v2
-npm install
-npm run dev
-```
-
-> Las variables de entorno secretas (`.env.local`) no se suben al repositorio. Copia el archivo `.env.local` desde tu máquina de desarrollo o crea uno a partir de `.env.example`.
+El repositorio está configurado en la raíz con `vercel.json` para compilar y desplegar automáticamente la carpeta `v2/`.
