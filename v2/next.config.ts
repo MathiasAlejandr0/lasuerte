@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 // React solo usa eval() en desarrollo (debug de errores). En producción no.
 const isDev = process.env.NODE_ENV === "development";
@@ -30,7 +31,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://sandbox.flow.cl https://www.flow.cl",
+      "connect-src 'self' https://sandbox.flow.cl https://www.flow.cl https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.twitch.tv https://www.twitch.tv https://www.tiktok.com https://tiktok.com",
       "child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.twitch.tv https://www.tiktok.com https://tiktok.com",
       "object-src 'none'",
@@ -113,4 +114,11 @@ const nextConfig: NextConfig = {
     : {}),
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  widenClientFileUpload: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+});
