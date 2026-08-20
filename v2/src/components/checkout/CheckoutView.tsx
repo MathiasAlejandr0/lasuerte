@@ -355,7 +355,8 @@ export function CheckoutView() {
 
           {!acceptsOrders && (
             <div className="mt-5 rounded-[14px] px-[18px] py-[14px] border border-red-400/40 bg-red-500/10 text-red-200 text-sm font-semibold">
-              La campaña de premiación ya está cerrada. No se pueden realizar nuevas compras.
+              La campaña de premiación ya está cerrada. No se pueden realizar
+              nuevas compras.
             </div>
           )}
 
@@ -419,7 +420,8 @@ export function CheckoutView() {
 
           {acceptsOrders && availableProviders.length === 0 && (
             <div className="mt-5 rounded-[14px] px-[18px] py-[14px] border border-brand-gold/40 bg-brand-gold/10 text-brand-cream text-sm">
-              No hay métodos de pago configurados todavía. Falta conectar Flow.cl.
+              No hay métodos de pago configurados todavía. Falta conectar
+              Flow.cl.
             </div>
           )}
 

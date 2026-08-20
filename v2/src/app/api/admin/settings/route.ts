@@ -31,9 +31,10 @@ async function syncRaffleCodeToDb(code: string) {
       normalizeRaffleCode(code),
       RAFFLE_UUID,
     ]);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     throw new Error(
-      `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${err.message}`,
+      `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${msg}`,
     );
   }
 }

@@ -741,12 +741,14 @@ export async function getRaffleCycleStats(raffleId: string) {
   }
 
   const [ordersRes, ticketsRes] = await Promise.all([
-    query<SqlRow[]>("SELECT COUNT(*) as count FROM orders WHERE raffle_id = ?", [
-      raffleId,
-    ]),
-    query<SqlRow[]>("SELECT COUNT(*) as count FROM tickets WHERE raffle_id = ?", [
-      raffleId,
-    ]),
+    query<SqlRow[]>(
+      "SELECT COUNT(*) as count FROM orders WHERE raffle_id = ?",
+      [raffleId],
+    ),
+    query<SqlRow[]>(
+      "SELECT COUNT(*) as count FROM tickets WHERE raffle_id = ?",
+      [raffleId],
+    ),
   ]);
 
   return {

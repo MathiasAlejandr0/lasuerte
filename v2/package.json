@@ -17,6 +17,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "quality": "npm run typecheck && npm run lint && npm run format:check && npm run test",
+    "secretlint": "secretlint \"**/*\"",
+    "prepare": "cd .. && husky v2/.husky",
     "build:gh-pages": "node scripts/gh-pages-prepare.mjs prepare && next build && node -e \"require('fs').writeFileSync('out/.nojekyll','')\" && node scripts/gh-pages-prepare.mjs restore"
   },
   "dependencies": {
@@ -36,6 +38,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "@secretlint/secretlint-rule-preset-recommend": "^13.0.4",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.0",
@@ -50,12 +53,24 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "javascript-obfuscator": "^5.5.0",
     "jsdom": "^29.1.1",
+    "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",
+    "secretlint": "^13.0.4",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10",
     "webpack-obfuscator": "^3.6.1"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   }
 }

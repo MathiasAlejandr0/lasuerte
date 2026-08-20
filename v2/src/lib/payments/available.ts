@@ -8,9 +8,7 @@ export type PublicPaymentOptions = {
 
 export function getPublicPaymentOptions(): PublicPaymentOptions {
   const mock = paymentsMockEnabled();
-  const flow = Boolean(
-    process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,
-  );
+  const flow = Boolean(process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY);
 
   let defaultProvider: PublicPaymentOptions["defaultProvider"] = "mock";
   if (flow) defaultProvider = "flow";

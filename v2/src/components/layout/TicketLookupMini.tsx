@@ -10,8 +10,7 @@ type Ticket = {
 };
 
 type LookupResult =
-  | { email: string; raffleCode?: string; tickets: Ticket[] }
-  | { error: string };
+  { email: string; raffleCode?: string; tickets: Ticket[] } | { error: string };
 
 export function TicketLookupMini({ large = false }: { large?: boolean }) {
   const [email, setEmail] = useState("");

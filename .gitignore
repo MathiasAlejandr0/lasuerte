@@ -5,3 +5,4 @@ node_modules
 *.pt
 test-results
 tsconfig.tsbuildinfo
+*.mp4
