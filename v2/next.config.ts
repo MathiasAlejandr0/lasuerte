@@ -116,8 +116,8 @@ const nextConfig: NextConfig = {
 
 export default withSentryConfig(nextConfig, {
   silent: true,
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  org: process.env.SENTRY_ORG || "mathdev-tz",
+  project: process.env.SENTRY_PROJECT || "suertu2s",
   widenClientFileUpload: true,
   disableLogger: true,
   automaticVercelMonitors: true,
