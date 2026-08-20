@@ -15,7 +15,7 @@ const MOTORCYCLE_VALUE_CLP = 2_190_000;
 const includes = [
   "Moto CORSA R150",
   "Documentación y transferencia",
-  "Kit de seguridad y casco",
+  "Casco y guantes",
 ];
 
 const stats = [
@@ -68,7 +68,7 @@ export function PrizeShowcase() {
         {/* Valor Comercial y Desglose */}
         <p className="reveal reveal-delay-3 text-xs text-brand-muted mt-3">
           Valor comercial de la moto: {formatClp(MOTORCYCLE_VALUE_CLP)} CLP +
-          documentación y kit de seguridad incluidos.
+          documentación, casco y guantes incluidos.
         </p>
 
         {/* Badges de lo que incluye el Premio */}
