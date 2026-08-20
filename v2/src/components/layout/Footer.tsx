@@ -17,8 +17,8 @@ export function Footer() {
           </div>
           <p className="text-xs text-brand-muted leading-relaxed opacity-80">
             La plataforma del sur de Chile para adquirir arte fotográfico y
-            participar de forma 100% transparente por una motocicleta cero
-            kilómetros.
+            participar de forma 100% transparente por una motocicleta Motorrad
+            R150.
           </p>
         </div>
 

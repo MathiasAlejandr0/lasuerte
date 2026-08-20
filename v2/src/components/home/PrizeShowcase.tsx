@@ -13,13 +13,13 @@ function formatClp(amount: number) {
 const MOTORCYCLE_VALUE_CLP = 2_190_000;
 
 const includes = [
-  "Moto CORSA R150 0 km",
+  "Moto CORSA R150",
   "Documentación y transferencia",
   "Kit de seguridad y casco",
 ];
 
 const stats = [
-  { value: "0 km", label: "Cero kilómetros" },
+  { value: "R150", label: "Motorrad R150" },
   { value: "2026", label: "Año del modelo" },
   { value: "100%", label: "Transferida a tu nombre" },
   { value: "Ante notario", label: "Premiación transmitida en vivo" },
@@ -67,8 +67,8 @@ export function PrizeShowcase() {
 
         {/* Valor Comercial y Desglose */}
         <p className="reveal reveal-delay-3 text-xs text-brand-muted mt-3">
-          Valor comercial de la moto 0 km: {formatClp(MOTORCYCLE_VALUE_CLP)} CLP
-          + documentación y kit de seguridad incluidos.
+          Valor comercial de la moto: {formatClp(MOTORCYCLE_VALUE_CLP)} CLP +
+          documentación y kit de seguridad incluidos.
         </p>
 
         {/* Badges de lo que incluye el Premio */}
