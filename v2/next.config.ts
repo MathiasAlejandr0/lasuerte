@@ -119,6 +119,4 @@ export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG || "mathdev-tz",
   project: process.env.SENTRY_PROJECT || "suertu2s",
   widenClientFileUpload: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
 });
