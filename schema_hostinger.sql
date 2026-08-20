@@ -176,7 +176,7 @@ INSERT INTO `raffles` (
   'MOTORRAD CORSA R150 2026',
   '2026-10-01 00:00:00',
   'active',
-  'S2S26',
+  'ST',
   0,
   99999
 ) ON DUPLICATE KEY UPDATE

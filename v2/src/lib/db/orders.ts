@@ -401,7 +401,7 @@ export async function fulfillOrder(orderId: string) {
       [order.raffle_id],
     );
     const raffleCode =
-      raffleRows.length > 0 ? String(raffleRows[0].code) : "S2S26";
+      raffleRows.length > 0 ? String(raffleRows[0].code) : "ST";
 
     // Generar tickets aleatorios de manera atómica
     const assignedCodes: string[] = [];
