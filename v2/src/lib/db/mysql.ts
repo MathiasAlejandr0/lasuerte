@@ -10,9 +10,9 @@ declare global {
 export function isDbConfigured(): boolean {
   return Boolean(
     process.env.MYSQL_HOST &&
-      process.env.MYSQL_DATABASE &&
-      process.env.MYSQL_USER &&
-      process.env.MYSQL_PASSWORD,
+    process.env.MYSQL_DATABASE &&
+    process.env.MYSQL_USER &&
+    process.env.MYSQL_PASSWORD,
   );
 }
 

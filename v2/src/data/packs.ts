@@ -31,9 +31,9 @@ export const RAFFLE = {
   endsAt: "2026-10-01T00:00:00-03:00",
   /**
    * Prefijo del código de participación. Cada ticket = code + 5 dígitos aleatorios
-   * (ej. S2S26 + 48291 → S2S2648291). No es secuencial ni refleja ventas.
+   * (ej. ST + 48291 → ST48291). No es secuencial ni refleja ventas.
    */
-  code: "S2S26",
+  code: "ST",
   ticketMin: 0,
   ticketMax: 99999,
   /** Compat: suma de DEFAULT_PRIZES (fuente de verdad: prizes en catalog store) */
@@ -43,7 +43,7 @@ export const RAFFLE = {
   liveStreamUrl: "",
   /** open = sorteo activo; closed = cerrado (puede anunciarse ganador). */
   raffleStatus: "open" as "open" | "closed",
-  /** Código completo ganador (ej. S2S2648291). */
+  /** Código completo ganador (ej. ST48291). */
   winnerTicketCode: "",
   winnerName: "",
   winnerNote: "",

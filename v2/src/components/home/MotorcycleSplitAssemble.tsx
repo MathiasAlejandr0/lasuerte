@@ -227,7 +227,7 @@ export function MotorcycleSplitAssemble() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-greenBright opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-greenBright" />
           </span>
-          MOTORRAD CORSA R150 0 KM
+          MOTORRAD CORSA R150
         </div>
       </div>
     </div>

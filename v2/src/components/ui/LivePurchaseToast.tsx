@@ -250,7 +250,9 @@ export function LivePurchaseToast() {
             <p className="m-0 text-[12px] sm:text-[13px] font-extrabold text-white truncate">
               {current.name}
             </p>
-            <span className="text-[10px] text-white/50">de {current.location}</span>
+            <span className="text-[10px] text-white/50">
+              de {current.location}
+            </span>
           </div>
 
           <p className="m-0 mt-0.5 text-[11px] sm:text-[12px] font-medium text-[#d8c28a] leading-tight">
@@ -283,7 +285,11 @@ export function LivePurchaseToast() {
             stroke="currentColor"
             strokeWidth="2.5"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>

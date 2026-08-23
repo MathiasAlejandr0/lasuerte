@@ -54,6 +54,7 @@ type SettingsData = {
     adminAuthConfigured: boolean;
     mercadoPagoConfigured: boolean;
     webpayConfigured: boolean;
+    flowConfigured?: boolean;
     emailConfigured?: boolean;
     adminSessionSecretConfigured?: boolean;
     adminPasswordHashed?: boolean;
@@ -577,11 +578,11 @@ export default function AdminSettingsPage() {
           <Row
             label="Flow.cl"
             value={
-              (data.env as any).flowConfigured
+              data.env.flowConfigured
                 ? "Configurado (API Key + Secret Key)"
                 : "Sin claves (FLOW_API_KEY / FLOW_SECRET_KEY)"
             }
-            tone={(data.env as any).flowConfigured ? "ok" : "warn"}
+            tone={data.env.flowConfigured ? "ok" : "warn"}
           />
           <Row
             label="Base de datos (Supabase / MySQL)"

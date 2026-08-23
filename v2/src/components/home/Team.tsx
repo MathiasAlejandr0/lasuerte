@@ -29,18 +29,19 @@ export function Team() {
             <span className="text-brand-gold">Suertu2s</span>?
           </h2>
           <p className="reveal reveal-delay-2 text-brand-muted text-base leading-relaxed">
-            Somos un equipo de tres emprendedores de Puerto Montt, Región de Los
-            Lagos. Creemos que comprar ilustraciones digitales de calidad y
-            participar por grandes premios de forma transparente no debería ser
-            complicado. Por eso creamos Suertu2s: una plataforma que une el arte
-            del sur de Chile con eventos de premiación 100% protocolizados ante
-            notario.
+            Somos un equipo de emprendedores de Puerto Montt que busca compartir
+            el arte y los paisajes del sur de Chile a través de ilustraciones
+            digitales.
           </p>
           <p className="reveal reveal-delay-2 text-brand-muted text-base leading-relaxed">
-            Cada pack adquirido está vinculado a una premiación pública,
-            transmitida en vivo y con bases legales notariadas. Nuestro
-            compromiso es simple: que todos los participantes jueguen bajo las
-            mismas reglas y que el ganador reciba su premio tal como se publica.
+            En Suertu2s vendemos ilustraciones digitales originales. Como
+            beneficio adicional, algunas compras pueden incluir participaciones
+            promocionales sin costo adicional en campañas con premios, sujetas a
+            sus respectivas bases legales.
+          </p>
+          <p className="reveal reveal-delay-2 text-brand-muted text-base leading-relaxed">
+            Nuestro compromiso es mantener un proceso claro, transparente y con
+            las mismas condiciones para todos los participantes.
           </p>
           <ul className="space-y-3 mt-4">
             {[

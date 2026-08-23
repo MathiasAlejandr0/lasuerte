@@ -1,0 +1,1 @@
+cd v2 && npx secretlint "**/*" && npx lint-staged

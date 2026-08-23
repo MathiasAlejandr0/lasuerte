@@ -19,5 +19,9 @@ node_modules
 test-results
 coverage
 *.tsbuildinfo
+tsconfig.tsbuildinfo
 .DS_Store
 *.pem
+*.mp4
+v2/node_modules
+v2/.next

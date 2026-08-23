@@ -35,9 +35,10 @@ async function syncRaffleCodeToDb(code: string) {
         .update({ code: norm })
         .eq("id", RAFFLE_UUID);
       if (error) throw new Error(error.message);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       throw new Error(
-        `No se pudo sincronizar el código del sorteo en Supabase: ${err.message}`,
+        `No se pudo sincronizar el código del sorteo en Supabase: ${msg}`,
       );
     }
   } else if (isDbConfigured()) {
@@ -46,9 +47,10 @@ async function syncRaffleCodeToDb(code: string) {
         norm,
         RAFFLE_UUID,
       ]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       throw new Error(
-        `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${err.message}`,
+        `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${msg}`,
       );
     }
   }

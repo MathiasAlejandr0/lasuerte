@@ -521,7 +521,7 @@ export async function fulfillOrder(orderId: string) {
       .eq("id", order.raffle_id)
       .maybeSingle();
 
-    const raffleCode = raffleData?.code || "S2S26";
+    const raffleCode = raffleData?.code || "ST";
     const ticketMin = raffleData?.ticket_min ?? 0;
     const ticketMax = raffleData?.ticket_max ?? 99999;
 
