@@ -31,19 +31,31 @@ export function rateLimit(opts: {
 }
 
 /**
- * IP del cliente. Solo confía en X-Forwarded-For si TRUST_PROXY=true
- * (detrás de Vercel/Cloudflare/nginx que lo setea).
+ * IP del cliente.
+ * Detecta de forma prioritaria las cabeceras de Cloudflare (cf-connecting-ip),
+ * Vercel (x-real-ip) y proxies confiables (x-forwarded-for).
  */
 export function clientIp(req: Request): string {
-  const trustProxy = process.env.TRUST_PROXY === "true";
+  const trustProxy =
+    process.env.TRUST_PROXY === "true" ||
+    process.env.NODE_ENV === "production" ||
+    Boolean(process.env.VERCEL);
+
   if (trustProxy) {
+    // 1. Cloudflare IP header (máxima prioridad cuando el tráfico pasa por Cloudflare)
+    const cfIp = req.headers.get("cf-connecting-ip")?.trim();
+    if (cfIp) return cfIp;
+
+    // 2. Vercel / Nginx real IP header
+    const real = req.headers.get("x-real-ip")?.trim();
+    if (real) return real;
+
+    // 3. X-Forwarded-For header estándar (primer IP es el cliente original)
     const xf = req.headers.get("x-forwarded-for");
     if (xf) {
       const first = xf.split(",")[0]?.trim();
       if (first) return first;
     }
-    const real = req.headers.get("x-real-ip")?.trim();
-    if (real) return real;
   }
   return "unknown";
 }

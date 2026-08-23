@@ -1,7 +1,23 @@
+# Dependencies
 node_modules
+/.pnp
+.pnp.*
+
+# Next.js & Build
 .next
+/out
+/build
+.vercel
+
+# Environment variables
+.env*
+!.env.example
+
+# Local storage & cache
 .data
-.env.local
 *.pt
 test-results
-tsconfig.tsbuildinfo
+coverage
+*.tsbuildinfo
+.DS_Store
+*.pem

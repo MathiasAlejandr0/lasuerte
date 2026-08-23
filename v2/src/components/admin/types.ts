@@ -77,6 +77,7 @@ export type DashboardData = {
     flowConfigured?: boolean;
     dbConfigured: boolean;
     supabaseConfigured?: boolean;
+    mysqlConfigured?: boolean;
     emailConfigured: boolean;
     liveStreamConfigured: boolean;
     raffleStatus: "open" | "closed";

@@ -15,6 +15,7 @@ import {
 } from "@/lib/catalog/store";
 import { paymentsMockEnabled } from "@/lib/db/orders";
 import { isDbConfigured, query } from "@/lib/db/mysql";
+import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/db/supabase";
 import { logServerError, publicError } from "@/lib/security/errors";
 import {
   isValidRaffleCode,
@@ -25,16 +26,31 @@ import {
 const RAFFLE_UUID = "a0000000-0000-4000-8000-000000000001";
 
 async function syncRaffleCodeToDb(code: string) {
-  if (!isDbConfigured()) return;
-  try {
-    await query("UPDATE raffles SET code = ? WHERE id = ?", [
-      normalizeRaffleCode(code),
-      RAFFLE_UUID,
-    ]);
-  } catch (err: any) {
-    throw new Error(
-      `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${err.message}`,
-    );
+  const norm = normalizeRaffleCode(code);
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = getSupabaseAdmin();
+      const { error } = await supabase
+        .from("raffles")
+        .update({ code: norm })
+        .eq("id", RAFFLE_UUID);
+      if (error) throw new Error(error.message);
+    } catch (err: any) {
+      throw new Error(
+        `No se pudo sincronizar el código del sorteo en Supabase: ${err.message}`,
+      );
+    }
+  } else if (isDbConfigured()) {
+    try {
+      await query("UPDATE raffles SET code = ? WHERE id = ?", [
+        norm,
+        RAFFLE_UUID,
+      ]);
+    } catch (err: any) {
+      throw new Error(
+        `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${err.message}`,
+      );
+    }
   }
 }
 
@@ -47,11 +63,13 @@ export const dynamic = "force-dynamic";
 
 function envPayload() {
   const adminEmails = getAllowedAdminEmails();
-  const dbOk = isDbConfigured();
+  const supabaseOk = isSupabaseConfigured();
+  const mysqlOk = isDbConfigured();
   return {
     paymentsMock: paymentsMockEnabled(),
-    dbConfigured: dbOk,
-    supabaseConfigured: dbOk,
+    dbConfigured: supabaseOk || mysqlOk,
+    supabaseConfigured: supabaseOk,
+    mysqlConfigured: mysqlOk,
     adminAuthConfigured: adminAuthConfigured(),
     flowConfigured: Boolean(
       process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,

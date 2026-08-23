@@ -17,6 +17,7 @@ import {
   paymentsMockEnabled,
 } from "@/lib/db/orders";
 import { isDbConfigured } from "@/lib/db/mysql";
+import { isSupabaseConfigured } from "@/lib/db/supabase";
 
 export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) {
@@ -54,14 +55,16 @@ export async function GET(req: NextRequest) {
     );
 
     const raffle = getRaffle();
-    const dbOk = isDbConfigured();
+    const supabaseOk = isSupabaseConfigured();
+    const mysqlOk = isDbConfigured();
     const ops = {
       paymentsMock: paymentsMockEnabled(),
       flowConfigured: Boolean(
         process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,
       ),
-      dbConfigured: dbOk,
-      supabaseConfigured: dbOk,
+      dbConfigured: supabaseOk || mysqlOk,
+      supabaseConfigured: supabaseOk,
+      mysqlConfigured: mysqlOk,
       emailConfigured: Boolean(process.env.RESEND_API_KEY),
       liveStreamConfigured: Boolean(raffle.liveStreamUrl?.trim()),
       raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",
