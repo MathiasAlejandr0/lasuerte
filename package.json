@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "cd v2 && npm install && npm run build"
-  },
-  "devDependencies": {
-    "next": "^16.3.0"
+    "dev": "cd v2 && npm run dev",
+    "build": "cd v2 && npm install && npm run build",
+    "start": "cd v2 && npm run start"
   }
 }
