@@ -9,8 +9,11 @@ import {
   getPacks,
   getPrizes,
   getRaffle,
+  persistPacksToDb,
+  persistRaffleToDb,
   replacePacks,
   replacePrizes,
+  syncCatalogFromDb,
   updateRaffle,
 } from "@/lib/catalog/store";
 import { paymentsMockEnabled } from "@/lib/db/orders";
@@ -104,7 +107,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  return NextResponse.json(settingsPayload());
+  await syncCatalogFromDb();
+
+  return NextResponse.json(settingsPayload(), {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
 }
 
 const packSchema = z.object({
@@ -213,6 +224,7 @@ export async function PUT(req: NextRequest) {
         endsAt: ends.toISOString(),
       });
 
+      await persistRaffleToDb(updated);
       if (body.raffle.code) {
         await syncRaffleCodeToDb(updated.code);
       }
@@ -224,6 +236,7 @@ export async function PUT(req: NextRequest) {
 
     if (body.packs) {
       replacePacks(body.packs);
+      await persistPacksToDb(getPacks());
     }
 
     return NextResponse.json({

@@ -13,6 +13,7 @@ import {
   isValidTicketCodeForRaffle,
   normalizeRaffleCode,
 } from "@/lib/tickets/codes";
+import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/db/supabase";
 
 export type { AnalysisPrize };
 
@@ -615,3 +616,149 @@ export function replacePacks(
   touch();
   return getPacks();
 }
+
+const PACK_UUID_MAP: Record<string, string> = {
+  "b0000000-0000-4000-8000-000000000001": "pack-puerto-montt",
+  "b0000000-0000-4000-8000-000000000002": "pack-llanquihue",
+  "b0000000-0000-4000-8000-000000000003": "pack-chiloe",
+};
+
+const PACK_ID_TO_UUID: Record<string, string> = {
+  "pack-puerto-montt": "b0000000-0000-4000-8000-000000000001",
+  "pack-llanquihue": "b0000000-0000-4000-8000-000000000002",
+  "pack-chiloe": "b0000000-0000-4000-8000-000000000003",
+};
+
+/**
+ * Sincroniza en tiempo real el sorteo activo y los paquetes desde Supabase PostgreSQL.
+ */
+export async function syncCatalogFromDb() {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = getSupabaseAdmin();
+    const [raffleRes, packsRes] = await Promise.all([
+      supabase
+        .from("raffles")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("packs")
+        .select("*")
+        .order("sort_order", { ascending: true }),
+    ]);
+
+    const s = store();
+    if (raffleRes.data) {
+      const r = raffleRes.data;
+      s.raffle.id = String(r.id);
+      if (r.title) s.raffle.title = String(r.title);
+      if (r.prize_name) s.raffle.prizeName = String(r.prize_name);
+      if (r.ends_at) s.raffle.endsAt = String(r.ends_at);
+      if (r.code) s.raffle.code = normalizeRaffleCode(String(r.code));
+      if (r.ticket_min != null) s.raffle.ticketMin = Number(r.ticket_min);
+      if (r.ticket_max != null) s.raffle.ticketMax = Number(r.ticket_max);
+      if (r.status) {
+        s.raffle.raffleStatus = r.status === "closed" ? "closed" : "open";
+      }
+    }
+
+    if (packsRes.data && packsRes.data.length > 0) {
+      for (const row of packsRes.data) {
+        const packId =
+          PACK_UUID_MAP[row.id] ||
+          (row.slug ? `pack-${row.slug}` : row.id);
+        const pack = s.packs.find((p) => p.id === packId || p.id === row.id);
+        if (pack) {
+          if (row.name) pack.name = String(row.name);
+          if (row.price_clp != null) pack.priceClp = Number(row.price_clp);
+          if (row.ticket_count != null) {
+            pack.ticketCount = Number(row.ticket_count);
+          }
+          if (row.featured != null) pack.featured = Boolean(row.featured);
+          if (row.sort_order != null) pack.order = Number(row.sort_order);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[catalog:syncCatalogFromDb error]", err);
+  }
+}
+
+/**
+ * Persiste los cambios del sorteo directamente a la base de datos Supabase.
+ */
+export async function persistRaffleToDb(raffle: RaffleSettings) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = getSupabaseAdmin();
+    const status = raffle.raffleStatus === "closed" ? "closed" : "active";
+    await supabase
+      .from("raffles")
+      .update({
+        title: raffle.title,
+        prize_name: raffle.prizeName,
+        ends_at: raffle.endsAt,
+        code: normalizeRaffleCode(raffle.code),
+        ticket_min: raffle.ticketMin,
+        ticket_max: raffle.ticketMax,
+        status,
+      })
+      .eq("id", raffle.id || "a0000000-0000-4000-8000-000000000001");
+  } catch (err) {
+    console.warn("[catalog:persistRaffleToDb error]", err);
+  }
+}
+
+/**
+ * Persiste la configuración de los paquetes a la base de datos Supabase.
+ */
+export async function persistPacksToDb(packs: Pack[]) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = getSupabaseAdmin();
+    for (const p of packs) {
+      const uuid = PACK_ID_TO_UUID[p.id] || p.id;
+      await supabase
+        .from("packs")
+        .update({
+          name: p.name,
+          price_clp: p.priceClp,
+          ticket_count: p.ticketCount,
+          featured: p.featured,
+          sort_order: p.order,
+        })
+        .eq("id", uuid);
+    }
+  } catch (err) {
+    console.warn("[catalog:persistPacksToDb error]", err);
+  }
+}
+
+/**
+ * Crea un nuevo ciclo de sorteo en Supabase y archiva los anteriores.
+ */
+export async function persistNewRaffleToDb(newRaffle: RaffleSettings) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = getSupabaseAdmin();
+    await supabase
+      .from("raffles")
+      .update({ status: "archived" })
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+
+    await supabase.from("raffles").insert({
+      title: newRaffle.title,
+      prize_name: newRaffle.prizeName,
+      ends_at: newRaffle.endsAt,
+      code: normalizeRaffleCode(newRaffle.code),
+      ticket_min: newRaffle.ticketMin,
+      ticket_max: newRaffle.ticketMax,
+      status: "active",
+    });
+  } catch (err) {
+    console.warn("[catalog:persistNewRaffleToDb error]", err);
+  }
+}
+

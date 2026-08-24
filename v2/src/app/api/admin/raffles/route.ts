@@ -5,6 +5,8 @@ import {
   createNewRaffle,
   getRaffle,
   getRaffleHistory,
+  persistNewRaffleToDb,
+  syncCatalogFromDb,
 } from "@/lib/catalog/store";
 import { getRaffleCycleStats } from "@/lib/db/orders";
 import { isValidRaffleCode, normalizeRaffleCode } from "@/lib/tickets/codes";
@@ -12,6 +14,7 @@ import { logServerError, publicError } from "@/lib/security/errors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function payload() {
   const active = getRaffle();
@@ -25,7 +28,14 @@ export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  return NextResponse.json(payload());
+  await syncCatalogFromDb();
+  return NextResponse.json(payload(), {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
 }
 
 const createSchema = z.object({
@@ -63,7 +73,7 @@ export async function POST(req: NextRequest) {
     const current = getRaffle();
     const stats = await getRaffleCycleStats(current.id);
 
-    createNewRaffle(
+    const created = createNewRaffle(
       {
         title: body.title,
         prizeName: body.prizeName,
@@ -75,6 +85,8 @@ export async function POST(req: NextRequest) {
       },
       stats,
     );
+
+    await persistNewRaffleToDb(created);
 
     return NextResponse.json({ ok: true, ...payload() });
   } catch (error) {
