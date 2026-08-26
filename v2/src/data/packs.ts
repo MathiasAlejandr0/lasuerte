@@ -25,10 +25,10 @@ export const DEFAULT_PRIZES: AnalysisPrize[] = [
 ];
 
 export const RAFFLE = {
-  id: "raffle-corsa-2026",
-  title: "Gran Premio MOTORRAD CORSA R150 0km 2026",
+  id: "a0000000-0000-4000-8000-000000000001",
+  title: "Gran Premio MOTORRAD CORSA R150 2026",
   prizeName: "MOTORRAD CORSA R150 2026",
-  endsAt: "2026-10-01T00:00:00-03:00",
+  endsAt: "2026-12-01T00:00:00-03:00",
   /**
    * Prefijo del código de participación. Cada ticket = code + 5 dígitos aleatorios
    * (ej. ST + 48291 → ST48291). No es secuencial ni refleja ventas.

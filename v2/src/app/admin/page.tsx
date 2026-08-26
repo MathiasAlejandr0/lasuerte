@@ -75,9 +75,7 @@ export default function AdminDashboardPage() {
           ok: Boolean(ops.dbConfigured),
           detail: ops.supabaseConfigured
             ? "Supabase PostgreSQL conectada"
-            : ops.mysqlConfigured
-              ? "Hostinger MySQL conectada"
-              : "Modo demo (memoria local)",
+            : "Modo demo (memoria local)",
         },
         {
           label: "Email (Resend)",

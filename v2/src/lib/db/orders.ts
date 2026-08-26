@@ -1,10 +1,8 @@
 import { randomUUID } from "crypto";
-import type mysql from "mysql2/promise";
 import { RAFFLE } from "@/data/packs";
 import { assertRaffleAcceptsOrders } from "@/lib/catalog/orders-guard";
 import { getPackById } from "@/lib/catalog/store";
 import { hashPassword } from "@/lib/security/password";
-import { isDbConfigured as isMysqlConfigured, query, transaction } from "./mysql";
 import { getSupabaseAdmin, isSupabaseConfigured } from "./supabase";
 import {
   memoryCreateOrder,
@@ -52,13 +50,11 @@ const PACK_ID_BY_UUID: Record<string, string> = Object.fromEntries(
   Object.entries(PACK_UUID).map(([id, uuid]) => [uuid, id]),
 );
 
-type SqlRow = mysql.RowDataPacket;
-
 /**
- * Retorna true si hay una base de datos real configurada (Supabase o MySQL).
+ * Retorna true si hay una base de datos Supabase configurada.
  */
 export function isDbActive(): boolean {
-  return isSupabaseConfigured() || isMysqlConfigured();
+  return isSupabaseConfigured();
 }
 
 function mapOrder(row: any): DbOrder {
@@ -197,21 +193,6 @@ async function resolveAffiliateId(code?: string) {
     return { affiliateId: null, code: normalized };
   }
 
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT id, code FROM affiliates WHERE UPPER(code) = ? AND active = 1 LIMIT 1",
-      [normalized],
-    );
-
-    if (rows.length > 0) {
-      return {
-        affiliateId: String(rows[0].id),
-        code: String(rows[0].code),
-      };
-    }
-    return { affiliateId: null, code: normalized };
-  }
-
   const { memoryFindAffiliateByCode } = await import("./memory");
   const aff = memoryFindAffiliateByCode(normalized);
   return { affiliateId: aff?.id ?? null, code: normalized };
@@ -303,54 +284,6 @@ export async function createOrder(input: CheckoutInput) {
     return { order: createdOrder, ticketTotal, items: lines };
   }
 
-  // MySQL Handler
-  if (isMysqlConfigured()) {
-    await transaction(async (conn) => {
-      await conn.execute(
-        `INSERT INTO orders (
-          id, email, full_name, rut, phone, status, payment_provider,
-          total_clp, raffle_id, referral_code, referral_name, affiliate_id,
-          created_at, paid_at, confirmation_email_sent_at
-        ) VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, NULL, NULL)`,
-        [
-          orderId,
-          input.email.toLowerCase().trim(),
-          input.fullName.trim(),
-          input.rut.trim(),
-          input.phone.trim(),
-          input.provider,
-          total,
-          RAFFLE_UUID,
-          referral.code,
-          input.referralName?.trim() || null,
-          referral.affiliateId,
-          createdAt,
-        ],
-      );
-
-      for (const line of lines) {
-        await conn.execute(
-          `INSERT INTO order_items (id, order_id, pack_id, quantity, unit_price_clp, ticket_count)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [
-            line.id,
-            orderId,
-            line.pack_id,
-            line.quantity,
-            line.unit_price_clp,
-            line.ticket_count,
-          ],
-        );
-      }
-    });
-
-    const createdOrder = await getOrder(orderId);
-    if (!createdOrder)
-      throw new Error("No se pudo crear el pedido en la base de datos MySQL");
-
-    return { order: createdOrder, ticketTotal, items: lines };
-  }
-
   // Memory Fallback
   return memoryCreateOrder(input);
 }
@@ -368,14 +301,6 @@ export async function getOrder(id: string) {
       throw new Error(`Error al obtener orden de Supabase: ${error.message}`);
     }
     return data ? mapOrder(data) : null;
-  }
-
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM orders WHERE id = ? LIMIT 1",
-      [id],
-    );
-    return rows.length > 0 ? mapOrder(rows[0]) : null;
   }
 
   return memoryGetOrder(id);
@@ -401,16 +326,6 @@ export async function setPaymentExternal(
         `Error al actualizar pago externo en Supabase: ${error.message}`,
       );
     }
-    const order = await getOrder(orderId);
-    if (!order) throw new Error("Pedido no encontrado");
-    return order;
-  }
-
-  if (isMysqlConfigured()) {
-    await query(
-      "UPDATE orders SET payment_external_id = ?, payment_provider = ? WHERE id = ?",
-      [externalId, provider, orderId],
-    );
     const order = await getOrder(orderId);
     if (!order) throw new Error("Pedido no encontrado");
     return order;
@@ -458,7 +373,7 @@ export async function fulfillOrder(orderId: string) {
     const order = mapOrder(orderRow);
 
     if (order.status === "paid") {
-      const { data: existingTickets } = await supabase
+      const { data: tickets } = await supabase
         .from("tickets")
         .select("*")
         .eq("order_id", orderId)
@@ -466,7 +381,7 @@ export async function fulfillOrder(orderId: string) {
 
       return {
         order,
-        tickets: (existingTickets || []).map(mapTicket),
+        tickets: (tickets || []).map(mapTicket),
         alreadyPaid: true,
       };
     }
@@ -582,158 +497,6 @@ export async function fulfillOrder(orderId: string) {
     };
   }
 
-  if (isMysqlConfigured()) {
-    return transaction(async (conn) => {
-      const [orderRows] = await conn.execute<SqlRow[]>(
-        "SELECT * FROM orders WHERE id = ? FOR UPDATE",
-        [orderId],
-      );
-
-      if (orderRows.length === 0) {
-        throw new Error("Pedido no encontrado");
-      }
-
-      const order = mapOrder(orderRows[0]);
-
-      if (order.status === "paid") {
-        const [ticketRows] = await conn.execute<SqlRow[]>(
-          "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
-          [orderId],
-        );
-        return {
-          order,
-          tickets: ticketRows.map(mapTicket),
-          alreadyPaid: true,
-        };
-      }
-
-      if (order.status !== "pending") {
-        throw new Error("El pedido no está pendiente de pago");
-      }
-
-      const paidAt = new Date();
-
-      const [updateResult] = await conn.execute<mysql.ResultSetHeader>(
-        "UPDATE orders SET status = 'paid', paid_at = ? WHERE id = ? AND status = 'pending'",
-        [paidAt, orderId],
-      );
-
-      if (updateResult.affectedRows === 0) {
-        const [retryRows] = await conn.execute<SqlRow[]>(
-          "SELECT * FROM orders WHERE id = ?",
-          [orderId],
-        );
-        const retryOrder = mapOrder(retryRows[0]);
-        const [ticketRows] = await conn.execute<SqlRow[]>(
-          "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
-          [orderId],
-        );
-        return {
-          order: retryOrder,
-          tickets: ticketRows.map(mapTicket),
-          alreadyPaid: true,
-        };
-      }
-
-      const [existingTickets] = await conn.execute<SqlRow[]>(
-        "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
-        [orderId],
-      );
-
-      if (existingTickets.length > 0) {
-        const updatedOrder = {
-          ...order,
-          status: "paid" as const,
-          paid_at: paidAt.toISOString(),
-        };
-        return {
-          order: updatedOrder,
-          tickets: existingTickets.map(mapTicket),
-          alreadyPaid: false,
-        };
-      }
-
-      const [items] = await conn.execute<SqlRow[]>(
-        "SELECT * FROM order_items WHERE order_id = ?",
-        [orderId],
-      );
-
-      const totalTickets = items.reduce(
-        (acc: number, item: SqlRow) => acc + Number(item.ticket_count),
-        0,
-      );
-
-      const [raffleRows] = await conn.execute<SqlRow[]>(
-        "SELECT code FROM raffles WHERE id = ?",
-        [order.raffle_id],
-      );
-      const raffleCode =
-        raffleRows.length > 0 ? String(raffleRows[0].code) : "S2S26";
-
-      const assignedCodes: string[] = [];
-      for (let i = 0; i < totalTickets; i++) {
-        let attempts = 0;
-        let inserted = false;
-
-        while (!inserted) {
-          attempts++;
-          if (attempts > 100) {
-            throw new Error("No se pudo asignar código único de boleto");
-          }
-
-          const suffix = Math.floor(Math.random() * 100000);
-          const ticketCode = raffleCode + String(suffix).padStart(5, "0");
-          const ticketId = randomUUID();
-
-          try {
-            await conn.execute(
-              `INSERT INTO tickets (id, raffle_id, order_id, number, code, email, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-              [
-                ticketId,
-                order.raffle_id,
-                orderId,
-                suffix,
-                ticketCode,
-                order.email,
-              ],
-            );
-            assignedCodes.push(ticketCode);
-            inserted = true;
-          } catch (err: unknown) {
-            const sqlErr = err as { code?: string; errno?: number };
-            if (
-              sqlErr.code === "ER_DUP_ENTRY" ||
-              sqlErr.errno === 1062 ||
-              String(err).includes("Duplicate entry")
-            ) {
-              continue;
-            }
-            throw err;
-          }
-        }
-      }
-
-      const [finalTickets] = await conn.execute<SqlRow[]>(
-        "SELECT * FROM tickets WHERE order_id = ? ORDER BY code",
-        [orderId],
-      );
-
-      const finalOrder = {
-        ...order,
-        status: "paid" as const,
-        paid_at: paidAt.toISOString(),
-      };
-
-      return {
-        order: finalOrder,
-        tickets: finalTickets.map(mapTicket),
-        alreadyPaid: false,
-        assignedCodes,
-      };
-    });
-  }
-
   return memoryFulfillOrder(orderId);
 }
 
@@ -747,14 +510,6 @@ export async function lookupTicketsByEmail(email: string) {
       .order("number");
 
     return (data || []).map(mapTicket);
-  }
-
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM tickets WHERE LOWER(email) = LOWER(?) ORDER BY number",
-      [email.trim()],
-    );
-    return rows.map(mapTicket);
   }
 
   return memoryLookupTickets(email);
@@ -778,13 +533,6 @@ export async function listOrders() {
     return (data || []).map(mapOrder);
   }
 
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM orders ORDER BY created_at DESC LIMIT 1000",
-    );
-    return rows.map(mapOrder);
-  }
-
   return memoryListOrders();
 }
 
@@ -795,11 +543,6 @@ export async function listOrderItems() {
     const supabase = getSupabaseAdmin();
     const { data } = await supabase.from("order_items").select("*").limit(5000);
     return (data || []).map(mapOrderItem);
-  }
-
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>("SELECT * FROM order_items LIMIT 5000");
-    return rows.map(mapOrderItem);
   }
 
   return memoryListOrderItems();
@@ -817,13 +560,6 @@ export async function listTickets() {
       .limit(5000);
 
     return (data || []).map(mapTicket);
-  }
-
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM tickets ORDER BY number DESC LIMIT 5000",
-    );
-    return rows.map(mapTicket);
   }
 
   return memoryListTickets();
@@ -864,25 +600,6 @@ export async function getOrderDetail(orderId: string) {
     };
   }
 
-  if (isMysqlConfigured()) {
-    const order = await getOrder(orderId);
-    if (!order) return null;
-
-    const [itemsRows, ticketsRows] = await Promise.all([
-      query<SqlRow[]>("SELECT * FROM order_items WHERE order_id = ?", [orderId]),
-      query<SqlRow[]>(
-        "SELECT * FROM tickets WHERE order_id = ? ORDER BY number",
-        [orderId],
-      ),
-    ]);
-
-    return {
-      order,
-      items: itemsRows.map(mapOrderItem),
-      tickets: ticketsRows.map(mapTicket),
-    };
-  }
-
   const order = memoryGetOrder(orderId);
   if (!order) return null;
   return {
@@ -905,11 +622,6 @@ export async function listAffiliates() {
     return (data || []).map(mapAffiliate);
   }
 
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>("SELECT * FROM affiliates ORDER BY code");
-    return rows.map(mapAffiliate);
-  }
-
   return memoryListAffiliates();
 }
 
@@ -925,14 +637,6 @@ export async function getAffiliateById(id: string) {
       .maybeSingle();
 
     return data ? mapAffiliate(data) : null;
-  }
-
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM affiliates WHERE id = ? LIMIT 1",
-      [id],
-    );
-    return rows.length > 0 ? mapAffiliate(rows[0]) : null;
   }
 
   return memoryGetAffiliateById(id);
@@ -954,14 +658,6 @@ export async function findAffiliateByEmail(email: string) {
     return data ? mapAffiliate(data) : null;
   }
 
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM affiliates WHERE LOWER(email) = LOWER(?) LIMIT 1",
-      [normalized],
-    );
-    return rows.length > 0 ? mapAffiliate(rows[0]) : null;
-  }
-
   return memoryFindAffiliateByEmail(normalized);
 }
 
@@ -977,13 +673,6 @@ export async function listPayouts() {
       .limit(1000);
 
     return (data || []).map(mapPayout);
-  }
-
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM affiliate_payouts ORDER BY paid_at DESC LIMIT 1000",
-    );
-    return rows.map(mapPayout);
   }
 
   return memoryListPayouts();
@@ -1024,21 +713,6 @@ export async function createPayout(input: {
       throw new Error(`Error al crear payout en Supabase: ${error?.message}`);
     }
     return mapPayout(data);
-  }
-
-  if (isMysqlConfigured()) {
-    await query(
-      `INSERT INTO affiliate_payouts (
-        id, affiliate_id, amount_clp, period_from, period_to, note, paid_at, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [payoutId, input.affiliate_id, amount, from, to, note, paidAt, paidAt],
-    );
-
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM affiliate_payouts WHERE id = ? LIMIT 1",
-      [payoutId],
-    );
-    return mapPayout(rows[0]);
   }
 
   return memoryCreatePayout(input);
@@ -1122,59 +796,6 @@ export async function upsertAffiliate(
     }
   }
 
-  if (isMysqlConfigured()) {
-    const existingRows = await query<SqlRow[]>(
-      "SELECT id FROM affiliates WHERE UPPER(code) = ? LIMIT 1",
-      [code],
-    );
-
-    if (existingRows.length > 0) {
-      const affiliateId = String(existingRows[0].id);
-      let sql = `UPDATE affiliates SET name = ?, email = ?, phone = ?, commission_type = ?, commission_value = ?, active = ?, notes = ?, updated_at = NOW()`;
-      const params: unknown[] = [
-        input.name,
-        input.email ?? null,
-        input.phone ?? null,
-        input.commission_type ?? "percent",
-        input.commission_value ?? 10,
-        (input.active ?? true) ? 1 : 0,
-        input.notes ?? null,
-      ];
-
-      if (password_hash !== undefined) {
-        sql += `, password_hash = ?`;
-        params.push(password_hash);
-      }
-      sql += ` WHERE id = ?`;
-      params.push(affiliateId);
-
-      await query(sql, params);
-      const updated = await getAffiliateById(affiliateId);
-      return updated!;
-    } else {
-      const affiliateId = randomUUID();
-      await query(
-        `INSERT INTO affiliates (
-          id, code, name, email, phone, commission_type, commission_value, active, notes, password_hash, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-        [
-          affiliateId,
-          code,
-          input.name,
-          input.email ?? null,
-          input.phone ?? null,
-          input.commission_type ?? "percent",
-          input.commission_value ?? 10,
-          (input.active ?? true) ? 1 : 0,
-          input.notes ?? null,
-          password_hash ?? null,
-        ],
-      );
-      const created = await getAffiliateById(affiliateId);
-      return created!;
-    }
-  }
-
   return memoryUpsertAffiliate({
     ...input,
     password_hash: password_hash !== undefined ? password_hash : undefined,
@@ -1189,14 +810,6 @@ export async function markOrderFailed(orderId: string) {
       .update({ status: "failed" })
       .eq("id", orderId)
       .eq("status", "pending");
-    return getOrder(orderId);
-  }
-
-  if (isMysqlConfigured()) {
-    await query(
-      "UPDATE orders SET status = 'failed' WHERE id = ? AND status = 'pending'",
-      [orderId],
-    );
     return getOrder(orderId);
   }
 
@@ -1215,14 +828,6 @@ export async function getOrderByPaymentExternal(externalId: string) {
     return data ? mapOrder(data) : null;
   }
 
-  if (isMysqlConfigured()) {
-    const rows = await query<SqlRow[]>(
-      "SELECT * FROM orders WHERE payment_external_id = ? LIMIT 1",
-      [externalId],
-    );
-    return rows.length > 0 ? mapOrder(rows[0]) : null;
-  }
-
   return memoryGetOrderByPayment(externalId);
 }
 
@@ -1234,14 +839,6 @@ export async function markConfirmationEmailSent(orderId: string) {
       .update({ confirmation_email_sent_at: new Date().toISOString() })
       .eq("id", orderId);
 
-    return getOrder(orderId);
-  }
-
-  if (isMysqlConfigured()) {
-    await query(
-      "UPDATE orders SET confirmation_email_sent_at = NOW() WHERE id = ?",
-      [orderId],
-    );
     return getOrder(orderId);
   }
 
@@ -1272,24 +869,6 @@ export async function getRaffleCycleStats(raffleId: string) {
     return {
       ordersCount: ordersRes.count ?? 0,
       ticketsCount: ticketsRes.count ?? 0,
-    };
-  }
-
-  if (isMysqlConfigured()) {
-    const [ordersRes, ticketsRes] = await Promise.all([
-      query<SqlRow[]>(
-        "SELECT COUNT(*) as count FROM orders WHERE raffle_id = ?",
-        [raffleId],
-      ),
-      query<SqlRow[]>(
-        "SELECT COUNT(*) as count FROM tickets WHERE raffle_id = ?",
-        [raffleId],
-      ),
-    ]);
-
-    return {
-      ordersCount: Number(ordersRes[0]?.count ?? 0),
-      ticketsCount: Number(ticketsRes[0]?.count ?? 0),
     };
   }
 

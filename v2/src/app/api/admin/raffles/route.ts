@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    await syncCatalogFromDb();
     const body = createSchema.parse(await req.json());
     const current = getRaffle();
     const stats = await getRaffleCycleStats(current.id);

@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { Countdown } from "@/components/home/Countdown";
-import { getRaffle } from "@/lib/catalog/store";
+import { getRaffle, syncCatalogFromDb } from "@/lib/catalog/store";
 
-export default function SorteosActivosPage() {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export default async function SorteosActivosPage() {
+  await syncCatalogFromDb();
   const raffle = getRaffle();
 
   return (

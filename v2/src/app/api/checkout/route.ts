@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assertRaffleAcceptsOrders } from "@/lib/catalog/orders-guard";
+import { syncCatalogFromDb } from "@/lib/catalog/store";
 import {
   createOrder,
   paymentsMockEnabled,
@@ -10,6 +11,10 @@ import { createFlowPayment } from "@/lib/payments/flow";
 import { isMockProviderAllowed } from "@/lib/payments/mock-guard";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { logServerError, publicError } from "@/lib/security/errors";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const schema = z.object({
   email: z.string().email(),
@@ -32,6 +37,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    await syncCatalogFromDb();
     const limited = rateLimit({
       key: `checkout:${clientIp(req)}`,
       limit: 30,

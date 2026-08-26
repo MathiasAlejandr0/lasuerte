@@ -7,7 +7,7 @@ import {
   buildProviderMix,
   buildSalesKpis,
 } from "@/lib/admin/analytics";
-import { getRaffle } from "@/lib/catalog/store";
+import { getRaffle, syncCatalogFromDb } from "@/lib/catalog/store";
 import {
   listAffiliates,
   listOrderItems,
@@ -16,8 +16,11 @@ import {
   listTickets,
   paymentsMockEnabled,
 } from "@/lib/db/orders";
-import { isDbConfigured } from "@/lib/db/mysql";
 import { isSupabaseConfigured } from "@/lib/db/supabase";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) {
@@ -25,6 +28,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    await syncCatalogFromDb();
+
     const { from, to } = parseDateRange(req);
     const [orders, affiliates, items, payouts, tickets] = await Promise.all([
       listOrders(),
@@ -56,54 +61,62 @@ export async function GET(req: NextRequest) {
 
     const raffle = getRaffle();
     const supabaseOk = isSupabaseConfigured();
-    const mysqlOk = isDbConfigured();
     const ops = {
       paymentsMock: paymentsMockEnabled(),
       flowConfigured: Boolean(
         process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,
       ),
-      dbConfigured: supabaseOk || mysqlOk,
+      dbConfigured: supabaseOk,
       supabaseConfigured: supabaseOk,
-      mysqlConfigured: mysqlOk,
       emailConfigured: Boolean(process.env.RESEND_API_KEY),
       liveStreamConfigured: Boolean(raffle.liveStreamUrl?.trim()),
       raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",
       winnerConfigured: Boolean(raffle.winnerTicketCode?.trim()),
     };
 
-    return NextResponse.json({
-      kpis: {
-        ...kpis,
-        commissionsOwedClp: totalBalance,
-        commissionsEarnedClp: totalEarned,
-        ticketsIssued: tickets.filter((t) => {
-          const order = orders.find((o) => o.id === t.order_id);
-          if (!order || order.status !== "paid") return false;
-          const ts = new Date(order.paid_at || order.created_at).getTime();
-          return ts >= from.getTime() && ts <= to.getTime();
-        }).length,
+    return NextResponse.json(
+      {
+        kpis: {
+          ...kpis,
+          commissionsOwedClp: totalBalance,
+          commissionsEarnedClp: totalEarned,
+          ticketsIssued: tickets.filter((t) => {
+            const order = orders.find((o) => o.id === t.order_id);
+            if (!order || order.status !== "paid") return false;
+            const ts = new Date(order.paid_at || order.created_at).getTime();
+            return ts >= from.getTime() && ts <= to.getTime();
+          }).length,
+        },
+        affiliateStats: affiliateStats.slice(0, 5),
+        orphanCodes,
+        providerMix,
+        packMix,
+        ops,
+        raffle: {
+          title: raffle.title,
+          prizeName: raffle.prizeName,
+          code: raffle.code,
+          endsAt: raffle.endsAt,
+          raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",
+          winnerTicketCode: raffle.winnerTicketCode,
+        },
+        alerts: {
+          pendingOrders: kpis.ordersPending,
+          orphanCodes: orphanCodes.length,
+          unpaidCommissions: affiliateStats.filter(
+            (a) => a.commissionBalanceClp > 0,
+          ).length,
+        },
       },
-      affiliateStats: affiliateStats.slice(0, 5),
-      orphanCodes,
-      providerMix,
-      packMix,
-      ops,
-      raffle: {
-        title: raffle.title,
-        prizeName: raffle.prizeName,
-        code: raffle.code,
-        endsAt: raffle.endsAt,
-        raffleStatus: raffle.raffleStatus === "closed" ? "closed" : "open",
-        winnerTicketCode: raffle.winnerTicketCode,
+      {
+        headers: {
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
       },
-      alerts: {
-        pendingOrders: kpis.ordersPending,
-        orphanCodes: orphanCodes.length,
-        unpaidCommissions: affiliateStats.filter(
-          (a) => a.commissionBalanceClp > 0,
-        ).length,
-      },
-    });
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Error al cargar el resumen";

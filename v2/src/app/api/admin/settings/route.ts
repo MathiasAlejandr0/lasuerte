@@ -10,6 +10,7 @@ import {
   getPrizes,
   getRaffle,
   persistPacksToDb,
+  persistPrizesToDb,
   persistRaffleToDb,
   replacePacks,
   replacePrizes,
@@ -17,7 +18,6 @@ import {
   updateRaffle,
 } from "@/lib/catalog/store";
 import { paymentsMockEnabled } from "@/lib/db/orders";
-import { isDbConfigured, query } from "@/lib/db/mysql";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/db/supabase";
 import { logServerError, publicError } from "@/lib/security/errors";
 import {
@@ -44,18 +44,6 @@ async function syncRaffleCodeToDb(code: string) {
         `No se pudo sincronizar el código del sorteo en Supabase: ${msg}`,
       );
     }
-  } else if (isDbConfigured()) {
-    try {
-      await query("UPDATE raffles SET code = ? WHERE id = ?", [
-        norm,
-        RAFFLE_UUID,
-      ]);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      throw new Error(
-        `No se pudo sincronizar el código del sorteo en la base de datos MySQL: ${msg}`,
-      );
-    }
   }
 }
 
@@ -65,16 +53,15 @@ function emailConfigured() {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function envPayload() {
   const adminEmails = getAllowedAdminEmails();
   const supabaseOk = isSupabaseConfigured();
-  const mysqlOk = isDbConfigured();
   return {
     paymentsMock: paymentsMockEnabled(),
-    dbConfigured: supabaseOk || mysqlOk,
+    dbConfigured: supabaseOk,
     supabaseConfigured: supabaseOk,
-    mysqlConfigured: mysqlOk,
     adminAuthConfigured: adminAuthConfigured(),
     flowConfigured: Boolean(
       process.env.FLOW_API_KEY && process.env.FLOW_SECRET_KEY,
@@ -175,6 +162,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
+    await syncCatalogFromDb();
     const body = putSchema.parse(await req.json());
 
     if (body.raffle) {
@@ -231,7 +219,8 @@ export async function PUT(req: NextRequest) {
     }
 
     if (body.prizes) {
-      replacePrizes(body.prizes);
+      const nextPrizes = replacePrizes(body.prizes);
+      await persistPrizesToDb(nextPrizes);
     }
 
     if (body.packs) {

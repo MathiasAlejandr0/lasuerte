@@ -617,6 +617,10 @@ export function replacePacks(
   return getPacks();
 }
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const DEFAULT_RAFFLE_UUID = "a0000000-0000-4000-8000-000000000001";
+
 const PACK_UUID_MAP: Record<string, string> = {
   "b0000000-0000-4000-8000-000000000001": "pack-puerto-montt",
   "b0000000-0000-4000-8000-000000000002": "pack-llanquihue",
@@ -630,16 +634,17 @@ const PACK_ID_TO_UUID: Record<string, string> = {
 };
 
 /**
- * Sincroniza en tiempo real el sorteo activo y los paquetes desde Supabase PostgreSQL.
+ * Sincroniza en tiempo real el sorteo activo, paquetes y premios desde Supabase PostgreSQL.
  */
 export async function syncCatalogFromDb() {
   if (!isSupabaseConfigured()) return;
   try {
     const supabase = getSupabaseAdmin();
-    const [raffleRes, packsRes] = await Promise.all([
+    const [raffleRes, packsRes, historyRes] = await Promise.all([
       supabase
         .from("raffles")
         .select("*")
+        .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
@@ -647,11 +652,28 @@ export async function syncCatalogFromDb() {
         .from("packs")
         .select("*")
         .order("sort_order", { ascending: true }),
+      supabase
+        .from("raffles")
+        .select("*")
+        .eq("status", "archived")
+        .order("created_at", { ascending: false })
+        .limit(50),
     ]);
 
+    let activeRaffle = raffleRes.data;
+    if (!activeRaffle) {
+      const fallback = await supabase
+        .from("raffles")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      activeRaffle = fallback.data;
+    }
+
     const s = store();
-    if (raffleRes.data) {
-      const r = raffleRes.data;
+    if (activeRaffle) {
+      const r = activeRaffle;
       s.raffle.id = String(r.id);
       if (r.title) s.raffle.title = String(r.title);
       if (r.prize_name) s.raffle.prizeName = String(r.prize_name);
@@ -661,6 +683,32 @@ export async function syncCatalogFromDb() {
       if (r.ticket_max != null) s.raffle.ticketMax = Number(r.ticket_max);
       if (r.status) {
         s.raffle.raffleStatus = r.status === "closed" ? "closed" : "open";
+      }
+      if (r.live_stream_url != null) {
+        s.raffle.liveStreamUrl = String(r.live_stream_url);
+      }
+      if (r.winner_ticket_code != null) {
+        s.raffle.winnerTicketCode = String(r.winner_ticket_code);
+      }
+      if (r.winner_name != null) {
+        s.raffle.winnerName = String(r.winner_name);
+      }
+      if (r.winner_note != null) {
+        s.raffle.winnerNote = String(r.winner_note);
+      }
+      if (r.estimated_ops_cost_clp != null) {
+        s.raffle.estimatedOpsCostClp = Number(r.estimated_ops_cost_clp);
+      }
+      if (Array.isArray(r.prizes) && r.prizes.length > 0) {
+        const mappedPrizes: AnalysisPrize[] = [];
+        for (const p of r.prizes) {
+          const norm = normalizePrize(p);
+          if (norm) mappedPrizes.push(norm);
+        }
+        if (mappedPrizes.length > 0) {
+          s.prizes = mappedPrizes;
+          s.raffle.estimatedPrizeCostClp = sumPrizeCosts(s.prizes);
+        }
       }
     }
 
@@ -681,6 +729,30 @@ export async function syncCatalogFromDb() {
         }
       }
     }
+
+    if (historyRes.data && Array.isArray(historyRes.data)) {
+      s.raffleHistory = historyRes.data.map((r) => ({
+        id: String(r.id),
+        title: String(r.title || ""),
+        prizeName: String(r.prize_name || ""),
+        endsAt: String(r.ends_at || ""),
+        code: normalizeRaffleCode(String(r.code || "ST")),
+        ticketMin: Number(r.ticket_min ?? 0),
+        ticketMax: Number(r.ticket_max ?? 99999),
+        estimatedPrizeCostClp: Array.isArray(r.prizes)
+          ? sumPrizeCosts(r.prizes)
+          : 0,
+        estimatedOpsCostClp: Number(r.estimated_ops_cost_clp ?? 0),
+        liveStreamUrl: String(r.live_stream_url || ""),
+        raffleStatus: "closed" as const,
+        winnerTicketCode: String(r.winner_ticket_code || ""),
+        winnerName: String(r.winner_name || ""),
+        winnerNote: String(r.winner_note || ""),
+        archivedAt: String(r.created_at || ""),
+        ordersCount: 0,
+        ticketsCount: 0,
+      }));
+    }
   } catch (err) {
     console.warn("[catalog:syncCatalogFromDb error]", err);
   }
@@ -691,23 +763,67 @@ export async function syncCatalogFromDb() {
  */
 export async function persistRaffleToDb(raffle: RaffleSettings) {
   if (!isSupabaseConfigured()) return;
+  const targetId = UUID_REGEX.test(raffle.id)
+    ? raffle.id
+    : DEFAULT_RAFFLE_UUID;
+  const status = raffle.raffleStatus === "closed" ? "closed" : "active";
+  const normCode = normalizeRaffleCode(raffle.code);
+  const currentPrizes = getPrizes();
+
   try {
     const supabase = getSupabaseAdmin();
-    const status = raffle.raffleStatus === "closed" ? "closed" : "active";
-    await supabase
+    const { error } = await supabase
       .from("raffles")
       .update({
         title: raffle.title,
         prize_name: raffle.prizeName,
         ends_at: raffle.endsAt,
-        code: normalizeRaffleCode(raffle.code),
+        code: normCode,
         ticket_min: raffle.ticketMin,
         ticket_max: raffle.ticketMax,
         status,
+        live_stream_url: raffle.liveStreamUrl || "",
+        winner_ticket_code: raffle.winnerTicketCode || "",
+        winner_name: raffle.winnerName || "",
+        winner_note: raffle.winnerNote || "",
+        estimated_ops_cost_clp: raffle.estimatedOpsCostClp ?? 400000,
+        prizes: currentPrizes,
       })
-      .eq("id", raffle.id || "a0000000-0000-4000-8000-000000000001");
+      .eq("id", targetId);
+
+    if (error) {
+      console.error("[catalog:persistRaffleToDb error]", error);
+      throw new Error(
+        `Error al persistir sorteo en Supabase: ${error.message}`,
+      );
+    }
   } catch (err) {
-    console.warn("[catalog:persistRaffleToDb error]", err);
+    console.error("[catalog:persistRaffleToDb error]", err);
+    throw err;
+  }
+}
+
+/**
+ * Persiste los premios del sorteo directamente a Supabase.
+ */
+export async function persistPrizesToDb(prizes: AnalysisPrize[]) {
+  if (!isSupabaseConfigured()) return;
+  const raffle = getRaffle();
+  const targetId = UUID_REGEX.test(raffle.id)
+    ? raffle.id
+    : DEFAULT_RAFFLE_UUID;
+  try {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase
+      .from("raffles")
+      .update({ prizes })
+      .eq("id", targetId);
+
+    if (error) {
+      console.error("[catalog:persistPrizesToDb error]", error);
+    }
+  } catch (err) {
+    console.error("[catalog:persistPrizesToDb error]", err);
   }
 }
 
@@ -719,8 +835,10 @@ export async function persistPacksToDb(packs: Pack[]) {
   try {
     const supabase = getSupabaseAdmin();
     for (const p of packs) {
-      const uuid = PACK_ID_TO_UUID[p.id] || p.id;
-      await supabase
+      const uuid =
+        PACK_ID_TO_UUID[p.id] || (UUID_REGEX.test(p.id) ? p.id : null);
+      if (!uuid) continue;
+      const { error } = await supabase
         .from("packs")
         .update({
           name: p.name,
@@ -730,9 +848,17 @@ export async function persistPacksToDb(packs: Pack[]) {
           sort_order: p.order,
         })
         .eq("id", uuid);
+
+      if (error) {
+        console.error(`[catalog:persistPacksToDb error for ${p.id}]`, error);
+        throw new Error(
+          `Error al persistir paquete en Supabase: ${error.message}`,
+        );
+      }
     }
   } catch (err) {
-    console.warn("[catalog:persistPacksToDb error]", err);
+    console.error("[catalog:persistPacksToDb error]", err);
+    throw err;
   }
 }
 
@@ -748,7 +874,9 @@ export async function persistNewRaffleToDb(newRaffle: RaffleSettings) {
       .update({ status: "archived" })
       .neq("id", "00000000-0000-0000-0000-000000000000");
 
-    await supabase.from("raffles").insert({
+    const currentPrizes = getPrizes();
+
+    const { error } = await supabase.from("raffles").insert({
       title: newRaffle.title,
       prize_name: newRaffle.prizeName,
       ends_at: newRaffle.endsAt,
@@ -756,9 +884,21 @@ export async function persistNewRaffleToDb(newRaffle: RaffleSettings) {
       ticket_min: newRaffle.ticketMin,
       ticket_max: newRaffle.ticketMax,
       status: "active",
+      live_stream_url: newRaffle.liveStreamUrl || "",
+      estimated_ops_cost_clp: newRaffle.estimatedOpsCostClp ?? 400000,
+      prizes: currentPrizes,
     });
+
+    if (error) {
+      console.error("[catalog:persistNewRaffleToDb error]", error);
+      throw new Error(
+        `Error al insertar nuevo sorteo en Supabase: ${error.message}`,
+      );
+    }
   } catch (err) {
-    console.warn("[catalog:persistNewRaffleToDb error]", err);
+    console.error("[catalog:persistNewRaffleToDb error]", err);
+    throw err;
   }
 }
+
 

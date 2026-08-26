@@ -23,10 +23,16 @@ CREATE TABLE IF NOT EXISTS raffles (
   title TEXT NOT NULL,
   prize_name TEXT NOT NULL,
   ends_at TIMESTAMPTZ NOT NULL,
-  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'closed', 'draft')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'closed', 'draft', 'archived')),
   code VARCHAR(12) NOT NULL UNIQUE,
   ticket_min INT NOT NULL DEFAULT 0,
   ticket_max INT NOT NULL DEFAULT 99999,
+  live_stream_url TEXT DEFAULT '',
+  winner_ticket_code VARCHAR(20) DEFAULT '',
+  winner_name TEXT DEFAULT '',
+  winner_note TEXT DEFAULT '',
+  estimated_ops_cost_clp INT DEFAULT 400000,
+  prizes JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -313,7 +319,7 @@ INSERT INTO raffles (
   'a0000000-0000-4000-8000-000000000001',
   'Sorteo MOTORRAD CORSA R150 0km 2026',
   'MOTORRAD CORSA R150 2026',
-  '2026-10-01 00:00:00+00',
+  '2026-12-01 03:00:00+00',
   'active',
   'S2S26',
   0,

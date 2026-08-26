@@ -585,13 +585,11 @@ export default function AdminSettingsPage() {
             tone={data.env.flowConfigured ? "ok" : "warn"}
           />
           <Row
-            label="Base de datos (Supabase / MySQL)"
+            label="Base de datos (Supabase)"
             value={
-              (data.env as any).supabaseConfigured
+              data.env.supabaseConfigured
                 ? "Supabase PostgreSQL conectada"
-                : (data.env as any).mysqlConfigured
-                  ? "Hostinger MySQL conectada"
-                  : "Modo demo (memoria local)"
+                : "Modo demo (memoria local)"
             }
             tone={data.env.dbConfigured ? "ok" : "warn"}
           />
